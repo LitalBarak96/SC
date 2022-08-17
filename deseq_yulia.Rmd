@@ -109,6 +109,93 @@ up<-as.data.frame(up)
          # row.names = TRUE)
 ```
 
+#only npf gene
+```{r}
+
+library(htmltools)
+library(DESeq2)
+library(ggplot2)
+library(autoplotly)
+library(factoextra)
+library("pheatmap")
+library("RColorBrewer")
+#library(limma)
+library("manhattanly")
+library("ggrepel")
+library(plotly)
+library("heatmaply")
+
+#(!require("BiocManager", quietly = TRUE))
+
+#install.pacakages("BiocManager")
+#BiocManager::install("DESeq2")
+
+
+
+library(dplyr)
+cts <- (read.csv("D:/seq_data/npfr/counts_npfr.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv", row.names=1)
+coldata_not_factorial <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv")
+
+
+
+data_noTPM <- select(cts, -contains("TPM"))
+NPF_gene<-data_noTPM[grepl("NPF",rownames(data_noTPM)),]
+
+
+data<-data.frame(row.names=rownames(cts))
+num_of_exp =9
+for (i in 1:num_of_exp){
+  temp.df<-data.frame()
+  temp.df<-data_noTPM %>%
+    select(starts_with(coldata_not_factorial[i,1]))
+  
+  
+  data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
+}
+
+#rownames(coldata) <- sub("_rep", "", rownames(coldata))
+
+
+NPF_gene<-data[grepl("NPF",rownames(data)),]
+
+coldata$condition <- factor(coldata$condition)
+
+all(rownames(coldata) %in% colnames(NPF_gene))
+all(rownames(coldata) == colnames(NPF_gene))
+NPF_gene <- NPF_gene[, rownames(coldata)]
+all(rownames(coldata) == colnames(NPF_gene))
+
+library("DESeq2")
+
+dds <- DESeqDataSetFromMatrix(countData = round(NPF_gene),
+                              colData = coldata,
+                              design = ~ condition)
+dds
+
+
+library(dplyr)
+
+#removing low count genes
+
+
+#check this is put the condition right
+#dds$condition <- factor(dds$condition, levels = c("males","females"))
+
+dds <- DESeq(dds)
+resultsNames(dds)
+res <- results(dds)
+vsdata <-vst(dds,blind=FALSE)
+
+library("pheatmap")
+select <- order(rowMeans(counts(dds,normalized=TRUE)),
+                decreasing=TRUE)[1:20]
+df <- as.data.frame(colData(dds)[,c("condition","sizeFactor")])
+pheatmap(assay(vsd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+         cluster_cols=FALSE, annotation_col=df)
+
+```
+
 
 #only NPFR tissue
 ```{r}
@@ -120,7 +207,6 @@ library(autoplotly)
 library(factoextra)
 library("pheatmap")
 library("RColorBrewer")
-library(gplots)
 #library(limma)
 library("manhattanly")
 library("ggrepel")
@@ -129,7 +215,7 @@ library("heatmaply")
 
 #(!require("BiocManager", quietly = TRUE))
 
-#install.packages("BiocManager")
+#install.pacakages("BiocManager")
 #BiocManager::install("DESeq2")
 
 
@@ -143,6 +229,7 @@ coldata_not_factorial <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv")
 
 data_noTPM <- select(cts, -contains("TPM"))
 
+
 data<-data.frame(row.names=rownames(cts))
 num_of_exp =9
 for (i in 1:num_of_exp){
@@ -154,6 +241,7 @@ for (i in 1:num_of_exp){
   data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
 }
 
+#rownames(coldata) <- sub("_rep", "", rownames(coldata))
 
 coldata$condition <- factor(coldata$condition)
 
@@ -176,9 +264,12 @@ dds <- DESeqDataSetFromMatrix(countData = round(data),
                               design = ~ condition)
 dds
 
-featureData <- data.frame(gene=rownames(data))
-mcols(dds) <- DataFrame(mcols(dds), featureData)
-mcols(dds)
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+
+#featureData <- data.frame(gene=rownames(data))
+#mcols(dds) <- DataFrame(mcols(dds), featureData)
+#mcols(dds)
 
 library(dplyr)
 
@@ -191,6 +282,34 @@ library(dplyr)
 dds <- DESeq(dds)
 resultsNames(dds)
 res <- results(dds)
+
+summary(res)
+sum(res$padj < 0.1, na.rm=TRUE)
+
+
+
+plotMA(res, ylim=c(-2,2))
+plotCounts(dds, gene=which.min(res$padj), intgroup="condition")
+vsdata <-vst(dds,blind=FALSE)
+
+
+plotCounts(dds, gene=which.min(res$padj), intgroup="condition")
+library("pheatmap")
+select <- order(rowMeans(counts(dds,normalized=TRUE)),
+                decreasing=TRUE)[1:20]
+df <- as.data.frame(colData(dds)[,c("condition","sizeFactor")])
+pheatmap(assay(vsdata)[select,], cluster_rows=FALSE, show_rownames=TRUE,
+         cluster_cols=FALSE, annotation_col=df)
+
+autoplotly::autoplotly((plotPCA(vsdata, intgroup="condition")+geom_text(aes(label=name),vjust=3)+labs(title = "PCA:  mated virgin rejected"))
+                       , data = vsdata, colour = 'Species', frame = TRUE)
+
+#test<-which(apply(res@rownames,1,function(x) any(grepl("NPF",x))))
+
+
+```
+
+```{r}
 
 vsdata <-vst(dds,blind=FALSE)
 #autoplotly::autoplotly((plotPCA(vsdata, intgroup="condition")+geom_text(aes(label=name),vjust=2)+labs(title = "PCA: male vs. female"))
@@ -263,12 +382,9 @@ pheatmap::pheatmap(sub_samp_ordered, annotation_col  = new_order,  cutree_rows =
 
 
 
-
 ```
 
-```{r}
 
-```
 ```{r}
 
 ```
