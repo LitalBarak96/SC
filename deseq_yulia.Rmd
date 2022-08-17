@@ -185,13 +185,63 @@ library(dplyr)
 dds <- DESeq(dds)
 resultsNames(dds)
 res <- results(dds)
-vsdata <-vst(dds,blind=FALSE)
+vsdata <-vst(dds,blind=FALSE,nsub=4)
+
+
+length(res$pvalue)
+
+
+y<-subset(res, pvalue<.05 & abs(log2FoldChange)>=1)
+idx<-which(rownames(vsdata[,1]) %in% row.names(y))
+#finding the genes
+significant<-data[idx,]
+
+mat<-as.matrix(significant)
+
+#create heatmap of most changed genes
+
+df <- as.data.frame(colData(dds)[,"condition"])
+colnames(df)<-"condition"
+row.names(df)<-colnames(mat)
+
+new_order<-data.frame()
+new_order<-df[order(df$condition),,drop=FALSE]
+
+library(htmltools)
+library("DESeq2")
+library(ggplot2)
+library(autoplotly)
+library(factoextra)
+library("pheatmap")
+library("RColorBrewer")
+library(gplots)
+#library(limma)
+library("manhattanly")
+library("ggrepel")
+library(plotly)
+library("heatmaply")
+library("dplyr")
+df_num_scale<-scale(data)
+
+sub_samp_ordered <- df_num_scale[,rownames(new_order) ]
+pheatmap::pheatmap(sub_samp_ordered, annotation_col  = new_order,  cutree_rows = 4,cluster_cols = F,show_rownames=FALSE,main ="all genes")
+
+
+df_num_scale<-scale(significant)
+
+##this part sperated between female and males 
+sub_samp_ordered <- df_num_scale[,rownames(new_order) ]
+
+pheatmap::pheatmap(sub_samp_ordered, annotation_col  = new_order,  cutree_rows = 4,cluster_cols = F,show_rownames=FALSE,main ="most significant")
+
+
+
 
 library("pheatmap")
 select <- order(rowMeans(counts(dds,normalized=TRUE)),
-                decreasing=TRUE)[1:20]
+                decreasing=TRUE)[1:4]
 df <- as.data.frame(colData(dds)[,c("condition","sizeFactor")])
-pheatmap(assay(vsd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+pheatmap(assay(vsdata)[select,], cluster_rows=FALSE, show_rownames=TRUE,
          cluster_cols=FALSE, annotation_col=df)
 
 ```
