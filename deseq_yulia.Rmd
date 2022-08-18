@@ -5,11 +5,9 @@ date: "2022-08-16"
 output: html_document
 ---
 
-#By condition
 
+#packges
 ```{r}
-
-
 library(htmltools)
 library(DESeq2)
 library(ggplot2)
@@ -17,12 +15,14 @@ library(autoplotly)
 library(factoextra)
 library("pheatmap")
 library("RColorBrewer")
-library(gplots)
 #library(limma)
 library("manhattanly")
 library("ggrepel")
 library(plotly)
 library("heatmaply")
+library(dplyr)
+library("DESeq2")
+library(EnhancedVolcano)
 
 #(!require("BiocManager", quietly = TRUE))
 
@@ -30,17 +30,17 @@ library("heatmaply")
 #BiocManager::install("DESeq2")
 
 
+```
 
-library(dplyr)
+#By condition
+
+```{r}
 cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
 coldata <- read.csv("D:/seq_data/meta_test.csv", row.names=1)
 coldata_not_factorial <- read.csv("D:/seq_data/meta_test.csv")
-
-
-
 data_noTPM <- select(cts, -contains("TPM"))
-
 data<-data.frame(row.names=rownames(cts))
+
 num_of_exp =9
 for (i in 1:num_of_exp){
   temp.df<-data.frame()
@@ -51,93 +51,19 @@ for (i in 1:num_of_exp){
   data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
 }
 
-
 coldata$condition <- factor(coldata$condition)
-
-
-#didn't need to subset just change in the meta data
-#data<-subset(data,select=-c(N831,N832))
-#coldata<-subset(coldata,select=-c(N831,N832))
-
-
-#rownames(coldata) <- sub("L00", "", rownames(coldata))
 all(rownames(coldata) %in% colnames(data))
 all(rownames(coldata) == colnames(data))
 data <- data[, rownames(coldata)]
 all(rownames(coldata) == colnames(data))
-
-library("DESeq2")
-
-dds <- DESeqDataSetFromMatrix(countData = round(data),
-                              colData = coldata,
-                              design = ~ condition)
-dds
-
-featureData <- data.frame(gene=rownames(data))
-mcols(dds) <- DataFrame(mcols(dds), featureData)
-mcols(dds)
-
-library(dplyr)
-
-#removing low count genes
-
-
-#check this is put the condition right
-#dds$condition <- factor(dds$condition, levels = c("males","females"))
-
-dds <- DESeq(dds)
-resultsNames(dds)
-res <- results(dds)
-
-vsdata <-vst(dds,blind=FALSE)
-#autoplotly::autoplotly((plotPCA(vsdata, intgroup="condition")+geom_text(aes(label=name),vjust=2)+labs(title = "PCA: male vs. female"))
-#                      , data = vsdata, colour = 'Species', frame = TRUE)
-
-autoplotly::autoplotly((plotPCA(vsdata, intgroup="condition")+geom_text(aes(label=name),vjust=3)+labs(title = "PCA:  mated virgin rejected"))
-                       , data = vsdata, colour = 'Species', frame = TRUE)
-
-length(res$pvalue)
-
-sum(res$pvalue <= 0.05, na.rm=TRUE)
-with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", sub="obp69", xlim=c(-3,3), col.sub="orchid4"))
-with(subset(res, pvalue<.05 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
-with(subset(res, pvalue<.05 & abs(log2FoldChange)>=1), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
-
-up<-subset(res, pvalue<.05 & log2FoldChange>=1)
-up<-as.data.frame(up)
-#write.csv(up, "D:/seq_data/upregulated.csv",
-         # row.names = TRUE)
 ```
 
-#only npf gene
+#npf gene
+
 ```{r}
-
-library(htmltools)
-library(DESeq2)
-library(ggplot2)
-library(autoplotly)
-library(factoextra)
-library("pheatmap")
-library("RColorBrewer")
-#library(limma)
-library("manhattanly")
-library("ggrepel")
-library(plotly)
-library("heatmaply")
-
-#(!require("BiocManager", quietly = TRUE))
-
-#install.pacakages("BiocManager")
-#BiocManager::install("DESeq2")
-
-
-
-library(dplyr)
 cts <- (read.csv("D:/seq_data/npfr/counts_npfr.csv",sep=",",row.names="GeneSymbol"))
 coldata <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv", row.names=1)
 coldata_not_factorial <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv")
-
-
 
 data_noTPM <- select(cts, -contains("TPM"))
 NPF_gene<-data_noTPM[grepl("NPF",rownames(data_noTPM)),]
@@ -158,54 +84,153 @@ for (i in 1:num_of_exp){
 
 
 NPF_gene<-data[grepl("NPF",rownames(data)),]
-
 coldata$condition <- factor(coldata$condition)
-
 all(rownames(coldata) %in% colnames(NPF_gene))
 all(rownames(coldata) == colnames(NPF_gene))
 NPF_gene <- NPF_gene[, rownames(coldata)]
 all(rownames(coldata) == colnames(NPF_gene))
+```
 
-library("DESeq2")
+#only NPFR tissues
+```{r}
 
-dds <- DESeqDataSetFromMatrix(countData = round(NPF_gene),
+library(dplyr)
+cts <- (read.csv("D:/seq_data/npfr/counts_npfr.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv", row.names=1)
+coldata_not_factorial <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv")
+
+
+
+data_noTPM <- select(cts, -contains("TPM"))
+data<-data.frame(row.names=rownames(cts))
+num_of_exp =9
+for (i in 1:num_of_exp){
+  temp.df<-data.frame()
+  temp.df<-data_noTPM %>%
+    select(starts_with(coldata_not_factorial[i,1]))
+  
+  
+  data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
+}
+
+coldata$condition <- factor(coldata$condition)
+
+all(rownames(coldata) %in% colnames(data))
+all(rownames(coldata) == colnames(data))
+data <- data[, rownames(coldata)]
+all(rownames(coldata) == colnames(data))
+```
+
+#deseq
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = round(data),
                               colData = coldata,
                               design = ~ condition)
 dds
 
+keep <- rowSums(counts(dds)) >= 50
+dds <- dds[keep,]
 
-library(dplyr)
-
-#removing low count genes
-
-
-#check this is put the condition right
-#dds$condition <- factor(dds$condition, levels = c("males","females"))
+#featureData <- data.frame(gene=rownames(data))
+#mcols(dds) <- DataFrame(mcols(dds), featureData)
+#mcols(dds)
 
 dds <- DESeq(dds)
 resultsNames(dds)
 res <- results(dds)
-vsdata <-vst(dds,blind=FALSE,nsub=4)
+
+
+```
+
+#
+```{r}
+vsdata <-vst(dds,blind=FALSE)
+#vsdata <-vst(dds,blind=FALSE,nsub=4)
+
+```
+
+#pca
+```{r}
+autoplotly::autoplotly((plotPCA(vsdata, intgroup="condition")+geom_text(aes(label=name),vjust=3)+labs(title = "PCA:  mated virgin rejected"))
+                       , data = vsdata, colour = 'Species', frame = TRUE)
+```
+
+
+#plot count
+```{r}
+
+plotCounts(dds, gene=which(res@rownames == "NPFR"), intgroup="condition")
+plotCounts(dds, gene=which.min(res$padj), intgroup="condition")
+
+```
+
+
+#volcano plot
+
+```{r}
+
+resultsNames(dds)
+
+
+resLFCRM <- lfcShrink(dds, coef="condition_Rejected_vs_Mated", type="apeglm")
+resLFCRM
+#plotMA(resLFCRM, ylim=c(-2,2))
+
+
+with(resLFCRM, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", sub="NPFR rejected vs mated", xlim=c(-3,3), col.sub="orchid4"))
+with(subset(resLFCRM, pvalue<.05 ), points(log2FoldChange, -log10(pvalue), pch=20, col="grey"))
+with(subset(resLFCRM, pvalue<.05 & abs(log2FoldChange)>=1), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
+
+
+resLFCVM <- lfcShrink(dds, coef="condition_Virgin_vs_Mated", type="apeglm")
+resLFCVM
+#plotMA(resLFCVM, ylim=c(-2,2))
+
+
+with(resLFCVM, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", sub="NPFR virgin vs mated", xlim=c(-3,3), col.sub="orchid4"))
+with(subset(resLFCVM, pvalue<.05 ), points(log2FoldChange, -log10(pvalue), pch=20, col="grey"))
+with(subset(resLFCVM, pvalue<.05 & abs(log2FoldChange)>=1), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
+
+
+
+```
+
+#new volcano plot
+```{r}
+
+  EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'padj',title = "NPFR tissue")
+```
+
+#save to csv upregulated and down regulated
+
+```{r}
+
+up<-subset(res, pvalue<.05 & log2FoldChange>=1)
+up<-as.data.frame(up)
+write.csv(up, "D:/seq_data/npfr/upregulated.csv",
+          row.names = TRUE)
+
+#creating a csv file with all the values with pval<.05 & log2FoldChange>=1 from T VS NT for down regulated genes
+down<-subset(res, pvalue<.05 & log2FoldChange<=-1)
+down<-as.data.frame(down)
+write.csv(down, "D:/seq_data/npfr/downregulated.csv",
+          row.names = TRUE)
+
+```
+
+#only npf gene
+```{r}
+
+
+
 
 
 length(res$pvalue)
 
-
-y<-subset(res, pvalue<.05 & abs(log2FoldChange)>=1)
-idx<-which(rownames(vsdata[,1]) %in% row.names(y))
-#finding the genes
-significant<-data[idx,]
-
-mat<-as.matrix(significant)
-
-#create heatmap of most changed genes
-
-df <- as.data.frame(colData(dds)[,"condition"])
-colnames(df)<-"condition"
-row.names(df)<-colnames(mat)
-
-new_order<-data.frame()
-new_order<-df[order(df$condition),,drop=FALSE]
 
 library(htmltools)
 library("DESeq2")
@@ -221,18 +246,7 @@ library("ggrepel")
 library(plotly)
 library("heatmaply")
 library("dplyr")
-df_num_scale<-scale(data)
 
-sub_samp_ordered <- df_num_scale[,rownames(new_order) ]
-pheatmap::pheatmap(sub_samp_ordered, annotation_col  = new_order,  cutree_rows = 4,cluster_cols = F,show_rownames=FALSE,main ="all genes")
-
-
-df_num_scale<-scale(significant)
-
-##this part sperated between female and males 
-sub_samp_ordered <- df_num_scale[,rownames(new_order) ]
-
-pheatmap::pheatmap(sub_samp_ordered, annotation_col  = new_order,  cutree_rows = 4,cluster_cols = F,show_rownames=FALSE,main ="most significant")
 
 
 
@@ -250,100 +264,14 @@ pheatmap(assay(vsdata)[select,], cluster_rows=FALSE, show_rownames=TRUE,
 #only NPFR tissue
 ```{r}
 
-library(htmltools)
-library(DESeq2)
-library(ggplot2)
-library(autoplotly)
-library(factoextra)
-library("pheatmap")
-library("RColorBrewer")
-#library(limma)
-library("manhattanly")
-library("ggrepel")
-library(plotly)
-library("heatmaply")
-
-#(!require("BiocManager", quietly = TRUE))
-
-#install.pacakages("BiocManager")
-#BiocManager::install("DESeq2")
 
 
 
-library(dplyr)
-cts <- (read.csv("D:/seq_data/npfr/counts_npfr.csv",sep=",",row.names="GeneSymbol"))
-coldata <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv", row.names=1)
-coldata_not_factorial <- read.csv("D:/seq_data/npfr/only_npfr_meta.csv")
 
 
 
-data_noTPM <- select(cts, -contains("TPM"))
 
 
-data<-data.frame(row.names=rownames(cts))
-num_of_exp =9
-for (i in 1:num_of_exp){
-  temp.df<-data.frame()
-  temp.df<-data_noTPM %>%
-    select(starts_with(coldata_not_factorial[i,1]))
-  
-  
-  data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
-}
-
-#rownames(coldata) <- sub("_rep", "", rownames(coldata))
-
-coldata$condition <- factor(coldata$condition)
-
-
-#didn't need to subset just change in the meta data
-#data<-subset(data,select=-c(N831,N832))
-#coldata<-subset(coldata,select=-c(N831,N832))
-
-
-#rownames(coldata) <- sub("L00", "", rownames(coldata))
-all(rownames(coldata) %in% colnames(data))
-all(rownames(coldata) == colnames(data))
-data <- data[, rownames(coldata)]
-all(rownames(coldata) == colnames(data))
-
-library("DESeq2")
-
-dds <- DESeqDataSetFromMatrix(countData = round(data),
-                              colData = coldata,
-                              design = ~ condition)
-dds
-
-keep <- rowSums(counts(dds)) >= 10
-dds <- dds[keep,]
-
-#featureData <- data.frame(gene=rownames(data))
-#mcols(dds) <- DataFrame(mcols(dds), featureData)
-#mcols(dds)
-
-library(dplyr)
-
-#removing low count genes
-
-
-#check this is put the condition right
-#dds$condition <- factor(dds$condition, levels = c("males","females"))
-
-dds <- DESeq(dds)
-resultsNames(dds)
-res <- results(dds)
-
-summary(res)
-sum(res$padj < 0.1, na.rm=TRUE)
-
-
-
-plotMA(res, ylim=c(-2,2))
-plotCounts(dds, gene=which.min(res$padj), intgroup="condition")
-vsdata <-vst(dds,blind=FALSE)
-
-
-plotCounts(dds, gene=which.min(res$padj), intgroup="condition")
 library("pheatmap")
 select <- order(rowMeans(counts(dds,normalized=TRUE)),
                 decreasing=TRUE)[1:20]
@@ -354,7 +282,14 @@ pheatmap(assay(vsdata)[select,], cluster_rows=FALSE, show_rownames=TRUE,
 autoplotly::autoplotly((plotPCA(vsdata, intgroup="condition")+geom_text(aes(label=name),vjust=3)+labs(title = "PCA:  mated virgin rejected"))
                        , data = vsdata, colour = 'Species', frame = TRUE)
 
-#test<-which(apply(res@rownames,1,function(x) any(grepl("NPF",x))))
+
+
+
+#idx <- identify(resLFC$baseMean, resLFC$log2FoldChange)
+#rownames(resLFC)[idx]
+
+#creating a csv file with all the values with pval<.05 & log2FoldChange>=1 from T VS NT for up regulated genes
+
 
 
 ```
