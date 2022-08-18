@@ -136,14 +136,52 @@ dds <- dds[keep,]
 #mcols(dds) <- DataFrame(mcols(dds), featureData)
 #mcols(dds)
 
-dds <- DESeq(dds)
-resultsNames(dds)
-res <- results(dds)
+
+
+
+
 
 
 ```
 
-#
+#relvel each group and analyse it diffently
+```{r}
+dds$condition<-relevel(dds$condition,ref = "Virgin")
+
+VirginDds<-dds
+
+dds$condition<-relevel(dds$condition,ref = "Rejected")
+
+RejectedDds<-dds
+
+
+dds$condition<-relevel(dds$condition,ref = "Mated")
+
+MatedDds<-dds
+
+
+```
+
+#deseq each condtion
+
+```{r}
+VirginDds <- DESeq(VirginDds)
+resultsNames(VirginDds)
+
+
+RejectedDds <- DESeq(RejectedDds)
+resultsNames(RejectedDds)
+
+
+MatedDds <- DESeq(MatedDds)
+resultsNames(MatedDds)
+
+resMated <- results(MatedDds)
+resRejected<- results(RejectedDds)
+resVirgin<- results(VirginDds)
+```
+
+
 ```{r}
 vsdata <-vst(dds,blind=FALSE)
 #vsdata <-vst(dds,blind=FALSE,nsub=4)
