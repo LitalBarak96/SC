@@ -1,0 +1,26 @@
+---
+title: "Untitled"
+output: html_document
+date: '2022-08-21'
+---
+
+```{r}
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+remotes::install_github("mojaveazure/seurat-disk")
+```
+
+
+```{r}
+
+
+
+library(Seurat)
+library(SeuratDisk)
+path_to_fca<-"D:/seq_data/FCA/s_fca_biohub_head_10x.loom"
+
+loom_obj<-Connect(filename =path_to_fca,mode="r")
+loom_obj<-as.Seurat(loom_obj)
+```
+
