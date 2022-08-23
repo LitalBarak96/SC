@@ -11,14 +11,13 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 remotes::install_github("mojaveazure/seurat-disk")
 ```
 
-#HEAD
+#HEAD relaxed
+
+
 ```{r}
-
-
-
 library(Seurat)
 library(SeuratDisk)
-path_to_fca<-"C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.h5ad"
+path_to_fca<-"D:/seq_data/FCA/r_fca_biohub_head_10x.h5ad"
 
 #l6.immune <- Connect(filename = "C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.loom", mode = "r")
 #l6.immune
@@ -27,15 +26,56 @@ path_to_fca<-"C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.h5ad"
 #VlnPlot(l6.seurat, features = c("Sparc", "Ftl1", "Junb", "Ccl4"), ncol = 2)
 
 Convert(path_to_fca,dest = "h5seurat",overwrite = TRUE)
-seurat_anndata<-LoadH5Seurat("C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.h5seurat")
+seurat_anndata<-LoadH5Seurat("D:/seq_data/FCA/r_fca_biohub_head_10x.h5seurat")
 
 pbmc <- seurat_anndata
 
 
+```
+
+
+
+```{r}
+l6.immune <- Connect(filename = "D:/seq_data/FCA/r_fca_biohub_head_10x.loom", mode = "r")
+l6.immune
+
+gene_names <-  l6.immune[["row_attrs/Gene"]][]
+
+gene_of_interest <- "NPFR"
+
+gene_of_interest %in% gene_names
+l6.seurat <- as.Seurat(l6.immune)
+```
+
+#head s
+
+```{r}
+library(Seurat)
+library(SeuratDisk)
+path_to_fca<-"D:/seq_data/FCA/s_fca_biohub_head_10x.h5ad"
+
+#l6.immune <- Connect(filename = "C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.loom", mode = "r")
+#l6.immune
+#l6.seurat <- as.Seurat(l6.immune)
+#Idents(l6.seurat) <- "ClusterName"
+#VlnPlot(l6.seurat, features = c("Sparc", "Ftl1", "Junb", "Ccl4"), ncol = 2)
+
+Convert(path_to_fca,dest = "h5seurat",overwrite = TRUE)
+seurat_anndata<-LoadH5Seurat("D:/seq_data/FCA/s_fca_biohub_head_10x.h5seurat")
+
+pbmc <- seurat_anndata
+
+
+```
+
+```{r}
+
+
 which(grepl("NPF",rownames(x = pbmc)))
-rownames(x = pbmc)[1732]
+rownames(x = pbmc)[1078]
 
 test<-rownames(x = pbmc)
+test<-as.data.frame(test)
 which(rownames(x = pbmc) == "NPF")
 
 
