@@ -23,10 +23,22 @@ setwd("E:/seq_data/FCA/")
 
 loom_file <- connect(filename = "r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
 
-matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+
+coltest<-as.data.frame(as.factor(loom_file[["col_attrs/CellID"]][]))
+colnames(coltest)<-"cellid"
+rowtest<-as.data.frame(loom_file[["row_attrs/Gene"]][])
+
+male_sample<-dplyr::filter(coltest, !grepl("Female",cellid))
+
+
+matrix_data <- as.data.frame(loom_file[["matrix"]][,1])
   rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
   colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
-  fca_seurat <- CreateSeuratObject(counts = t(matrix_data), project = "test", min.cells = 0, min.features=0)
+  library("writexl")
+write_xlsx(matrix_data,"E:/seq_data/FCA/loom_r_fac_head.xlsx")
+  #write.csv(matrix_data,"E:/seq_data/FCA/loom_r_fac_head.csv", row.names = TRUE)
+head(matrix_data)
+  #fca_seurat <- CreateSeuratObject(counts = t(matrix_data), project = "test", min.cells = 0, min.features=0)
 ```
 
 
@@ -35,6 +47,9 @@ matrix_data <- as.data.frame(loom_file[["matrix"]][,])
 library(Seurat)
 library(SeuratData)
 library(patchwork)
+# install dataset
+InstallData("ifnb")
+ifnb.list <- SplitObject(ifnb, split.by = "stim")
 ```
 
 
