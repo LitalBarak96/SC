@@ -30,6 +30,13 @@ matrix_data <- as.data.frame(loom_file[["matrix"]][,])
     woAnn<-highNpfr[ , !(names(highNpfr) %in% drops)]
     ann<- highNpfr["annotation"]
 
+    
+
+    test<-as.data.frame(all.genes)
+    
+    gene_of_interest <- "Syt1"
+
+    gene_of_interest %in% all.genes
   SERUAT_NPFR <- CreateSeuratObject(counts = t(woAnn), project = "high Npfr", min.cells = 0, min.features=0)
   
   colOrd <- rownames(FetchData(SERUAT_NPFR,"ident"))
@@ -78,12 +85,28 @@ Idents(SERUAT_NPFR)
 SERUAT_NPFR <- RunUMAP(SERUAT_NPFR, dims = 1:15)
 DimPlot(SERUAT_NPFR, reduction = "umap")
 DefaultAssay(SERUAT_NPFR) <- "RNA"
-Seurat::FeaturePlot(SERUAT_NPFR, "NPF")
+Seurat::FeaturePlot(SERUAT_NPFR, "BRP")
 
-plot <- DimPlot(SERUAT_NPFR, reduction = "umap")
-LabelClusters(plot = plot, id = "ident")
+
+neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
+
+Seurat::FeaturePlot(SERUAT_NPFR, neruon_cell_genes, ncol=2)
+
+#monocyte_genes <- c("CD14", "CST3", "CD68", "CTSS")
+
+#plot <- DimPlot(SERUAT_NPFR, reduction = "umap")
+#LabelClusters(plot = plot, id = "ident")
   
 
+Seurat::VlnPlot(SERUAT_NPFR,
+                features = neruon_cell_genes,
+                ncol = 2)
+
+seu_int <- Seurat::AddModuleScore(SERUAT_NPFR,
+                              features = list(neruon_cell_genes),
+                              name = "neruon_cell_genes")
+
+Seurat::FeaturePlot(SERUAT_NPFR, "neruon_cell_genes1")
 
 ```
 
