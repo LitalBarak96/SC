@@ -24,21 +24,73 @@ setwd("E:/seq_data/FCA/")
 loom_file <- connect(filename = "r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
 
 
-coltest<-as.data.frame(as.factor(loom_file[["col_attrs/CellID"]][]))
-colnames(coltest)<-"cellid"
-rowtest<-as.data.frame(loom_file[["row_attrs/Gene"]][])
+#coltest<-as.data.frame(as.factor(loom_file[["col_attrs/CellID"]][]))
+#colnames(coltest)<-"cellid"
+#rowtest<-as.data.frame(loom_file[["row_attrs/Gene"]][])
 
-male_sample<-dplyr::filter(coltest, !grepl("Female",cellid))
+#male_sample<-dplyr::filter(coltest, !grepl("Female",cellid))
 
 
-matrix_data <- as.data.frame(loom_file[["matrix"]][,1])
+
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
   rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
   colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
-  library("writexl")
-write_xlsx(matrix_data,"E:/seq_data/FCA/loom_r_fac_head.xlsx")
+  matrix_data$annotation<-loom_file[["col_attrs/S_annotation"]][]
+ # library("writexl")
+#write_xlsx(matrix_data,"E:/seq_data/FCA/loom_r_fac_head.xlsx")
   #write.csv(matrix_data,"E:/seq_data/FCA/loom_r_fac_head.csv", row.names = TRUE)
-head(matrix_data)
-  #fca_seurat <- CreateSeuratObject(counts = t(matrix_data), project = "test", min.cells = 0, min.features=0)
+#head(matrix_data)
+  #small_test<-matrix_data[1:10,1:10]
+  
+
+
+  highNpfr<-(matrix_data[matrix_data$NPFR>1,])
+    drops <- c("annotation")
+    woAnn<-highNpfr[ , !(names(highNpfr) %in% drops)]
+    
+   ann<- highNpfr["annotation"]
+
+  SERUAT_NPFR <- CreateSeuratObject(counts = t(woAnn), project = "high Npfr", min.cells = 0, min.features=0)
+ # SERUAT_NPFR[["percent.mt"]] <- PercentageFeatureSet(SERUAT_NPFR, pattern = "^MT-")
+  VlnPlot(SERUAT_NPFR, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
+FeatureScatter(SERUAT_NPFR, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") +
+  geom_smooth(method = 'lm')
+  SERUAT_NPFR <- NormalizeData(SERUAT_NPFR, normalization.method = "LogNormalize", scale.factor = 10000)
+  View(SERUAT_NPFR@meta.data)
+  
+  SERUAT_NPFR <- FindVariableFeatures(SERUAT_NPFR, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(SERUAT_NPFR), 10)
+
+plot1 <- VariableFeaturePlot(SERUAT_NPFR)
+LabelPoints(plot = plot1, points = top10, repel = TRUE)
+
+
+all.genes <- rownames(SERUAT_NPFR)
+SERUAT_NPFR <- ScaleData(SERUAT_NPFR, features = all.genes)
+str(SERUAT_NPFR)
+SERUAT_NPFR <- RunPCA(SERUAT_NPFR, features = VariableFeatures(object = SERUAT_NPFR))
+
+print(SERUAT_NPFR[["pca"]], dims = 1:5, nfeatures = 5)
+DimHeatmap(SERUAT_NPFR, dims = 1, cells = 500, balanced = TRUE)
+
+ElbowPlot(SERUAT_NPFR)
+SERUAT_NPFR <- FindNeighbors(SERUAT_NPFR, dims = 1:15)
+
+SERUAT_NPFR <- FindClusters(SERUAT_NPFR, resolution = c(0.1,0.3, 0.5, 0.7, 1))
+View(SERUAT_NPFR@meta.data)
+DimPlot(SERUAT_NPFR, group.by = "RNA_snn_res.0.3", label = TRUE)
+Idents(SERUAT_NPFR)
+Idents(SERUAT_NPFR) <- "RNA_snn_res.0.3"
+Idents(SERUAT_NPFR)
+
+SERUAT_NPFR <- RunUMAP(SERUAT_NPFR, dims = 1:15)
+DimPlot(SERUAT_NPFR, reduction = "umap")
+DefaultAssay(SERUAT_NPFR) <- "RNA"
+Seurat::FeaturePlot(SERUAT_NPFR, "NPF")
+
+
 ```
 
 
