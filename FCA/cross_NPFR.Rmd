@@ -30,11 +30,79 @@ matrix_data <- as.data.frame(loom_file[["matrix"]][,])
   
 
 ```
+#higly expressed gene
+```{r}
+library(ggplot2)
+library(Matrix)
+library(Seurat)
 
+most_expressed_boxplot <- function(object, ngenes = 20){
+
+  # matrix of raw counts
+  cts <- Seurat::GetAssayData(object, assay = "RNA", slot = "counts")
+
+  # get percentage/cell
+  cts <- t(cts)/colSums(cts)*100
+  medians <- apply(cts, 2, median)
+
+  # get top n genes
+  most_expressed <- order(medians, decreasing = T)[ngenes:1]
+  most_exp_matrix <- as.matrix((cts[,most_expressed]))
+
+  # prepare for plotting
+  most_exp_df <- stack(as.data.frame(most_exp_matrix))
+  colnames(most_exp_df) <- c("perc_total", "gene")
+
+  # boxplot with ggplot2
+  boxplot <- ggplot(most_exp_df, aes(x=gene, y=perc_total)) +
+    geom_boxplot() +
+    coord_flip()
+  return(boxplot)
+}
+
+most_expressed_boxplot(SERUAT_NPFR, 5)
+
+```
+
+
+
+```{r}
+SERUAT_NPFR <- Seurat::NormalizeData(SERUAT_NPFR,
+                     normalization.method = "LogNormalize",
+                     scale.factor = 10000)
+
+SERUAT_NPFR <- Seurat::FindVariableFeatures(SERUAT_NPFR,
+                            selection.method = "vst",
+                            nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(Seurat::VariableFeatures(SERUAT_NPFR), 10)
+top10
+
+vf_plot <- Seurat::VariableFeaturePlot(SERUAT_NPFR)
+Seurat::LabelPoints(plot = vf_plot,
+            points = top10, repel = TRUE)
+
+
+SERUAT_NPFR <- Seurat::ScaleData(SERUAT_NPFR,
+                 features = rownames(SERUAT_NPFR))
+
+
+
+saveRDS(SERUAT_NPFR, "seu_day1.rds")
+
+#rm(list = ls())
+#gc()
+#.rs.restartR()
+```
 
 #check the wanted gene names
 
 ```{r}
+
+
+SERUAT_NPFR <-readRDS("E:/seq_data/FCA/seu_day1.rds")
+
     all.genes <- rownames(SERUAT_NPFR)
 
     all_genes<-as.data.frame(rownames(SERUAT_NPFR))
