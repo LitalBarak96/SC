@@ -1,0 +1,126 @@
+---
+title: "seruat"
+output: html_document
+date: "2022-11-16"
+---
+
+#without the annotations
+```{r}
+# Load loomR
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+setwd("E:/seq_data/FCA/")
+
+loom_file <- connect(filename = "r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
+
+
+
+
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+
+  highNpfr<-(matrix_data[matrix_data$NPFR>1,])
+    drops <- c("annotation")
+    woAnn<-highNpfr[ , !(names(highNpfr) %in% drops)]
+
+    SERUAT_NPFR <- CreateSeuratObject(counts = t(woAnn), project = "high Npfr", min.cells = 0, min.features=0)
+  
+
+```
+
+
+#check the wanted gene names
+
+```{r}
+    all.genes <- rownames(SERUAT_NPFR)
+
+    all_genes<-as.data.frame(rownames(SERUAT_NPFR))
+    
+    gene_of_interest <- "Syt1"
+
+    gene_of_interest %in% all.genes
+  
+    list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
+
+```
+
+
+
+```{r}
+
+  
+
+
+ # SERUAT_NPFR[["percent.mt"]] <- PercentageFeatureSet(SERUAT_NPFR, pattern = "^MT-")
+  VlnPlot(SERUAT_NPFR, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
+
+FeatureScatter(SERUAT_NPFR, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") +
+  geom_smooth(method = 'lm')
+  SERUAT_NPFR <- NormalizeData(SERUAT_NPFR, normalization.method = "LogNormalize", scale.factor = 10000)
+  View(SERUAT_NPFR@meta.data)
+  
+  SERUAT_NPFR <- FindVariableFeatures(SERUAT_NPFR, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(SERUAT_NPFR), 10)
+
+plot1 <- VariableFeaturePlot(SERUAT_NPFR)
+LabelPoints(plot = plot1, points = top10, repel = TRUE)
+
+
+all.genes <- rownames(SERUAT_NPFR)
+SERUAT_NPFR <- ScaleData(SERUAT_NPFR, features = all.genes)
+str(SERUAT_NPFR)
+SERUAT_NPFR <- RunPCA(SERUAT_NPFR, features = VariableFeatures(object = SERUAT_NPFR))
+
+print(SERUAT_NPFR[["pca"]], dims = 1:5, nfeatures = 5)
+
+
+Seurat::ElbowPlot(SERUAT_NPFR, ndims = 40)
+DimHeatmap(SERUAT_NPFR, dims = 1:10, cells = 200, balanced = TRUE)
+DimHeatmap(SERUAT_NPFR)
+
+SERUAT_NPFR <- FindNeighbors(SERUAT_NPFR, dims = 1:15)
+
+SERUAT_NPFR <- FindClusters(SERUAT_NPFR, resolution = c(0.1,0.3, 0.5, 0.7, 1))
+View(SERUAT_NPFR@meta.data)
+
+#check what kind of resulution is the best
+DimPlot(SERUAT_NPFR, group.by = "RNA_snn_res.0.3", label = TRUE)
+Idents(SERUAT_NPFR)
+Idents(SERUAT_NPFR) <- "RNA_snn_res.0.3"
+Idents(SERUAT_NPFR)
+
+SERUAT_NPFR <- RunUMAP(SERUAT_NPFR, dims = 1:15)
+DimPlot(SERUAT_NPFR, reduction = "umap")
+DefaultAssay(SERUAT_NPFR) <- "RNA"
+Seurat::FeaturePlot(SERUAT_NPFR, "brp")
+
+
+neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
+
+Seurat::FeaturePlot(SERUAT_NPFR, neruon_cell_genes, ncol=2)
+Seurat::FeaturePlot(SERUAT_NPFR, list_of_gene_yulia, ncol=3)
+
+
+#monocyte_genes <- c("CD14", "CST3", "CD68", "CTSS")
+
+#plot <- DimPlot(SERUAT_NPFR, reduction = "umap")
+#LabelClusters(plot = plot, id = "ident")
+  
+
+Seurat::VlnPlot(SERUAT_NPFR,
+                features = neruon_cell_genes,
+                ncol = 2)
+
+seu_int <- Seurat::AddModuleScore(SERUAT_NPFR,
+                              features = list(neruon_cell_genes),
+                              name = "neruon_cell_genes")
+
+Seurat::FeaturePlot(SERUAT_NPFR, "neruon_cell_genes1")
+
+```
+
