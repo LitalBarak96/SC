@@ -101,7 +101,6 @@ saveRDS(SERUAT_NPFR, "seu_day1.rds")
 ```{r}
 
 
-SERUAT_NPFR <-readRDS("E:/seq_data/FCA/seu_day1.rds")
 
     all.genes <- rownames(SERUAT_NPFR)
 
@@ -121,13 +120,14 @@ SERUAT_NPFR <-readRDS("E:/seq_data/FCA/seu_day1.rds")
 
   
 
-
+SERUAT_NPFR <-readRDS("E:/seq_data/FCA/FCA17_11.rds")
+library(ggplot2)
  # SERUAT_NPFR[["percent.mt"]] <- PercentageFeatureSet(SERUAT_NPFR, pattern = "^MT-")
   VlnPlot(SERUAT_NPFR, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
 
 FeatureScatter(SERUAT_NPFR, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") +
   geom_smooth(method = 'lm')
-  SERUAT_NPFR <- NormalizeData(SERUAT_NPFR, normalization.method = "LogNormalize", scale.factor = 10000)
+  SERUAT_NPFR <- NormalizeData(SERUAT_NPFR, normalization.method = "LogNormalize", scale.factor= 10000)
   View(SERUAT_NPFR@meta.data)
   
   SERUAT_NPFR <- FindVariableFeatures(SERUAT_NPFR, selection.method = "vst", nfeatures = 2000)
@@ -169,7 +169,7 @@ Seurat::FeaturePlot(SERUAT_NPFR, "brp")
 
 
 neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
-
+ list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
 Seurat::FeaturePlot(SERUAT_NPFR, neruon_cell_genes, ncol=2)
 Seurat::FeaturePlot(SERUAT_NPFR, list_of_gene_yulia, ncol=3)
 
@@ -184,11 +184,154 @@ Seurat::VlnPlot(SERUAT_NPFR,
                 features = neruon_cell_genes,
                 ncol = 2)
 
-seu_int <- Seurat::AddModuleScore(SERUAT_NPFR,
+
+Seurat::VlnPlot(SERUAT_NPFR,
+                features = list_of_gene_yulia,
+                ncol = 3)
+
+SERUAT_NPFR <- Seurat::AddModuleScore(SERUAT_NPFR,
                               features = list(neruon_cell_genes),
                               name = "neruon_cell_genes")
 
-Seurat::FeaturePlot(SERUAT_NPFR, "neruon_cell_genes1")
+SERUAT_NPFR <- Seurat::AddModuleScore(SERUAT_NPFR,
+                              features = list(list_of_gene_yulia),
+                              name = "list_of_gene_yulia")
+
+
+
+View(SERUAT_NPFR@meta.data)
+
+#Seurat::FeaturePlot(SERUAT_NPFR, #"neruon_cell_genes1")
+
+#s.genes <- Seurat::cc.genes.updated.2019$s.genes
+#g2m.genes <- Seurat::cc.genes.updated.2019$g2m.genes
+
+
+#SERUAT_NPFR <- Seurat::CellCycleScoring(SERUAT_NPFR,
+#                                     s.features #=s.genes,
+ #                                    g2m.features = #g2m.genes)
+
+
+```
+
+```{r}
+#BiocManager::install("edgeR")
+#if (!require("BiocManager", quietly = TRUE))
+ #   install.packages("BiocManager")
+#BiocManager::install("celldex")
+#install.packages("stringer")
+#BiocManager::install("dittoSeq")
+library(Seurat)
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library("dittoSeq")
+library("celldex")
+de_genes <- Seurat::FindAllMarkers(SERUAT_NPFR,  min.pct = 0.25,
+                                   only.pos = TRUE)
+de_genes <- subset(de_genes, de_genes$p_val_adj<0.05)
+write.csv(de_genes, "E:/seq_data/FCA/de_genes_FindAllMarkers.csv", row.names = F, quote = F)
+
+
+library(dplyr)
+top_specific_markers <- de_genes %>%
+  group_by(cluster) %>%
+  top_n(3, avg_log2FC)
+
+
+dittoSeq::dittoDotPlot(SERUAT_NPFR, vars = unique(top_specific_markers$gene), 
+                       group.by = "RNA_snn_res.0.3")
+
+
+```
+
+
+```{r}
+
+
+# Load loomR
+library(loomR)
+library(Seurat)
+
+setwd("E:/seq_data/FCA/")
+
+loom_file <- connect(filename = "r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
+
+
+
+#please check if in the rds file there is only the gene that are high of NPFR,do sinty check
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+  matrix_data$annotation<-loom_file[["col_attrs/S_annotation"]][]
+
+  highNpfr<-(matrix_data[matrix_data$NPFR>1,])
+    drops <- c("annotation")
+    woAnn<-highNpfr[ , !(names(highNpfr) %in% drops)]
+    ann<- highNpfr["annotation"]
+
+    
+    
+    
+    
+
+
+```
+
+
+
+
+
+```{r}
+
+SERUAT_NPFR <-readRDS("E:/seq_data/FCA/FCA17_11.rds")
+library(tidyr)
+library(stringr)
+
+SERUAT_NPFR$sample <- rownames(SERUAT_NPFR@meta.data)
+
+SERUAT_NPFR$sample<-str_remove(SERUAT_NPFR$sample, "Adult_")
+SERUAT_NPFR$sample<-str_replace(SERUAT_NPFR$sample, "__", "_")
+
+
+SERUAT_NPFR@meta.data <- separate(SERUAT_NPFR@meta.data, col = 'sample', into = c('Barcode','Test', 'Gender','Origin'), 
+         sep = '_')
+SERUAT_NPFR@meta.data$tissu<-ann$annotation
+#colnames(SERUAT_NPFR@meta.data$tissu$annotation)<-c#("tissue")
+View(SERUAT_NPFR@meta.data)
+unique(SERUAT_NPFR@meta.data$Gender)
+unique(SERUAT_NPFR@meta.data$tissu)
+saveRDS(SERUAT_NPFR, "E:/seq_data/FCA/FCA17_11.rds")
+
+
+
+
+```
+
+
+
+```{r}
+library(gridExtra)
+
+#tried to give diffrent color palte ,didnt work
+p1 <- DimPlot(SERUAT_NPFR, reduction = 'umap', group.by = 'tissu')+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 5))+scale_fill_brewer(palette="Dark2")
+#install.packages("wesanderson")
+
+library(wesanderson)
+library(RColorBrewer)
+
+
+p2 <- DimPlot(SERUAT_NPFR, reduction = 'umap', group.by = 'Gender')
+p3<-DimPlot(SERUAT_NPFR, reduction = "umap")
+
+
+neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
+ list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
+p4<-Seurat::FeaturePlot(SERUAT_NPFR, neruon_cell_genes, ncol=2)
+p5<-Seurat::FeaturePlot(SERUAT_NPFR, list_of_gene_yulia, ncol=3)
+
+
+grid.arrange(p3, p2, ncol = 2, nrow = 2)
 
 ```
 
