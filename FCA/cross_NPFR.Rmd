@@ -4,6 +4,31 @@ output: html_document
 date: "2022-11-16"
 ---
 
+#packeges
+
+```{r}
+
+BiocManager::install("edgeR")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("celldex")
+install.packages("stringer")
+BiocManager::install("dittoSeq")
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library("dittoSeq")
+library("celldex")
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(Matrix)
+library(tidyr)
+library(stringr)
+```
+
+
 #without the annotations
 ```{r}
 # Load loomR
@@ -35,6 +60,9 @@ matrix_data <- as.data.frame(loom_file[["matrix"]][,])
 library(ggplot2)
 library(Matrix)
 library(Seurat)
+
+SERUAT_NPFR <-readRDS("C:/dev/genomics/FCA/FCA_22_11.rds")
+
 
 most_expressed_boxplot <- function(object, ngenes = 20){
 
@@ -89,7 +117,7 @@ SERUAT_NPFR <- Seurat::ScaleData(SERUAT_NPFR,
 
 
 
-saveRDS(SERUAT_NPFR, "seu_day1.rds")
+#saveRDS(SERUAT_NPFR, "seu_day1.rds")
 
 #rm(list = ls())
 #gc()
@@ -120,7 +148,7 @@ saveRDS(SERUAT_NPFR, "seu_day1.rds")
 
   
 
-SERUAT_NPFR <-readRDS("E:/seq_data/FCA/FCA17_11.rds")
+#SERUAT_NPFR <-readRDS("E:/seq_data/FCA/FCA17_11.rds")
 library(ggplot2)
  # SERUAT_NPFR[["percent.mt"]] <- PercentageFeatureSet(SERUAT_NPFR, pattern = "^MT-")
   VlnPlot(SERUAT_NPFR, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
@@ -158,9 +186,10 @@ View(SERUAT_NPFR@meta.data)
 
 #check what kind of resulution is the best
 DimPlot(SERUAT_NPFR, group.by = "RNA_snn_res.0.3", label = TRUE)
-Idents(SERUAT_NPFR)
+#Idents(SERUAT_NPFR)
 Idents(SERUAT_NPFR) <- "RNA_snn_res.0.3"
-Idents(SERUAT_NPFR)
+
+#Idents(SERUAT_NPFR)
 
 SERUAT_NPFR <- RunUMAP(SERUAT_NPFR, dims = 1:15)
 DimPlot(SERUAT_NPFR, reduction = "umap")
@@ -211,6 +240,7 @@ View(SERUAT_NPFR@meta.data)
 #                                     s.features #=s.genes,
  #                                    g2m.features = #g2m.genes)
 
+colnames(SERUAT_NPFR@meta.data)[colnames(SERUAT_NPFR@meta.data) == 'oldName'] <- 'newName'
 
 ```
 
@@ -229,7 +259,7 @@ library("celldex")
 de_genes <- Seurat::FindAllMarkers(SERUAT_NPFR,  min.pct = 0.25,
                                    only.pos = TRUE)
 de_genes <- subset(de_genes, de_genes$p_val_adj<0.05)
-write.csv(de_genes, "E:/seq_data/FCA/de_genes_FindAllMarkers.csv", row.names = F, quote = F)
+write.csv(de_genes, "C:/dev/genomics/FCA/de_genes_FindAllMarkers.csv", row.names = F, quote = F)
 
 
 library(dplyr)
@@ -280,10 +310,12 @@ matrix_data <- as.data.frame(loom_file[["matrix"]][,])
 
 
 
+#oegenize the name and the barcode in the seruat object
+
 
 ```{r}
 
-SERUAT_NPFR <-readRDS("E:/seq_data/FCA/FCA17_11.rds")
+SERUAT_NPFR <-readRDS("C:/dev/genomics/FCA/FCA_22_11.rds")
 library(tidyr)
 library(stringr)
 
@@ -300,7 +332,7 @@ SERUAT_NPFR@meta.data$tissu<-ann$annotation
 View(SERUAT_NPFR@meta.data)
 unique(SERUAT_NPFR@meta.data$Gender)
 unique(SERUAT_NPFR@meta.data$tissu)
-saveRDS(SERUAT_NPFR, "E:/seq_data/FCA/FCA17_11.rds")
+saveRDS(SERUAT_NPFR, "C:/dev/genomics/FCA/FCA_22_11.rds")
 
 
 
@@ -310,17 +342,45 @@ saveRDS(SERUAT_NPFR, "E:/seq_data/FCA/FCA17_11.rds")
 
 
 ```{r}
+# Include additional data to display alongside cell names by passing in a data frame of
+# information Works well when using FetchData
+FeaturePlot(SERUAT_NPFR, features = "NPFR", min.cutoff = 1, max.cutoff = 3)
+
+#plot <- FeaturePlot(SERUAT_NPFR, features = "NPFR")
+#HoverLocator(plot = plot, information = FetchData(SERUAT_NPFR, vars = c("ident", "PC_1")))
+```
+
+
+
+```{r}
 library(gridExtra)
+
+library(purrr)
+
+split_seurat <- SplitObject(SERUAT_NPFR, split.by = "tissu_new")
+
+
+new_list <- discard(test, .p = ~str_detect(.x,"unannotated"))
+
+ttest<-MergeSTData(split_seurat)
+
+split_seurat <- split_seurat[new_list]
 
 #tried to give diffrent color palte ,didnt work
 p1 <- DimPlot(SERUAT_NPFR, reduction = 'umap', group.by = 'tissu')+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
-               legend.text = element_text(size = 5))+scale_fill_brewer(palette="Dark2")
+               legend.text = element_text(size = 5))
 #install.packages("wesanderson")
 
+
+p6<- DimPlot(SERUAT_NPFR, reduction = 'umap', group.by = 'tissu_new',split.by ="RNA_snn_res.0.3",ncol = 3)+theme(legend.title = element_text(size = 8), 
+               legend.text = element_text(size = 8))
+#install.packages("wesanderson")
 library(wesanderson)
 library(RColorBrewer)
 
 
+
+temp<-as.data.frame(SERUAT_NPFR@meta.data$tissu_new)
 p2 <- DimPlot(SERUAT_NPFR, reduction = 'umap', group.by = 'Gender')
 p3<-DimPlot(SERUAT_NPFR, reduction = "umap")
 
@@ -333,5 +393,40 @@ p5<-Seurat::FeaturePlot(SERUAT_NPFR, list_of_gene_yulia, ncol=3)
 
 grid.arrange(p3, p2, ncol = 2, nrow = 2)
 
+```
+
+```{r}
+
+#install.packages("randomcoloR")
+
+colors38 = c("#466791","#60bf37","#953ada","#4fbe6c","#ce49d3","#a7b43d","#5a51dc","#d49f36","#552095","#507f2d","#db37aa","#84b67c","#a06fda","#df462a","#5b83db","#c76c2d","#4f49a3","#82702d","#dd6bbb","#334c22","#d83979","#55baad","#dc4555","#62aad3","#8c3025","#417d61","#862977","#bba672","#403367","#da8a6d","#a79cd4","#71482c","#c689d0","#6b2940","#d593a7","#895c8b","#bd5975","#FFFFFF")
+
+highlight_gene_expression <- function(seurat, gene_counts, cells = rownames(seurat@meta.data), colors = NULL){
+  Idents(seurat) <- 'cell_type'
+  p <- DimPlot(
+    seurat,
+    raster = FALSE,
+    shuffle = TRUE,
+    reduction = "umap",
+    cols.highlight = colors,
+    pt.size = 0.01,
+    sizes.highlight = 0.01,
+    cells.highlight = seurat@meta.data[cells,] %>% split(.$cell_type) |> lapply(rownames),
+  )
+  p <- p + guides(color = guide_legend(override.aes = list(size = 4), ncol = 1))
+
+  expression_level <- {gene_counts |> rowSums()} / {gene_counts |> rowSums() |> max()}
+  p[[1]]$layers[[1]]$aes_params$alpha <- expression_level
+  p
+}
+```
+
+```{r}
+
+tissue_name<-unique(SERUAT_NPFR@meta.data$tissu_new)
+cell_names <- c("unannotated")
+DimPlot(object = SERUAT_NPFR, cells.highlight = "cell_names, cols.highlight = "red", cols = "gray", order = TRUE)
+
+DimPlot(SERUAT_NPFR, label=T, group.by="tissu_new", cells.highlight= "", cols.highlight = "red", cols= "grey")
 ```
 
