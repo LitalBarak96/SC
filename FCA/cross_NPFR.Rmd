@@ -372,8 +372,8 @@ p1 <- DimPlot(SERUAT_NPFR, reduction = 'umap', group.by = 'tissu')+guides(color 
 #install.packages("wesanderson")
 
 
-p6<- DimPlot(SERUAT_NPFR, reduction = 'umap', group.by = 'tissu_new',split.by ="RNA_snn_res.0.3",ncol = 3)+theme(legend.title = element_text(size = 8), 
-               legend.text = element_text(size = 8))
+p6<- DimPlot(SERUAT_NPFR, reduction = 'umap',split.by ="tissu_new",ncol = 5)+theme(legend.title = element_text(size = 4), 
+               legend.text = element_text(size = 4))
 #install.packages("wesanderson")
 library(wesanderson)
 library(RColorBrewer)
