@@ -1,0 +1,121 @@
+---
+title: "deseq"
+author: "lital barak"
+date: "2022-11-27"
+output: html_document
+---
+```{r}
+library(stringr)
+library(tibble)
+library(dplyr)
+library(data.table)
+library(tidyr)
+library(ggplot2)
+library(gplots)
+library(ggthemes)
+library(ggrepel)
+library(pheatmap)
+library(gridExtra)
+library(patchwork)
+library(openxlsx)
+library(readxl)
+library(RColorBrewer)
+library(DESeq2)
+library(Rtsne)
+library(factoextra)
+library(vegan)
+library(biomaRt)
+library(flowCore) 
+library(corrplot)
+library(psych)
+library(DataExplorer)
+library(apeglm)
+library(GGally)
+library(Rcpp)
+library(EnrichmentBrowser)
+library(mygene)
+library(plotly)
+#library(xlsx)
+library(stringr)
+library(EnhancedVolcano)
+library("png")
+library("plotly")
+library(grid)
+```
+
+
+
+```{r}
+
+DE_result_dir<-"D:/seq_data"
+cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/seq_data/meta_test.csv", row.names=1)
+
+
+coldata_not_factorial <- read.csv("D:/seq_data/meta_test.csv")
+data_noTPM <- select(cts, -contains("TPM"))
+data<-data.frame(row.names=rownames(cts))
+
+
+#avarge on the repets
+
+num_of_exp =9
+for (i in 1:num_of_exp){
+  temp.df<-data.frame()
+  temp.df<-data_noTPM %>%
+    select(starts_with(coldata_not_factorial[i,1]))
+  
+  
+  data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
+}
+coldata$condition <- factor(coldata$condition)
+
+coldata$cell<-factor(coldata$cell)
+
+NPF_gene<-data[grepl("NPF",rownames(data)),]
+coldata$condition <- factor(coldata$condition)
+all(rownames(coldata) %in% colnames(NPF_gene))
+all(rownames(coldata) == colnames(NPF_gene))
+NPF_gene <- NPF_gene[, rownames(coldata)]
+all(rownames(coldata) == colnames(NPF_gene))
+
+dds <- DESeqDataSetFromMatrix(countData = round(data),
+                              colData = coldata,
+                              design= ~cell + condition)
+
+dds$cell <- relevel(dds$cell, ref = "Npfr") 
+dds$condition <- relevel(dds$condition, ref = "Rejected") 
+
+dds <- DESeq(dds)
+# Returns the names of the estimated effects (coefficents) of the model
+resultsNames(dds) #"Group_Post_vs_CTRL"
+# Get the Pval, Padj and LFC for each gene
+res <- results(dds)
+# Print a summary of the results from a DESeq analysis
+summary(res) # ~19000 genes
+
+dds <- dds[rowMeans(counts(dds))>25, ]
+dds <- DESeq(dds)
+resultsNames(dds) 
+
+res <- results(dds, name = "cell_Tdc2_vs_Npfr")
+
+summary(res) # ~6000 genes
+
+
+res_treat <- results(dds, name = "cell_Tdc2_vs_Npfr")
+write.csv(res_treat,  file=paste0(DE_result_dir,"/Genes_info.csv"),
+          row.names = TRUE)
+
+```
+
+```{r}
+ddsLRT <- DESeq(dds, test="LRT", reduced= ~ 1)
+
+resLRT <- results(ddsLRT)
+summary(resLRT)
+resultsNames(resLRT) 
+
+```
+
+
