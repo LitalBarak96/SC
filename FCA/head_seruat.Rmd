@@ -34,6 +34,7 @@ library(Seurat)
 library(ggplot2)
 library(dplyr)
   SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head.rds")
+SERUAT_HEAD <- subset(SERUAT_HEAD, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 )
 
 ```
 
@@ -50,6 +51,72 @@ library(dplyr)
   
     neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
     list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
+```
+
+
+```{r}
+# SERUAT_HEAD <- Seurat::NormalizeData(SERUAT_HEAD,
+#                      normalization.method = "LogNormalize",
+#                      scale.factor = 10000)
+# 
+# SERUAT_HEAD <- Seurat::FindVariableFeatures(SERUAT_HEAD,
+#                             selection.method = "vst",
+#                             nfeatures = 1500)
+
+
+
+
+#saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/seuruat_head_scaled.rds")
+
+
+# Identify the 10 most highly variable genes
+top10 <- head(Seurat::VariableFeatures(SERUAT_HEAD), 10)
+top10
+
+vf_plot <- Seurat::VariableFeaturePlot(SERUAT_HEAD)
+Seurat::LabelPoints(plot = vf_plot,
+            points = top10, repel = TRUE)
+
+
+SERUAT_HEAD <- Seurat::ScaleData(SERUAT_HEAD,
+                 features = rownames(SERUAT_HEAD))
+
+SERUAT_HEAD <- RunPCA(SERUAT_HEAD, features = VariableFeatures(object = SERUAT_HEAD))
+
+SERUAT_HEAD <- RunTSNE(SERUAT_HEAD, dims.use = 1:30, do.fast = T)
+SERUAT_HEAD <- FindNeighbors(SERUAT_HEAD, dims = 1:15)
+
+SERUAT_HEAD <- FindClusters(SERUAT_HEAD , resolution = seq(0.1,4,0.2))
+Idents(SERUAT_HEAD) <- "RNA_snn_res.0.3"
+
+#check what kind of resulution is the best
+DimPlot(SERUAT_HEAD, group.by = "RNA_snn_res.3.9", label = TRUE,raster=FALSE)
+
+DimPlot(SERUAT_HEAD, group.by = "RNA_snn_res.3.9", label = TRUE,raster=FALSE)
+
+FeaturePlot(object = SERUAT_HEAD, features = c('NPFR', 'Dh44'), blend = TRUE,raster=FALSE,blend.threshold = 0.1,pt.size = 2)
+
+
+ Idents(SERUAT_HEAD) <-WhichCells(object = SERUAT_HEAD, expression = NPFR > 4)
+ DimPlot(SERUAT_HEAD, label = TRUE,raster=FALSE)
+ 
+ 
+ cell_typeA_marker_gene_list <- list(c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1"))
+SERUAT_HEAD <- AddModuleScore(object = SERUAT_HEAD, features = cell_typeA_marker_gene_list, name = "ten_cell")
+FeaturePlot(object = SERUAT_HEAD, features = "ten_cell1",raster=FALSE)
+ 
+DimPlot(SERUAT_HEAD, cells.highlight= WhichCells(SERUAT_HEAD,expression = "NPFR"> 0 ), raster=FALSE)
+
+
+
+#Cluster_Highlight_Plot(seurat_object = SERUAT_HEAD, cluster_name = "7", highlight_color = "navy",
+  #  background_color = "lightgray")
+#library(scCustomize)
+#devtools::install_github(repo = "samuel-marsh/scCustomize")
+
+
+test <- c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
+FeaturePlot(object = SERUAT_HEAD, features.plot = c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1"),raster=FALSE )
 ```
 
 
@@ -140,12 +207,12 @@ FeaturePlot(object = SERUAT_HEAD, features = c('NPFR', 'fru'), blend = TRUE,rast
 
 
 ```{r}
-SERUAT_HEAD <- RunTSNE(SERUAT_HEAD, dims.use = 1:20, do.fast = T)
-SERUAT_HEAD <- FindClusters(SERUAT_HEAD ,pc.use = 1:20, resolution = seq(0,2,0.4), save.SNN = T, do.sparse = T)
-Idents(SERUAT_HEAD) <- "RNA_snn_res.0.4"
+SERUAT_HEAD <- RunTSNE(SERUAT_HEAD, dims.use = 1:30, do.fast = T)
+SERUAT_HEAD <- FindClusters(SERUAT_HEAD , resolution = seq(0.1,3,0.2))
+Idents(SERUAT_HEAD) <- "RNA_snn_res.0.1"
 
 #check what kind of resulution is the best
-DimPlot(SERUAT_HEAD, group.by = "RNA_snn_res.0.4", label = TRUE,raster=FALSE)
+DimPlot(SERUAT_HEAD, group.by = "RNA_snn_res.0.1", label = TRUE,raster=FALSE)
 
 FeaturePlot(object = SERUAT_HEAD, features = c('NPFR', 'Dh44'), blend = TRUE,raster=FALSE,blend.threshold = 0.5,pt.size = 2)
 ```
@@ -163,7 +230,7 @@ SERUAT_HEAD <- FindClusters(SERUAT_HEAD ,pc.use = 1:10, resolution = seq(2,4,0.5
 ```
 
 ```{r}
-SERUAT_HEAD <- RunUMAP(SERUAT_HEAD, dims = 1:15)
+SERUAT_HEAD <- RunUMAP(SERUAT_HEAD, dims = 1:15,reduction ="tsne")
 DimPlot(SERUAT_HEAD, reduction = "umap")
 DefaultAssay(SERUAT_HEAD) <- "RNA"
 #Seurat::FeaturePlot(SERUAT_HEAD, "brp")
