@@ -122,3 +122,71 @@ saveRDS(SERUAT_HEAD, "/home/alu/aluguest/Lital_galitLab/seuruat_head5_12.rds")
 
 ```
 
+
+```{r}
+
+
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(Matrix)
+library(tidyr)
+library(stringr)
+library("gridExtra")
+library(loomR)
+
+SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena6_12.rds")
+
+    all.genes <- rownames(SERUAT_Antena)
+
+    all_genes<-as.data.frame(rownames(SERUAT_Antena))
+
+    DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'RNA_snn_res.0.8', label = TRUE,raster=FALSE)
+    
+    
+FeaturePlot(SERUAT_Antena, "Obp69a",raster=FALSE, group.by = "Sex")
+
+
+SERUAT_Antena$sample <- rownames(SERUAT_Antena@meta.data)
+
+SERUAT_Antena$sample<-str_replace(SERUAT_Antena$sample, "__", "_")
+
+View(SERUAT_Antena@meta.data)
+SERUAT_Antena@meta.data <- separate(SERUAT_Antena@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
+         sep = '_')
+
+
+DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+
+
+DimPlot(SERUAT_Antena, reduction = 'umap', split.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+
+
+obps_gene<- grep('Obp', all.genes, value=TRUE)
+
+
+FeaturePlot(SERUAT_Antena, obps_gene, ncol=7,raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 5))
+
+high_obps<-c("Obp19a","Obp19d","Obp28a","Obp56d","Obp69a","Obp83a","Obp83b")
+
+highest_obps<-c("Obp19d","Obp69a","Obp83a","Obp83b")
+
+FeaturePlot(object = SERUAT_Antena, highest_obps, ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE,split.by = "Sex")
+
+FeaturePlot(object = SERUAT_Antena, obps_gene[30:37], ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE)
+plots <- FeaturePlot(object = SERUAT_Antena, obps_gene[1:10], ncol=2,raster=FALSE)
+
+plots <- lapply(X = plots, FUN = function(x) x + theme(plot.title = element_text(size = 3)))
+
+Reduce( '+', plots ) +
+      patchwork::plot_layout( ncol = 3 )
+```
+
