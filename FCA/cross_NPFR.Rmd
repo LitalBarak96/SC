@@ -140,6 +140,8 @@ SERUAT_NPFR <- Seurat::ScaleData(SERUAT_NPFR,
   
     list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
 
+   test<- grep('Obp', all.genes, value=TRUE)
+
 ```
 
 
@@ -268,7 +270,7 @@ top_specific_markers <- de_genes %>%
   top_n(3, avg_log2FC)
 
 
-dittoSeq::dittoDotPlot(SERUAT_NPFR, vars = unique(top_specific_markers$gene), 
+dittoSeq::dittoDotPlot(SERUAT_NPFR, vars = unique(g$gene), 
                        group.by = "RNA_snn_res.0.3")
 
 
