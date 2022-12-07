@@ -47,41 +47,46 @@ library(grid)
 
 ```{r}
 
-DE_result_dir<-"D:/seq_data"
-cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
-coldata <- read.csv("D:/seq_data/meta_test.csv", row.names=1)
+DE_result_dir<-"E:/seq_data"
+cts <- (read.csv("E:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("E:/seq_data/npfr/only_npfr_meta.csv", row.names=1)
 
-
-coldata_not_factorial <- read.csv("D:/seq_data/meta_test.csv")
+#doing avarge
+coldata_not_factorial <- read.csv("E:/seq_data/meta_test.csv")
 data_noTPM <- select(cts, -contains("TPM"))
 data<-data.frame(row.names=rownames(cts))
 
 
 #avarge on the repets
 
-num_of_exp =9
-for (i in 1:num_of_exp){
-  temp.df<-data.frame()
-  temp.df<-data_noTPM %>%
-    select(starts_with(coldata_not_factorial[i,1]))
-  
-  
-  data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
-}
+# num_of_exp =9
+# for (i in 1:num_of_exp){
+#   temp.df<-data.frame()
+#   temp.df<-data_noTPM %>%
+#     select(starts_with(coldata_not_factorial[i,1]))
+#   data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
+# }
 coldata$condition <- factor(coldata$condition)
 
-coldata$cell<-factor(coldata$cell)
+coldata$repeat.<-factor(coldata$repeat.)
 
+NPF_gene<-data_noTPM[,grepl("NPFR",colnames(data))]
+NPF_cell<-data_noTPM %>%
+  select(matches("NPFR"))
+
+
+colnames(NPF_cell)<-gsub("_counts","",colnames(NPF_cell))
 NPF_gene<-data[grepl("NPF",rownames(data)),]
+
 coldata$condition <- factor(coldata$condition)
 all(rownames(coldata) %in% colnames(NPF_gene))
 all(rownames(coldata) == colnames(NPF_gene))
 NPF_gene <- NPF_gene[, rownames(coldata)]
 all(rownames(coldata) == colnames(NPF_gene))
 
-dds <- DESeqDataSetFromMatrix(countData = round(data),
+dds <- DESeqDataSetFromMatrix(countData = round(NPF_cell),
                               colData = coldata,
-                              design= ~cell + condition)
+                              design= ~repeat.+condition)
 
 dds$cell <- relevel(dds$cell, ref = "Npfr") 
 dds$condition <- relevel(dds$condition, ref = "Rejected") 
@@ -98,7 +103,7 @@ dds <- dds[rowMeans(counts(dds))>25, ]
 dds <- DESeq(dds)
 resultsNames(dds) 
 
-res <- results(dds, name = "cell_Tdc2_vs_Npfr")
+res <- results(dds, name = "condition_Mated_vs_Rejected")
 
 summary(res) # ~6000 genes
 
@@ -118,4 +123,21 @@ resultsNames(resLRT)
 
 ```
 
+
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+DESeq2::plotPCA(vsd, intgroup="condition") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
+
+
+DESeq2::plotPCA(vsd, intgroup="repeat.") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
+
+```
+
+### Remove the batch effect:
+```{r}
+mat <- assay(vsd)
+mat <- limma::removeBatchEffect(mat, vsd$repeat.)# remove according to experiment
+assay(vsd) <- mat
+```
 
