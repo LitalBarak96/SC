@@ -82,6 +82,8 @@ head(markers_cluster3)
 
 
 ```{r}
+ 
+ 
 library(loomR)
 library(Seurat)
 library(ggplot2)
@@ -188,5 +190,20 @@ plots <- lapply(X = plots, FUN = function(x) x + theme(plot.title = element_text
 
 Reduce( '+', plots ) +
       patchwork::plot_layout( ncol = 3 )
+```
+
+#example of normaliztion and scaling
+
+```{r}
+
+
+SERUAT_Antena_new <-readRDS("D:/seq_data/FCA/seuruat_antena6_12.rds")
+
+original_count<-SERUAT_Antena_new@assays$RNA@counts[1:10,1:10]
+
+after_normelize<-SERUAT_Antena_new@assays[["RNA"]]@data[1:10,1:10]
+
+SERUAT_Antena@meta.data[["nCount_RNA"]]
+
 ```
 
