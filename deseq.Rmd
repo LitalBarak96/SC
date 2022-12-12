@@ -47,9 +47,9 @@ library(grid)
 
 ```{r}
 
-DE_result_dir<-"E:/seq_data"
-cts <- (read.csv("E:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
-coldata <- read.csv("E:/seq_data/npfr/only_npfr_metaNooutliers.csv", row.names=1)
+DE_result_dir<-"D:/seq_data"
+cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/seq_data/npfr/only_npfr_metaNooutliers.csv", row.names=1)
 
 
 data_noTPM <- select(cts, -contains("TPM"))
@@ -82,7 +82,7 @@ dds <- DESeqDataSetFromMatrix(countData = round(NPF_cell),
                               design= ~repeat.+condition)
 
 #dds$cell <- relevel(dds$cell, ref = "Npfr") 
-dds$condition <- relevel(dds$condition, ref = "Rejected") 
+dds$condition <- relevel(dds$condition, ref = "Mated") 
 
 dds <- DESeq(dds)
 # Returns the names of the estimated effects (coefficents) of the model
@@ -96,7 +96,7 @@ dds <- dds[rowMeans(counts(dds))>25, ]
 dds <- DESeq(dds)
 resultsNames(dds) 
 
-res <- results(dds, name = "condition_Virgin_vs_Rejected")
+res <- results(dds, name = "condition_Virgin_vs_Mated")
 
 summary(res) # ~6000 genes
 
@@ -138,10 +138,11 @@ DESeq2::plotPCA(vsd, intgroup="repeat.") + geom_label(aes(label=name)) + labs(ti
 ```{r}
 pheatmap(cor(assay(vsd)), main="Samples Correlation Heatmap")
 ```
+
 ```{r}
 
 
-res_treat <- results(dds, name = "condition_Virgin_vs_Rejected")
+res_treat <- results(dds, name = "condition_Mated_vs_Rejected")
 res_df<- as.data.frame(res_treat)
 thresh<-0.58
 pVal<-0.05
@@ -183,13 +184,13 @@ openxlsx::write.xlsx (gene_res_pval_sig, paste0(DE_result_dir,"/gene_res_pval_si
 # Volcano plot
 ## Significant genes with FDR <= 0.1
 ```{r Volcano plot FDR}
-EnhancedVolcano(res,
+plots<-EnhancedVolcano(res,
     lab = rownames(res),
     x = 'log2FoldChange',
     y = 'padj', labSize = 3.0,
     legendLabSize = 10,
     legendIconSize = 3.5,
-    FCcutoff = thresh, pCutoff = pAdj)
+    pCutoff = 0.05)
 
 ```
 
