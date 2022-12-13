@@ -146,27 +146,40 @@ SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena6_12.rds")
 
     all_genes<-as.data.frame(rownames(SERUAT_Antena))
 
-    DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'RNA_snn_res.0.8', label = TRUE,raster=FALSE)
+   umap_antena<- DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'RNA_snn_res.0.8', label = TRUE,raster=FALSE)
+   tiff("umao_antena.tiff", units="in", width=7, height=5, res=300)
+umap_antena
+dev.off()
+   
     
-    
-FeaturePlot(SERUAT_Antena, "Obp69a",raster=FALSE, group.by = "Sex")
-
-
-SERUAT_Antena$sample <- rownames(SERUAT_Antena@meta.data)
+    SERUAT_Antena$sample <- rownames(SERUAT_Antena@meta.data)
 
 SERUAT_Antena$sample<-str_replace(SERUAT_Antena$sample, "__", "_")
 
 View(SERUAT_Antena@meta.data)
 SERUAT_Antena@meta.data <- separate(SERUAT_Antena@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
          sep = '_')
+    
+obp69a<-FeaturePlot(SERUAT_Antena, "Obp69a",raster=FALSE)
 
 
-DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+   tiff("obp69a.tiff", units="in", width=7, height=5, res=300)
+obp69a
+dev.off()
+   
+
+
+
+
+
+plot_sex<-DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
                legend.text = element_text(size = 7))
 
+tiff("sex_antena.tiff", units="in", width=7, height=5, res=300)
+plot_sex
+dev.off()
 
-
-DimPlot(SERUAT_Antena, reduction = 'umap', split.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+plots_splits_sex<-DimPlot(SERUAT_Antena, reduction = 'umap', split.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
                legend.text = element_text(size = 7))
 
 
@@ -176,6 +189,16 @@ obps_gene<- grep('Obp', all.genes, value=TRUE)
 
 FeaturePlot(SERUAT_Antena, obps_gene, ncol=7,raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
                legend.text = element_text(size = 5))
+
+
+
+
+obp69_sex<-FeaturePlot(object = SERUAT_Antena, "Obp69a", ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE,split.by = "Sex")
+
+tiff("sex_obps69.tiff", units="in", width=14, height=6, res=300)
+obp69_sex
+dev.off()
+
 
 high_obps<-c("Obp19a","Obp19d","Obp28a","Obp56d","Obp69a","Obp83a","Obp83b")
 
