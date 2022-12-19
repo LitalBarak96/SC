@@ -206,7 +206,13 @@ highest_obps<-c("Obp19d","Obp69a","Obp83a","Obp83b")
 
 FeaturePlot(object = SERUAT_Antena, highest_obps, ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE,split.by = "Sex")
 
-FeaturePlot(object = SERUAT_Antena, obps_gene[30:37], ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE)
+obps<-FeaturePlot(object = SERUAT_Antena, obps_gene[29:37], ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE)
+
+
+tiff("obps.tiff", units="in", width=14, height=9, res=300)
+obps
+dev.off()
+
 plots <- FeaturePlot(object = SERUAT_Antena, obps_gene[1:10], ncol=2,raster=FALSE)
 
 plots <- lapply(X = plots, FUN = function(x) x + theme(plot.title = element_text(size = 3)))
