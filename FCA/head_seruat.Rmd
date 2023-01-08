@@ -23,7 +23,7 @@ matrix_data <- as.data.frame(loom_file[["matrix"]][,])
 
 
   SERUAT_HEAD <- CreateSeuratObject(counts = t(matrix_data), project = "Head", min.cells = 0, min.features=0)
-  saveRDS(SERUAT_HEAD, "seuruat_head.rds")
+  saveRDS(SERUAT_HEAD, "seuruat_head_non_norm.rds")
   
 
 ```
