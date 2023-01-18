@@ -44,6 +44,52 @@ library("plotly")
 library(grid)
 ```
 
+
+
+
+
+```{r}
+
+DE_result_dir<-"D:/seq_data"
+cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/seq_data/npfr/only_npfr_metaNooutliers.csv", row.names=1)
+
+
+data_noTPM <- select(cts, -contains("TPM"))
+data<-data.frame(row.names=rownames(cts))
+
+
+coldata$condition <- factor(coldata$condition)
+
+coldata$repeat.<-factor(coldata$repeat.)
+
+NPF_cell<-data_noTPM %>%
+  select(matches("NPFR"))
+
+
+NPF_cell<-NPF_cell %>%
+  select(matches(
+rownames(coldata)))
+
+
+colnames(NPF_cell)<-gsub("_counts","",colnames(NPF_cell))
+
+coldata$condition <- factor(coldata$condition)
+coldata$repeat. <- factor(coldata$repeat.)
+
+all(rownames(NPF_cell) %in% colnames(NPF_cell))
+all(rownames(coldata) == colnames(NPF_cell))
+
+dds <- DESeqDataSetFromMatrix(countData = round(NPF_cell),
+                              colData = coldata,
+                              design= ~repeat.+condition)
+
+dds <- DESeqDataSetFromMatrix(countData = round(NPF_cell),
+                              colData = coldata,
+                              design= ~repeat.+condition)
+
+```
+
 ```{r}
 DE_result_dir<-"D:/seq_data"
 cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
@@ -120,7 +166,7 @@ res <- results(dds, name = name_res)
 summary(res) # ~6000 genes
 vsd <- vst(dds, blind=FALSE)
 mat <- assay(vsd)
-mat <- limma::removeBatchEffect(mat, vsd$repeat.)# remove according to experiment
+mat <- limma::removeBatchEffect(mat, vsd$neruon)# remove according to experiment
 assay(vsd) <- mat
 
 
@@ -167,8 +213,24 @@ openxlsx::write.xlsx (gene_res_padj_sig_downlogfold, paste0(path_for_csv,"gene_r
 #logfold_condition(dds,"Virgin","Mated",2)
 #logfold_condition(dds,"Virgin","Rejected",2)
 
-logfold_condition(dds,"Rejected","Mated",2)
-logfold_condition(dds,"Rejected","Virgin",2)
+
+
+logfold_condition(dds,"Npfr","Tdc2",1)
+logfold_condition(dds,"Npfr","Trh",1)
+
+logfold_condition(dds,"Tdc2","Npfr",1)
+logfold_condition(dds,"Tdc2","Trh",1)
+
+logfold_condition(dds,"Trh","Npfr",1)
+logfold_condition(dds,"Trh","Tdc2",1)
+
+#Tdc2
+#Trh
+#Npfr
+
+
+#logfold_condition(dds,"Rejected","Mated",2)
+#logfold_condition(dds,"Rejected","Virgin",2)
 
 ```
 
@@ -230,8 +292,20 @@ openxlsx::write.xlsx (commen_genes, paste0(newwpath,"/logfold",logfold_value,"co
 #commen_genes("Virgin","Rejected","Mated",2,"up")
 #commen_genes("Virgin","Rejected","Mated",2,"down")
 
-commen_genes("Rejected","Virgin","Mated",2,"up")
-commen_genes("Rejected","Virgin","Mated",2,"down")
+
+#Tdc2
+#Trh
+#Npfr
+
+
+commen_genes("Npfr","Trh","Tdc2",1,"up")
+commen_genes("Npfr","Trh","Tdc2",1,"down")
+
+commen_genes("Tdc2","Npfr","Trh",1,"up")
+commen_genes("Tdc2","Npfr","Trh",1,"down")
+
+commen_genes("Trh","Npfr","Tdc2",1,"up")
+commen_genes("Trh","Npfr","Tdc2",1,"down")
 
 ```
 
