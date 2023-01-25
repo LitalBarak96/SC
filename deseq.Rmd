@@ -48,7 +48,7 @@ library(grid)
 ```{r}
 DE_result_dir<-"D:/seq_data"
 cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
-coldata <- read.csv("D:/seq_data/sex_condition/meta.csv", row.names=1)
+coldata <- read.csv("D:/seq_data/Mated/meta.csv", row.names=1)
 
 data_noTPM <- select(cts, -contains("TPM"))
 data<-data.frame(row.names=rownames(cts))
@@ -57,7 +57,7 @@ data<-data.frame(row.names=rownames(cts))
 coldata$condition <- factor(coldata$condition)
 
 coldata$repeat.<-factor(coldata$repeat.)
-coldata$neruon<-factor(coldata$neruon)
+#coldata$neuron<-factor(coldata$neuron)
 
 
 #NPF_cell<-data_noTPM %>%
@@ -79,10 +79,10 @@ all(rownames(coldata) == colnames(sex_cell))
 
 dds <- DESeqDataSetFromMatrix(countData = round(sex_cell),
                               colData = coldata,
-                              design= ~neruon+condition)
+                              design= ~condition+repeat.)
 
 #dds$cell <- relevel(dds$cell, ref = "Npfr") 
-dds$condition <- relevel(dds$condition, ref = "Mated") 
+#dds$condition <- relevel(dds$condition, ref = "Mated") 
 
 dds <- DESeq(dds)
 # Returns the names of the estimated effects (coefficents) of the model
@@ -96,7 +96,7 @@ dds <- dds[rowMeans(counts(dds))>25, ]
 dds <- DESeq(dds)
 resultsNames(dds) 
 
-res <- results(dds, name = "condition_Virgin_vs_Mated")
+res <- results(dds, name = "neuron_Tdc2_vs_Npfr")
 
 summary(res) # ~6000 genes
 
@@ -113,25 +113,25 @@ summary(res) # ~6000 genes
 
 ```{r}
 vsd <- vst(dds, blind=FALSE)
-DESeq2::plotPCA(vsd, intgroup="condition") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
+DESeq2::plotPCA(vsd, intgroup="repeat.") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
 
 
-DESeq2::plotPCA(vsd, intgroup="neruon") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
+DESeq2::plotPCA(vsd, intgroup="neuron") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
 
 ```
 
 ### Remove the batch effect:
 ```{r}
 mat <- assay(vsd)
-mat <- limma::removeBatchEffect(mat, vsd$neruon)# remove according to experiment
+mat <- limma::removeBatchEffect(mat, vsd$neuron)# remove according to experiment
 assay(vsd) <- mat
 ```
 
 ```{r}
-DESeq2::plotPCA(vsd, intgroup="condition") + geom_label(aes(label=name)) + labs(title = "PCA according to group - After removing batch effect")
+DESeq2::plotPCA(vsd, intgroup="repeat.") + geom_label(aes(label=name)) + labs(title = "PCA according to group - After removing batch effect")
 
 
-DESeq2::plotPCA(vsd, intgroup="neruon") + geom_label(aes(label=name)) + labs(title = "PCA according to group - After removing batch effect")
+DESeq2::plotPCA(vsd, intgroup="neuron") + geom_label(aes(label=name)) + labs(title = "PCA according to group - After removing batch effect")
 
 ```
 

@@ -138,21 +138,21 @@ creating the csv for dowwwn and up
 
 DE_result_dir<-"D:/seq_data"
 
-logfold_condition<-function(dds,main_condition,second_condition,logfold_value){
+logfold_condition<-function(dds_F,main_condition,second_condition,logfold_value){
 
-dds$condition <- relevel(dds$condition, ref = main_condition) 
+dds_F$condition <- relevel(dds_F$condition, ref = main_condition) 
 
-dds <- DESeq(dds)
+dds_F <- DESeq(dds_F)
 # Returns the names of the estimated effects (coefficents) of the model
-resultsNames(dds) #"Group_Post_vs_CTRL"
+resultsNames(dds_F) #"Group_Post_vs_CTRL"
 # Get the Pval, Padj and LFC for each gene
-res <- results(dds)
+res <- results(dds_F)
 # Print a summary of the results from a DESeq analysis
 summary(res) # ~19000 genes
 
-dds <- dds[rowMeans(counts(dds))>25, ]
-dds <- DESeq(dds)
-resultsNames(dds) 
+dds_F <- dds_F[rowMeans(counts(dds_F))>25, ]
+dds_F <- DESeq(dds_F)
+resultsNames(dds_F) 
 
 name_res<-paste("condition_",second_condition,"_vs_",main_condition,sep = "")
 
@@ -161,16 +161,12 @@ name_res<-paste("condition_",second_condition,"_vs_",main_condition,sep = "")
 dir.create(paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,sep = ""))
   
 path_for_csv<-paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,"/",sep = "")
-res <- results(dds, name = name_res)
+res <- results(dds_F, name = name_res)
 
 summary(res) # ~6000 genes
-vsd <- vst(dds, blind=FALSE)
-mat <- assay(vsd)
-mat <- limma::removeBatchEffect(mat, vsd$neruon)# remove according to experiment
-assay(vsd) <- mat
 
 
-#res_treat <- results(dds, name = "condition_Mated_vs_Rejected")
+#res_treat <- results(dds_F, name = "condition_Mated_vs_Rejected")
 res_df<- as.data.frame(res)
 thresh<-logfold_value
 #pVal<-0.05
@@ -203,6 +199,7 @@ openxlsx::write.xlsx (gene_res_padj_sig_downlogfold, paste0(path_for_csv,"gene_r
 
 
 }
+
 
 
 
