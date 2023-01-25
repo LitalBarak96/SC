@@ -68,8 +68,16 @@ head_antena_sum("NPFR",13,2)
 
  hist of frq based on xlim and ylim choice of all the data on the same plot! all the permuatuion
 ```{r}
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
 
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head_non_norm.rds")
 
+SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena_non_normelize.rds")
 list_of_freq<-c(100,50,20,10,5,2,1,0.5,0.1,0.05)
 
 list_of_xlimit<-c(10,5,2)
@@ -113,7 +121,16 @@ dev.off()
 hist based on xlim and ylim choice on all the gene diffrent plots
 
 ```{r}
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
 
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head_non_norm.rds")
+
+SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena_non_normelize.rds")
 all.genes_antena<-as.data.frame(rownames(SERUAT_Antena))
 all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
 
