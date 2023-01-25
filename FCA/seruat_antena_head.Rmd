@@ -337,6 +337,45 @@ dev.off()
 
 
 
+
+
+
+```{r}
+library(spatstat.utils, lib.loc = "/private/common/Software/R/Rlibs")
+head_antena_sum<-function(gene_name,y_value,x_value){
+  
+  precnt_name<-paste("percent.",gene_name,sep="")
+  SERUAT_Antena[[precnt_name]] <- PercentageFeatureSet(SERUAT_Antena,features =gene_name)
+  SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
+  
+  gene_head<-as.data.frame(get(precnt_name,SERUAT_HEAD@meta.data))
+  gene_antena<-as.data.frame(get(precnt_name,SERUAT_Antena@meta.data))
+  colnames(gene_head)<-"head"
+  colnames(gene_antena)<-"antena"
+  
+  
+  
+  gene_sum_head <- hist(gene_head$head,breaks=seq(0,10,l=500))                     # Store histogram info
+  gene_sum_head$counts <- revcumsum((gene_sum_head$counts))    # Change histogram counts
+  
+  gene_sum_antena <-hist(gene_antena$antena,breaks=seq(0,10,l=500)) 
+  gene_sum_antena$counts <- revcumsum((gene_sum_antena$counts))    # Change histogram counts
+
+
+  main_title <-paste("head (red) vs antena (green)",gene_name)
+
+  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
+  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),add = TRUE)
+
+
+
+}
+
+head_antena_sum("Tdc2",35,2)
+
+```
+
+
 ```{r}
 
 par( mar= c(1,15,15,1) )
