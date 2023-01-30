@@ -231,6 +231,106 @@ logfold_condition(dds,"Trh","Tdc2",1)
 
 ```
 
+up and down  regulated by opostise to commen genes
+
+```{r}
+
+
+DE_result_dir<-"D:/seq_data"
+
+logfold_condition<-function(dds_F,main_condition,second_condition,logfold_value){
+
+dds_F$condition <- relevel(dds_F$condition, ref = main_condition) 
+
+dds_F <- DESeq(dds_F)
+# Returns the names of the estimated effects (coefficents) of the model
+resultsNames(dds_F) #"Group_Post_vs_CTRL"
+# Get the Pval, Padj and LFC for each gene
+res <- results(dds_F)
+# Print a summary of the results from a DESeq analysis
+summary(res) # ~19000 genes
+
+dds_F <- dds_F[rowMeans(counts(dds_F))>25, ]
+dds_F <- DESeq(dds_F)
+resultsNames(dds_F) 
+
+name_res<-paste("condition_",second_condition,"_vs_",main_condition,sep = "")
+
+  dir.create(paste(DE_result_dir,"/",name_res,sep = ""))
+
+dir.create(paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,sep = ""))
+  
+path_for_csv<-paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,"/",sep = "")
+res <- results(dds_F, name = name_res)
+
+summary(res) # ~6000 genes
+
+
+#res_treat <- results(dds_F, name = "condition_Mated_vs_Rejected")
+res_df<- as.data.frame(res)
+thresh<-logfold_value
+#pVal<-0.05
+pAdj<-0.05
+
+# Padj = FDR correction - all the genes that Padj <= 0.05
+gene_res_padj_sig <- subset(res_df, padj <= pAdj)
+print(paste("gene_res_padj_sig:",nrow(gene_res_padj_sig)))
+
+
+# Padj - all the genes that Padj<=00.1 and LFC>=thresh
+gene_res_padj_sig_uplogfold <- subset(gene_res_padj_sig,log2FoldChange >= thresh)
+print(paste("gene_res_padj_sig_logfold2_up",thresh,":",nrow(gene_res_padj_sig)))
+
+gene_res_padj_sig_downlogfold<-subset(gene_res_padj_sig,log2FoldChange <= -(thresh))
+print(paste("gene_res_padj_sig_logfold2_down",thresh,":",nrow(gene_res_padj_sig)))
+
+
+
+write.table(rownames(gene_res_padj_sig), 
+              file = paste0(path_for_csv,"sig_genes_padj_lfc",".txt"),  
+              sep = "\t", row.names = F, col.names = FALSE, quote = FALSE)
+
+
+openxlsx::write.xlsx (gene_res_padj_sig_uplogfold, paste0(path_for_csv,"gene_res_padj_sig_logfold2_up",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+
+openxlsx::write.xlsx (gene_res_padj_sig_downlogfold, paste0(path_for_csv,"gene_res_padj_sig_logfold2_down",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+
+
+}
+
+
+
+
+#logfold_condition(dds,"Mated","Virgin",2)
+#logfold_condition(dds,"Mated","Rejected",2)
+
+
+#logfold_condition(dds,"Virgin","Mated",2)
+#logfold_condition(dds,"Virgin","Rejected",2)
+
+
+
+logfold_condition(dds,"Npfr","Tdc2",1)
+logfold_condition(dds,"Npfr","Trh",1)
+
+logfold_condition(dds,"Tdc2","Npfr",1)
+logfold_condition(dds,"Tdc2","Trh",1)
+
+logfold_condition(dds,"Trh","Npfr",1)
+logfold_condition(dds,"Trh","Tdc2",1)
+
+#Tdc2
+#Trh
+#Npfr
+
+
+#logfold_condition(dds,"Rejected","Mated",2)
+#logfold_condition(dds,"Rejected","Virgin",2)
+
+```
+
 
 
 
@@ -305,4 +405,106 @@ commen_genes("Trh","Npfr","Tdc2",1,"up")
 commen_genes("Trh","Npfr","Tdc2",1,"down")
 
 ```
+
+
+
+```{r}
+
+
+DE_result_dir<-"D:/seq_data"
+
+logfold_condition<-function(dds_F,main_condition,second_condition,logfold_value){
+
+dds_F$condition <- relevel(dds_F$condition, ref = main_condition) 
+
+dds_F <- DESeq(dds_F)
+# Returns the names of the estimated effects (coefficents) of the model
+resultsNames(dds_F) #"Group_Post_vs_CTRL"
+# Get the Pval, Padj and LFC for each gene
+res <- results(dds_F)
+# Print a summary of the results from a DESeq analysis
+summary(res) # ~19000 genes
+
+dds_F <- dds_F[rowMeans(counts(dds_F))>25, ]
+dds_F <- DESeq(dds_F)
+resultsNames(dds_F) 
+
+name_res<-paste("condition_",second_condition,"_vs_",main_condition,sep = "")
+
+  dir.create(paste(DE_result_dir,"/",name_res,sep = ""))
+
+dir.create(paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,sep = ""))
+  
+path_for_csv<-paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,"/",sep = "")
+res <- results(dds_F, name = name_res)
+
+summary(res) # ~6000 genes
+
+
+#res_treat <- results(dds_F, name = "condition_Mated_vs_Rejected")
+res_df<- as.data.frame(res)
+thresh<-logfold_value
+#pVal<-0.05
+pAdj<-0.05
+
+# Padj = FDR correction - all the genes that Padj <= 0.05
+gene_res_padj_sig <- subset(res_df, padj <= pAdj)
+print(paste("gene_res_padj_sig:",nrow(gene_res_padj_sig)))
+
+
+# Padj - all the genes that Padj<=00.1 and LFC>=thresh
+gene_res_padj_sig_uplogfold <- subset(gene_res_padj_sig,log2FoldChange >= thresh)
+print(paste("gene_res_padj_sig_logfold2_up",thresh,":",nrow(gene_res_padj_sig)))
+
+gene_res_padj_sig_downlogfold<-subset(gene_res_padj_sig,log2FoldChange <= -(thresh))
+print(paste("gene_res_padj_sig_logfold2_down",thresh,":",nrow(gene_res_padj_sig)))
+
+
+
+write.table(rownames(gene_res_padj_sig), 
+              file = paste0(path_for_csv,"sig_genes_padj_lfc",".txt"),  
+              sep = "\t", row.names = F, col.names = FALSE, quote = FALSE)
+
+
+openxlsx::write.xlsx (gene_res_padj_sig_uplogfold, paste0(path_for_csv,"gene_res_padj_sig_logfold2_up",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+
+openxlsx::write.xlsx (gene_res_padj_sig_downlogfold, paste0(path_for_csv,"gene_res_padj_sig_logfold2_down",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+
+
+}
+
+
+
+
+#logfold_condition(dds,"Mated","Virgin",2)
+#logfold_condition(dds,"Mated","Rejected",2)
+
+
+#logfold_condition(dds,"Virgin","Mated",2)
+#logfold_condition(dds,"Virgin","Rejected",2)
+
+
+
+logfold_condition(dds,"Npfr","Tdc2",1)
+logfold_condition(dds,"Npfr","Trh",1)
+
+logfold_condition(dds,"Tdc2","Npfr",1)
+logfold_condition(dds,"Tdc2","Trh",1)
+
+logfold_condition(dds,"Trh","Npfr",1)
+logfold_condition(dds,"Trh","Tdc2",1)
+
+#Tdc2
+#Trh
+#Npfr
+
+
+#logfold_condition(dds,"Rejected","Mated",2)
+#logfold_condition(dds,"Rejected","Virgin",2)
+
+```
+
+
 
