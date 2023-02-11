@@ -24,11 +24,15 @@ main_path<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presen
 SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head_non_norm.rds")
 
 SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena_non_normelize.rds")
+all.genes_antena<-as.data.frame(rownames(SERUAT_Antena))
+all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
 head_antena_sum<-function(gene_name,y_value,x_value){
   
   precnt_name<-paste("percent.",gene_name,sep="")
   SERUAT_Antena[[precnt_name]] <- PercentageFeatureSet(SERUAT_Antena,features =gene_name)
   SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
+  View(SERUAT_HEAD@meta.data)
+View(SERUAT_Antena@meta.data)
   
   gene_head<-as.data.frame(get(precnt_name,SERUAT_HEAD@meta.data))
   gene_antena<-as.data.frame(get(precnt_name,SERUAT_Antena@meta.data))
@@ -58,6 +62,8 @@ dev.off()
 }
 
 head_antena_sum("NPFR",13,2)
+
+
 
 #fru 200
 #Tdc2 35
@@ -203,6 +209,45 @@ dev.off()
 }
 }
 
+
+
+```
+
+
+
+cumaltive
+```{r}
+library(spatstat.utils, lib.loc = "/private/common/Software/R/Rlibs")
+head_antena_sum<-function(gene_name,y_value,x_value){
+  
+  precnt_name<-paste("percent.",gene_name,sep="")
+  SERUAT_Antena[[precnt_name]] <- PercentageFeatureSet(SERUAT_Antena,features =gene_name)
+  SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
+  
+  gene_head<-as.data.frame(get(precnt_name,SERUAT_HEAD@meta.data))
+  gene_antena<-as.data.frame(get(precnt_name,SERUAT_Antena@meta.data))
+  colnames(gene_head)<-"head"
+  colnames(gene_antena)<-"antena"
+  
+  
+  
+  gene_sum_head <- hist(gene_head$head,breaks=seq(0,10,l=500))                     # Store histogram info
+  gene_sum_head$counts <- revcumsum((gene_sum_head$counts))    # Change histogram counts
+  
+  gene_sum_antena <-hist(gene_antena$antena,breaks=seq(0,10,l=500)) 
+  gene_sum_antena$counts <- revcumsum((gene_sum_antena$counts))    # Change histogram counts
+
+
+  main_title <-paste("head (red) vs antena (green)",gene_name)
+
+  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
+  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),add = TRUE)
+
+
+
+}
+
+head_antena_sum("Tdc2",35,2)
 
 
 ```

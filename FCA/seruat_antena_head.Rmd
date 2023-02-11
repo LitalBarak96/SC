@@ -340,63 +340,6 @@ dev.off()
 
 
 
-```{r}
-library(spatstat.utils)
-library(loomR)
-library(Seurat)
-library(ggplot2)
-library(dplyr)
-
-
-library(stringr)
-
-
-
-main_path<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level"
-
-SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head_non_norm.rds")
-
-SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena_non_normelize.rds")
-head_antena_sum<-function(gene_name,y_value,x_value){
-  
-  precnt_name<-paste("percent.",gene_name,sep="")
-  SERUAT_Antena[[precnt_name]] <- PercentageFeatureSet(SERUAT_Antena,features =gene_name)
-  SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
-  
-  gene_head<-as.data.frame(get(precnt_name,SERUAT_HEAD@meta.data))
-  gene_antena<-as.data.frame(get(precnt_name,SERUAT_Antena@meta.data))
-  colnames(gene_head)<-"head"
-  colnames(gene_antena)<-"antena"
-  
-  
-  
-  gene_sum_head <- hist(gene_head$head,breaks=seq(0,10,l=500))                     # Store histogram info
-  gene_sum_head$counts <- revcumsum((gene_sum_head$counts))    # Change histogram counts
-  
-  gene_sum_antena <-hist(gene_antena$antena,breaks=seq(0,10,l=500)) 
-  gene_sum_antena$counts <- revcumsum((gene_sum_antena$counts))    # Change histogram counts
-
-  
-  plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
-  
-tiff(file=plotname,units="in",height=11,width=11,res=600)
-  main_title <-paste("head (red) vs antena (green)",gene_name)
-
-  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
-  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),add = TRUE)
-dev.off()
-
-
-
-}
-
-head_antena_sum("NPFR",13,2)
-
-#fru 200
-#Tdc2 35
-#NPF 5
-#NPFR 13
-```
 
 
 ```{r}

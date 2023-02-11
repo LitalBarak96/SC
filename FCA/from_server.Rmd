@@ -214,38 +214,6 @@ SERUAT_Antena <-readRDS("/home/alu/aluguest/Lital_galitLab/seuruat_antena_non_no
 
 ```{r}
 
-all.genes_antena<-as.data.frame(rownames(SERUAT_Antena))
-all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
-
-head_antena<-function(gene_name,y_value){
-  
-  precnt_name<-paste("percent.",gene_name,sep="")
-  SERUAT_Antena[[precnt_name]] <- PercentageFeatureSet(SERUAT_Antena,features =gene_name)
-  SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
-  
-  gene_head<-as.data.frame(get(precnt_name,SERUAT_HEAD@meta.data))
-  gene_antena<-as.data.frame(get(precnt_name,SERUAT_Antena@meta.data))
-  colnames(gene_head)<-"head"
-  colnames(gene_antena)<-"antena"
-  
-  
-  gene_head_density <- hist(gene_head$head, breaks=200,plot = FALSE)         # Store output of hist function
-gene_head_density$density <- gene_head_density$counts /    # Compute density values
-  sum(gene_head_density$counts) * 100
-
-
-gene_antena_density <- hist(gene_antena$antena, breaks=200,plot = FALSE)         # Store output of hist function
-gene_antena_density$density <- gene_antena_density$counts /    # Compute density values
-  sum(gene_antena_density$counts) * 100
-
-
-main_title <-paste("head (red) vs antena (green)",gene_name)
-
- plot(gene_head_density, freq = FALSE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value)) 
- plot(gene_antena_density,freq = FALSE, col=alpha('green',0.5),ylim =c(0,y_value),add = TRUE)
-}
-
-head_antena("Adar",2)
 ```
 
 
