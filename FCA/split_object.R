@@ -47,6 +47,9 @@ all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
 
 head_FCA<-function(gene_name,y_value,x_value,FCA,NUMBER_OF_FCA){
   
+  
+  
+  plotname<-paste("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/12.02.23/new/",gene_name,"/",NUMBER_OF_FCA,".tiff",sep = "")
   precnt_name<-paste("percent.",gene_name,sep="")
   FCA[[precnt_name]] <- PercentageFeatureSet(FCA,features =gene_name)
   
@@ -63,10 +66,31 @@ head_FCA<-function(gene_name,y_value,x_value,FCA,NUMBER_OF_FCA){
   
   
   main_title <-paste("head (red) of " ,NUMBER_OF_FCA ,gene_name)
+  tiff(file=plotname,units="in",height=11,width=14,res=600)
   
   plot(gene_head_density, freq = TRUE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value),xlim = c(0,x_value))
+  dev.off()
   
 }
 
-head_FCA("trh",20,0.73,FCA15,"FCA15 ")
+
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+for(i in 1:length(new)){
+  head_FCA("trh",20,0.73,new[[i]],names_of_fca[i])
+  
+}
+
+
+for(i in 1:length(new)){
+  head_FCA("fru",400,0.25,new[[i]],names_of_fca[i])
+  
+}
+
+for(i in 1:length(new)){
+  head_FCA("NPFR",200,0.25,new[[i]],names_of_fca[i])
+  
+}
 
