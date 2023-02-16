@@ -24,32 +24,32 @@ SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = 
 
 new<-SplitObject(SERUAT_HEAD, split.by = "identity")
 
-gene_name <-"NPF"
-FCA1<-new$FCA1
+#gene_name <-"NPF"
+#FCA1<-new$FCA1
 
-FCA1<-new$FCA1
-FCA4<-new$FCA4
-FCA5<-new$FCA5
-FCA6<-new$FCA6
-FCA7<-new$FCA7
-FCA8<-new$FCA8
-FCA9<-new$FCA9
-FCA10<-new$FCA10
-FCA11<-new$FCA11
-FCA12<-new$FCA12
-FCA13<-new$FCA13
-FCA14<-new$FCA14
-FCA15<-new$FCA15
+# FCA1<-new$FCA1
+# FCA4<-new$FCA4
+# FCA5<-new$FCA5
+# FCA6<-new$FCA6
+# FCA7<-new$FCA7
+# FCA8<-new$FCA8
+# FCA9<-new$FCA9
+# FCA10<-new$FCA10
+# FCA11<-new$FCA11
+# FCA12<-new$FCA12
+# FCA13<-new$FCA13
+# FCA14<-new$FCA14
+# FCA15<-new$FCA15
 
 
 
 all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
 
-head_FCA<-function(gene_name,y_value,x_value,FCA,NUMBER_OF_FCA){
+head_FCA<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_OF_FCA){
   
   
   
-  plotname<-paste("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/12.02.23/new/",gene_name,"/",NUMBER_OF_FCA,".tiff",sep = "")
+  plotname<-paste("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.2.23/",gene_name,"/",NUMBER_OF_FCA,".tiff",sep = "")
   precnt_name<-paste("percent.",gene_name,sep="")
   FCA[[precnt_name]] <- PercentageFeatureSet(FCA,features =gene_name)
   
@@ -68,7 +68,7 @@ head_FCA<-function(gene_name,y_value,x_value,FCA,NUMBER_OF_FCA){
   main_title <-paste("head (red) of " ,NUMBER_OF_FCA ,gene_name)
   tiff(file=plotname,units="in",height=11,width=14,res=600)
   
-  plot(gene_head_density, freq = TRUE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value),xlim = c(0,x_value))
+  plot(gene_head_density, freq = TRUE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value),xlim =rev(c(bottom_x_value, top_x_value)))
   dev.off()
   
 }
@@ -84,13 +84,19 @@ for(i in 1:length(new)){
 }
 
 
+
 for(i in 1:length(new)){
-  head_FCA("fru",400,0.25,new[[i]],names_of_fca[i])
+  
+  y_Vale_max<-round((2000*ncol(new[[i]]))/100000) # to find how many sample suppose to be
+  y_Vale_max
+  head_FCA("fru",y_Vale_max,0.58,5,new[[i]],names_of_fca[i])
   
 }
 
 for(i in 1:length(new)){
-  head_FCA("NPFR",200,0.25,new[[i]],names_of_fca[i])
+  y_Vale_max<-round((2000*ncol(new[[i]]))/100000) # to find how many sample suppose to be
+  y_Vale_max
+  head_FCA("NPFR",y_Vale_max,0.25,new[[i]],names_of_fca[i])
   
 }
 
