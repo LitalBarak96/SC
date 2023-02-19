@@ -47,9 +47,9 @@ all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
 
 head_FCA<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_OF_FCA){
   
+  #remmber to rename the path to the username of he computer
   
-  
-  plotname<-paste("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.2.23/",gene_name,"/",NUMBER_OF_FCA,".tiff",sep = "")
+  plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.2.23/",gene_name,"/",NUMBER_OF_FCA,".tiff",sep = "")
   precnt_name<-paste("percent.",gene_name,sep="")
   FCA[[precnt_name]] <- PercentageFeatureSet(FCA,features =gene_name)
   
@@ -66,9 +66,9 @@ head_FCA<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_OF_FC
   
   
   main_title <-paste("head (red) of " ,NUMBER_OF_FCA ,gene_name)
-  tiff(file=plotname,units="in",height=11,width=14,res=600)
+  tiff(file=plotname,units="in",height=13,width=18,res=600)
   
-  plot(gene_head_density, freq = TRUE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value),xlim =rev(c(bottom_x_value, top_x_value)))
+  t<-plot(gene_head_density, freq = TRUE,col=alpha('red',0.5), main=main_title, xlab='%',ylab='f',ylim =c(0,y_value),xlim =rev(c(bottom_x_value, top_x_value)),cex.axis=2.2,cex.lab=1.5, cex.main=2)
   dev.off()
   
 }
@@ -94,9 +94,17 @@ for(i in 1:length(new)){
 }
 
 for(i in 1:length(new)){
-  y_Vale_max<-round((2000*ncol(new[[i]]))/100000) # to find how many sample suppose to be
+  y_Vale_max<-round((100*ncol(new[[i]]))/100000) # to find how many sample suppose to be
   y_Vale_max
-  head_FCA("NPFR",y_Vale_max,0.25,new[[i]],names_of_fca[i])
+  head_FCA("NPFR",y_Vale_max,0,2,new[[i]],names_of_fca[i])
+  
+}
+
+
+for(i in 1:length(new)){
+  y_Vale_max<-round((265*ncol(new[[i]]))/100000) # to find how many sample suppose to be
+  y_Vale_max
+  head_FCA("Tdc2",y_Vale_max,0.25,10,new[[i]],names_of_fca[i])
   
 }
 
