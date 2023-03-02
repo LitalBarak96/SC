@@ -6,6 +6,14 @@ output: html_notebook
 
 
 ```{r}
+test<-c("a","b")
+ttest<-c("c","d")
+a<-NULL
+a<-rbind(a,test)
+```
+
+
+```{r}
 
 library(spatstat.utils)
 library(loomR)
@@ -75,6 +83,7 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
   
   exp_per_counts<-gene_sum_head[["breaks"]][max(which(gene_sum_head[["counts"]] > y_value))]
   
+  
   t<-plot(gene_sum_head,col=alpha('red',0.5), main=main_title, xlab='% expression',ylab='number of cells',ylim =c(0,new_yval),xlim =rev(c(bottom_x_value, top_x_value)),cex.axis=2.2,cex.lab=1.5, cex.main=2,xaxt = "n")
   abline(h = y_value, col = "darkgreen")
   abline(v =exp_per_counts, col = "blue") 
@@ -84,7 +93,7 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
   
   
   dev.off()
-  
+  return(exp_per_counts)
 }
 ```
 
@@ -99,32 +108,42 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
 number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
 
-path_of_photos<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/"
-
-gene<-"NPFR"
-expceted_cell_num<-100
+path_of_photos<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/"
+gene<-"ple"
+expceted_cell_num<-515
 
 
 full_path_of_gene<-paste(path_of_photos,gene,"/",sep = "")
 
-  
+  to_csv<-NULL
 if(dir.exists(full_path_of_gene)){
   for(i in 1:length(new)){
     y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
-    head_FCA_sum(gene,y_Vale_max_origin,0,0.5,new[[i]],names_of_fca[i],full_path_of_gene)
+   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.5,new[[i]],names_of_fca[i],full_path_of_gene)
+      temp<-c(expression_level,names_of_fca[i])
+    to_csv<-rbind(to_csv,temp)
   }
 }else{
   dir.create(full_path_of_gene)
   for(i in 1:length(new)){
     y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
-    head_FCA_sum(gene,y_Vale_max_origin,0,0.3,new[[i]],names_of_fca[i],full_path_of_gene)
-    
+   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.3,new[[i]],names_of_fca[i],full_path_of_gene)
+   
+    temp<-c(expression_level,names_of_fca[i])
+    to_csv<-rbind(to_csv,temp)
   }
 }
 
+of_all<-head_FCA_sum(gene,expceted_cell_num,0,0.5,SERUAT_HEAD,"ALL",full_path_of_gene)
 
+temp<-c(of_all,"ALL")
+to_csv<-rbind(to_csv,temp)
+  
+to_csv<-as.data.frame(to_csv)
+full_path_csv<-paste(full_path_of_gene,gene,".csv",sep = "")
+write.csv(to_csv, full_path_csv, row.names=FALSE)
 
 
 
@@ -142,7 +161,7 @@ full_path_of_gene<-paste(path_of_photos,gene,"/",sep = "")
 
 y_Vale_max_origin<-515
 
-head_FCA_sum(gene,y_Vale_max_origin,0,0.5,SERUAT_HEAD,"ALL",full_path_of_gene)
+of_all<-head_FCA_sum(gene,y_Vale_max_origin,0,0.5,SERUAT_HEAD,"ALL",full_path_of_gene)
 
 
 ```
