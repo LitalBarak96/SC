@@ -6,14 +6,6 @@ output: html_notebook
 
 
 ```{r}
-test<-c("a","b")
-ttest<-c("c","d")
-a<-NULL
-a<-rbind(a,test)
-```
-
-
-```{r}
 
 library(spatstat.utils)
 library(loomR)
@@ -55,7 +47,7 @@ new<-SplitObject(SERUAT_HEAD, split.by = "identity")
 
 all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
 
-head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_OF_FCA,path_of_photos){
+head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_OF_FCA,path_of_photos,to_plot){
   
   #remmber to rename the path to the username of he computer
   plotname<- paste(path_of_photos,"/",NUMBER_OF_FCA,".tiff",sep = "")
@@ -72,28 +64,35 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
   # sum(gene_head_density$counts) * 100
   
   
-  gene_sum_head <- hist(gene_head$head, breaks=seq(0,10,l=10000),plot = FALSE)                       # Store histogram info
+  gene_sum_head <- hist(gene_head$head, breaks=seq(0,20,l=20000),plot = FALSE)                       # Store histogram info
   gene_sum_head$counts <- revcumsum((gene_sum_head$counts)) 
   
   
   main_title <-paste("cumilative garph in ",NUMBER_OF_FCA,"need to be " ,y_value," cells of ",gene_name)
-  tiff(file=plotname,units="in",height=13,width=18,res=600)
+
   new_yval<-y_value + 0.5*(y_value)
   
   
   exp_per_counts<-gene_sum_head[["breaks"]][max(which(gene_sum_head[["counts"]] > y_value))]
   
-  
-  t<-plot(gene_sum_head,col=alpha('red',0.5), main=main_title, xlab='% expression',ylab='number of cells',ylim =c(0,new_yval),xlim =rev(c(bottom_x_value, top_x_value)),cex.axis=2.2,cex.lab=1.5, cex.main=2,xaxt = "n")
+  if(to_plot == TRUE){
+      tiff(file=plotname,units="in",height=13,width=18,res=600)
+      t<-plot(gene_sum_head,col=alpha('red',0.5), main=main_title, xlab='% expression',ylab='number of cells',ylim =c(0,new_yval),xlim =rev(c(bottom_x_value, top_x_value)),cex.axis=2.2,cex.lab=1.5, cex.main=2,xaxt = "n")
   abline(h = y_value, col = "darkgreen")
   abline(v =exp_per_counts, col = "blue") 
   
-  axis(1, at = rev(seq(bottom_x_value,top_x_value, by = 0.01)),
+  axis(1, at = rev(seq(bottom_x_value,top_x_value, by =
+                         0.01)),
        labels = rev(seq(bottom_x_value,top_x_value, by = 0.01)))
   
   
   dev.off()
-  return(exp_per_counts)
+  }else{
+      return(exp_per_counts)
+      dev.off()
+
+  }
+
 }
 ```
 
@@ -108,20 +107,32 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
 number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
 
+plot_or_not<-FALSE
 path_of_photos<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/"
-gene<-"ple"
-expceted_cell_num<-515
+#gene<-"ple"
+#expceted_cell_num<-515
 
 
-full_path_of_gene<-paste(path_of_photos,gene,"/",sep = "")
+list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Trh","Crz","Tbh","Ddc")
+list_of_expected_cells<-c(515,100,1454,265,40,989,300,265,1500)
+
+all_gene_csv<-NULL
+
+for(i_gene in 1:length(list_of_gene)){
+  
+  
+  gene<-list_of_gene[i_gene]
+  expceted_cell_num<-list_of_expected_cells[i_gene]
+  
+  full_path_of_gene<-paste(path_of_photos,gene,"/",sep = "")
 
   to_csv<-NULL
 if(dir.exists(full_path_of_gene)){
   for(i in 1:length(new)){
     y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
-   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.5,new[[i]],names_of_fca[i],full_path_of_gene)
-      temp<-c(expression_level,names_of_fca[i])
+   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.5,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
+      temp<-c(expression_level,names_of_fca[i],gene)
     to_csv<-rbind(to_csv,temp)
   }
 }else{
@@ -129,25 +140,52 @@ if(dir.exists(full_path_of_gene)){
   for(i in 1:length(new)){
     y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
-   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.3,new[[i]],names_of_fca[i],full_path_of_gene)
+   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.3,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
    
-    temp<-c(expression_level,names_of_fca[i])
+    temp<-c(expression_level,names_of_fca[i],gene)
+    # colnames(temp)<-gene
+
     to_csv<-rbind(to_csv,temp)
   }
 }
 
-of_all<-head_FCA_sum(gene,expceted_cell_num,0,0.5,SERUAT_HEAD,"ALL",full_path_of_gene)
+of_all<-head_FCA_sum(gene,expceted_cell_num,0,0.5,SERUAT_HEAD,"ALL",full_path_of_gene,plot_or_not)
 
-temp<-c(of_all,"ALL")
+temp<-c(of_all,"ALL",gene)
 to_csv<-rbind(to_csv,temp)
   
 to_csv<-as.data.frame(to_csv)
-full_path_csv<-paste(full_path_of_gene,gene,".csv",sep = "")
-write.csv(to_csv, full_path_csv, row.names=FALSE)
 
+
+all_gene_csv<-rbind(all_gene_csv,to_csv)
+
+
+
+  
+}
+
+
+
+
+
+
+
+full_path_csv<-paste(path_of_photos,"all_genes",".csv",sep = "")
+colnames(all_gene_csv)<-c("value","FCA","Gene")
+all_gene_csv$value<-as.numeric(all_gene_csv$value)
+write.csv(all_gene_csv, full_path_csv, row.names=FALSE)
 
 
 ```
+
+
+
+```{r}
+ggplot(all_gene_csv, aes( x=FCA, y=value, group=Gene, col=Gene)) +
+  geom_point()+geom_line()
+```
+
+
 
 ```{r}
 
