@@ -170,10 +170,10 @@ all_gene_csv<-rbind(all_gene_csv,to_csv)
 
 
 
-full_path_csv<-paste(path_of_photos,"all_genes",".csv",sep = "")
-colnames(all_gene_csv)<-c("value","FCA","Gene")
-all_gene_csv$value<-as.numeric(all_gene_csv$value)
-write.csv(all_gene_csv, full_path_csv, row.names=FALSE)
+#full_path_csv<-paste(path_of_photos,"all_genes",".csv",sep = "")
+#colnames(all_gene_csv)<-c("value","FCA","Gene")
+#all_gene_csv$value<-as.numeric(all_gene_csv$value)
+#write.csv(all_gene_csv, full_path_csv, row.names=FALSE)
 
 
 ```
@@ -181,8 +181,11 @@ write.csv(all_gene_csv, full_path_csv, row.names=FALSE)
 
 
 ```{r}
-ggplot(all_gene_csv, aes( x=FCA, y=value, group=Gene, col=Gene)) +
-  geom_point()+geom_line()
+
+colnames(all_gene_csv)<-c("value","FCA","Gene")
+all_gene_csv$value<-as.numeric(all_gene_csv$value)
+ggplot(all_gene_csv, aes( x=Gene, y=value, group=FCA, col=FCA)) +
+  geom_jitter()
 ```
 
 
