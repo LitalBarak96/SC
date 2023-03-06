@@ -180,12 +180,17 @@ all_gene_csv<-rbind(all_gene_csv,to_csv)
 
 
 
+#for visual of all FCA per genes after creatting csv file of %  exprssion per FCA
+
 ```{r}
 
-colnames(all_gene_csv)<-c("value","FCA","Gene")
+library(ggplot2)
+all_gene_csv<-read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/all_genes.csv")
+
+#colnames(all_gene_csv)<-c("value","FCA","Gene")
 all_gene_csv$value<-as.numeric(all_gene_csv$value)
 ggplot(all_gene_csv, aes( x=Gene, y=value, group=FCA, col=FCA)) +
-  geom_jitter()
+  geom_point()
 ```
 
 

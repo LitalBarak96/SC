@@ -6,46 +6,55 @@ date: "2023-01-30"
 
 
 ```{r}
-library(edgeR) # BiocManager::install("edgeR")
-library(limma)
-library(Seurat)
-library(ggplot2)
-library(dplyr)
-library(ggplot2)
-library(Matrix)
-library(tidyr)
-library(stringr)
-library("gridExtra")
+# install.packages("viridis")
+library(viridis)
+#install.packages("scCustomize")
+library(scCustomize)
 
 
-SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
-
-
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
 
 
 neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
 list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
 
 
-clusters<-DimPlot(SERUAT_HEAD,reduction="umap",pt.size = 1, label = TRUE, label.size = 7,raster = FALSE)
-
-Dh44<-FeaturePlot(SERUAT_HEAD, "Dh44",raster=FALSE)
-NPF<-FeaturePlot(SERUAT_HEAD, "NPF",raster=FALSE)
-NPFR<-FeaturePlot(SERUAT_HEAD, "NPFR",raster=FALSE)
-Tdc2<-FeaturePlot(SERUAT_HEAD, "Tdc2",raster=FALSE)
-Crz<-FeaturePlot(SERUAT_HEAD, "Crz",raster=FALSE)
-Trh<-FeaturePlot(SERUAT_HEAD, "Trh",raster=FALSE)
-fru<-FeaturePlot(SERUAT_HEAD, "fru",raster=FALSE)
+#clusters<-DimPlot(SERUAT_HEAD,reduction="umap",pt.size = 1, label = TRUE, label.size = 7,raster = FALSE)
 
 
+
+gene_name<-"fru"
+
+pal <- viridis(n = 10, option = "C", direction = -1)
+
+#precnt_name<-paste("percent.",gene_name,sep="")
+#SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
+#saveRDS(SERUAT_HEAD,file = "D:/seq_data/FCA/seuruat_head6_3.rds")
+
+# THE ORDER IS FOR BETTER VISUAL THAT THEY ARE ON TOP 
+ple<-FeaturePlot(SERUAT_HEAD, paste("percent.","ple",sep=""),raster=FALSE,min.cutoff = 0.36,order = T)
+NPF<-FeaturePlot(SERUAT_HEAD, paste("percent.","NPF",sep=""),raster=FALSE,min.cutoff = 0.3,order = T)
+NPFR<-FeaturePlot(SERUAT_HEAD, paste("percent.","NPFR",sep=""),raster=FALSE,min.cutoff = 0.18,order = T)
+Tdc2<-FeaturePlot(SERUAT_HEAD, paste("percent.","Tdc2",sep=""),raster=FALSE,min.cutoff = 0.05,order = T)
+Crz<-FeaturePlot(SERUAT_HEAD, paste("percent.","Crz",sep=""),raster=FALSE,min.cutoff = 0.16,order = T)
+Tbh<-FeaturePlot(SERUAT_HEAD, paste("percent.","Tbh",sep=""),raster=FALSE,min.cutoff = 0.33,order = T)
+fru<-FeaturePlot(SERUAT_HEAD,paste("percent.","fru",sep=""),raster=FALSE,min.cutoff = 0.57,order = T)
+
+#FeaturePlot_scCustom
 #brp<-FeaturePlot(SERUAT_HEAD, "brp",raster=FALSE)
 
 #Syt1<-FeaturePlot(SERUAT_HEAD, "Syt1",raster=FALSE)
 #fru<-FeaturePlot(SERUAT_HEAD, "fru",raster=FALSE)
 
 
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.3.23/umap_percent_on_top.tiff"
 
-grid.arrange(Dh44, NPF, NPFR, Dh44,Tdc2,Crz, Trh,fru,ncol=3, nrow =3)
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+grid.arrange(ple, NPF, NPFR, Tbh,Tdc2,Crz,fru,ncol=3, nrow =3)
+
+dev.off()
 
 
 #grid.arrange(clusters, brp, NPFR, Dh44,Tdc2,Syt1, fru,NPF,ncol=4, nrow =2)
