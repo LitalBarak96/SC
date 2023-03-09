@@ -10,6 +10,7 @@ date: "2023-01-30"
 library(viridis)
 #install.packages("scCustomize")
 library(scCustomize)
+library(Seurat)
 
 
 SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
@@ -25,7 +26,7 @@ list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
 
 gene_name<-"fru"
 
-pal <- viridis(n = 10, option = "C", direction = -1)
+#pal <- viridis(n = 10, option = "C", direction = -1)
 
 #precnt_name<-paste("percent.",gene_name,sep="")
 #SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
@@ -84,17 +85,17 @@ head(markers_cluster3)
 ```{r}
 
 library(Seurat)
-plots<-FeaturePlot(SERUAT_HEAD,features = c("percent.NPFR", "percent.NPF"),raster=FALSE,order = T,blend = TRUE,cols =  c("white", "#ff0000", "#00ff00"),pt.size = 2,combine = FALSE,min.cutoff = 0.05,blend.threshold= 0)
+plots<-FeaturePlot(SERUAT_HEAD,features = c("percent.NPFR", "percent.NPF"),raster=FALSE,order = T,blend = TRUE,cols =  c("white", "#ff0000", "#00ff00"),pt.size = 2,combine = FALSE,min.cutoff = 0.14,blend.threshold= 0) & scale_colour_gradientn(colours = rev(brewer.pal(n = 11, name = "RdBu")))
 
 
-plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.3.23/umap_percen_NPFR_NPF.tiff"
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/5.3.23/umap_percen_NPFR_NPF_test.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
 
 #plots[[3]] + NoLegend()  # Get just the co-expression plot, built-in legend is meaningless for this plot
 #plots[[4]] # Get just the key
-CombinePlots(plots[3:4], legend = 'none')
+CombinePlots(plots[3:4])
 
 dev.off()
 
@@ -117,7 +118,6 @@ SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
 
 SERUAT_HEAD$test<-SERUAT_HEAD$percent.ple
 
-SERUAT_HEAD$Tttest<-(SERUAT_HEAD$percent.NPFR > 0.1 && SERUAT_HEAD$percent.NPF > 0.1)
 
 SERUAT_HEAD$percent.NPFR_PLE<-"ple_NPFR.neg"
 
@@ -130,3 +130,33 @@ Idents(SERUAT_HEAD) <- "percent.ple"
 # Idents(SERUAT_HEAD) <- "lyz.group"
 ```
 I WANTED TO CREAT A NEW COLOM THAT CONATIN TRUE OR FALSE FOR ALL THE CELLS THAT CONTAIN BOTH OF THE KARGER EXPRESSION LEVEL THAT WE FOUND ERLIEAR
+
+
+
+
+
+```{r}
+
+NPF_<-as.data.frame(SERUAT_HEAD@meta.data$percent.NPF)
+NPFR_<-as.data.frame(SERUAT_HEAD@meta.data$percent.NPFR)
+
+
+test<-cbind(NPF_,NPFR_)
+colnames(test)<-c("NPF","NPFR")
+
+sub <- subset(test, NPF > 0.3 & NPFR > 0.18)
+
+
+```
+
+
+
+
+```{r}
+Tttest<-subset(SERUAT_HEAD,subset =  percent.NPF > 0.3 & percent.NPFR > 0.18)
+
+
+FeaturePlot(Tttest,features = c("percent.NPFR", "percent.NPF"),order = T,blend = TRUE)
+
+```
+
