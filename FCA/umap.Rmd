@@ -153,10 +153,22 @@ sub <- subset(test, NPF > 0.3 & NPFR > 0.18)
 
 
 ```{r}
-Tttest<-subset(SERUAT_HEAD,subset =  percent.NPF > 0.3 & percent.NPFR > 0.18)
+gene_name1<-"NPF"
+gene_name2<-"NPFR"
+
+threshold1<-0.05
+threshold2<-0.57
+
+  
+#precnt_name1<-paste("percent.",gene_name1,sep="")
+#precnt_name2<-paste("percent.",gene_name2,sep="")
+
+howmany_cells<-subset(SERUAT_HEAD,subset = percent.Tdc2 > threshold1 & percent.fru > threshold2)
+
+num<-nrow(howmany_cells@meta.data)
 
 
-FeaturePlot(Tttest,features = c("percent.NPFR", "percent.NPF"),order = T,blend = TRUE)
+#FeaturePlot(Tttest,features = c("percent.NPFR", "percent.NPF"),order = T,blend = TRUE)
 
 ```
 
