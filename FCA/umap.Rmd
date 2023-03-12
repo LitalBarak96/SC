@@ -13,7 +13,7 @@ library(scCustomize)
 library(Seurat)
 
 
-SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
 
 
 neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
@@ -169,6 +169,218 @@ num<-nrow(howmany_cells@meta.data)
 
 
 #FeaturePlot(Tttest,features = c("percent.NPFR", "percent.NPF"),order = T,blend = TRUE)
+
+```
+
+
+```{r}
+
+
+
+
+gene_name1<-"NPF"
+gene_name2<-"NPFR"
+
+threshold1<-0.05
+threshold2<-0.57
+
+
+SERUAT_HEAD$ident<-SERUAT_HEAD$orig.ident
+SERUAT_HEAD$ident <- NULL
+SERUAT_HEAD$ident[SERUAT_HEAD$percent.fru > 0.57] <- "fru"
+
+  
+#precnt_name1<-paste("percent.",gene_name1,sep="")
+#precnt_name2<-paste("percent.",gene_name2,sep="")
+
+SERUAT_HEAD$percent.fru<-subset(SERUAT_HEAD,subset =  percent.fru > threshold2)
+
+num<-nrow(howmany_cells@meta.data)
+
+
+SplitObject(object, split.by = "ident")
+
+
+test<-subset(SERUAT_HEAD,subset = percent.Tdc2 > 0.05)
+
+test@meta.data$
+DimPlot(object = test)
+
+
+
+head(Idents(test))
+
+```
+
+
+
+
+
+
+
+<!-- ```{r} -->
+<!-- threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57) -->
+<!-- gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru") -->
+
+<!-- fullname<-paste("percent.",gene_names,sep="") -->
+
+
+<!-- temp<-NULL -->
+
+<!-- for(i in 1:length(fullname)){ -->
+
+<!-- temp<-cbind( temp,c(SERUAT_HEAD@meta.data[fullname[i]] > threshold_values[i])) -->
+
+<!-- } -->
+
+<!-- colnames(temp)<-gene_names -->
+
+
+<!-- temp<-as.data.frame(temp) -->
+
+
+
+
+<!-- temp$names<-"" -->
+
+
+<!-- for(i in 1:nrow(temp)){ -->
+<!--   if(temp$ple[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"ple") -->
+
+<!--   } -->
+<!--     if(temp$NPF[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"NPF") -->
+
+<!--     } -->
+<!--     if(temp$NPFR[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"NPFR") -->
+
+<!--     } -->
+<!--     if(temp$Tdc2[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"Tdc2") -->
+
+<!--     } -->
+<!--       if(temp$Crz[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"Crz") -->
+
+<!--       } -->
+<!--       if(temp$Tbh[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"Tbh") -->
+
+<!--       } -->
+<!--         if(temp$fru[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"fru") -->
+
+<!--     } -->
+
+
+<!-- } -->
+
+
+<!-- #temp$names <- str_replace(temp$names, "St", "Street") -->
+
+
+
+<!-- ``` -->
+
+
+
+
+
+```{r}
+
+
+threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("percent.",gene_names,sep="")
+
+
+
+for(i in 1:length(fullname)){
+  
+SERUAT_HEAD@meta.data[fullname[i]]<-c(SERUAT_HEAD@meta.data[fullname[i]] > threshold_values[i])
+ 
+}
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+  }
+    if(SERUAT_HEAD@meta.data$NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    if(SERUAT_HEAD@meta.data$NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+    }
+  
+
+}
+
+
+SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
+
+test<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+
+
+my_seurat <- subset(sub_Seted, idents = 1:23)
+
+levels(Idents(my_seurat))
+
+
+#here I CAN CHOOSE THE COLORS
+my_cols <- c('3'='#F68282','15'='#31C53F','5'='#1FA195','1'='#B95FBB','13'='#D4D915',
+  '14'='#28CECA','9'='#ff9a36','8'='#2FF18B','11'='#aeadb3','6'='#faf4cf',
+  '2'='#CCB1F1','12'='#25aff5','7'='#A4DFF2','4'='#4B4BF7','16'='#AC8F14',
+  '10'='#E6C122','17'='#c00000','18'='#4B4BF0','19'='#AA4371','20'='#4B4BF4','21'='#37004D','22'='#00FF66','23'='#4B4BF0')
+
+my_cols2 <- my_cols[order(as.integer(names(my_cols)))]
+scales::show_col(my_cols2)
+
+
+DimPlot(object = sub_Seted,group.by = "names",label=TRUE,label.size
+=3.5,pt.size = 1.5)
+
+
+
+
+
+#saveRDS(SERUAT_HEAD,file = "D:/seq_data/FCA/seuruat_head12_3.rds")
+
+
+DimPlot(sub_Seted,
+        cols = my_cols2, label=TRUE ,group.by = "names")
+#DoHeatmap(sub_Seted,
+      #    features = c("gene1", "gene2"),
+       #   group.colors = my_cols2)
 
 ```
 
