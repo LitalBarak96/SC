@@ -442,9 +442,21 @@ dev.off()
 
 
 
+
+
+```{r}
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+```
+
+
 ```{r}
 # find all markers of cluster 2
-cluster2.markers <- FindMarkers(SERUAT_HEAD, ident.1 = 21, min.pct = 0.25)
-head(cluster2.markers, n = 10)
+all.markers <- FindAllMarkers(object = SERUAT_HEAD,logfc.threshold = 1)
+head(all.markers, n = 10)
+
+all.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
 ```
 
