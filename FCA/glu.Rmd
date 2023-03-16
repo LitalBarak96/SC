@@ -11,7 +11,7 @@ SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
 gene_name<-"GluClalpha"
   precnt_name<-paste("percent.",gene_name,sep="")
   SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
-threshold_values=1
+threshold_values=0
  fullname<-paste("percent.",gene_name,sep="")
 SERUAT_HEAD@meta.data[gene_name]<-c(SERUAT_HEAD@meta.data[fullname] > threshold_values)
   SERUAT_HEAD@meta.data$names<-""
@@ -82,12 +82,13 @@ glu <- RunUMAP(object = glu, dims = 1:20)
 ```{r}
 
 
-plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/hila_graphs/reclust_1_exp_featureplot.tiff"
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/hila_graphs/reclust_0_exp_glu.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
   
 
-FeaturePlot(glu,"percent.GluClalpha",order = T)
+DimPlot(object = glu,label=TRUE,label.size
+=3.5,pt.size = 1.5,group.by = "names")
 
 #DimPlot(object = glu,label=TRUE,label.size
 #=3.5,pt.size = 1.5,group.by = "names")
@@ -99,9 +100,11 @@ dev.off()
   
 FeaturePlot(glu,"percent.GluClalpha",order = T)
 
+  
+DimPlot(object = glu,label=TRUE,label.size
+=3.5,pt.size = 1.5)
 
-
-all.markers <- FindMarkers(object = glu,ident.1 = 8 )
+all.markers <- FindMarkers(object = glu,ident.1 = 18 )
 
 
 ```
