@@ -438,6 +438,9 @@ DimPlot(sub_Seted,
 dev.off()
 
 
+
+DimPlot(sub_Seted,
+label=TRUE)
 ```
 
 
@@ -458,5 +461,22 @@ head(all.markers, n = 10)
 all.markers %>%
     group_by(cluster) %>%
     slice_max(n = 2, order_by = avg_log2FC)
+```
+
+
+# do all clustring after removing what is without exprssion
+```{r}
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+#test<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+sub_Seted <- NormalizeData(object = sub_Seted)
+sub_Seted <- FindVariableFeatures(object = sub_Seted)
+sub_Seted <- ScaleData(object = sub_Seted)
+sub_Seted <- RunPCA(object = sub_Seted)
+sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:20)
+sub_Seted <- FindClusters(object = sub_Seted)
+sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:20)
 ```
 
