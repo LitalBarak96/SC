@@ -480,3 +480,58 @@ sub_Seted <- FindClusters(object = sub_Seted)
 sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:20)
 ```
 
+
+
+
+
+```{r}
+
+
+cols<-DiscretePalette(23, palette = NULL)
+
+#fru
+cols[3]<-"#b6c9e3"
+cols[14]<-"#d197ab"
+  
+#ple
+#NPF TBH
+cols[8]<-"#b59670"
+#PLE FRU
+cols[16]<-"#3531a3"
+#tBH FRU
+cols[19]<-"#70b4b5"
+
+
+
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/19.3.23/rcluster_genes_after_removing_wo_names.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(object = sub_Seted,cols= cols,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+#plots[[3]] + NoLegend()  # Get just the co-expression plot, built-in legend is meaningless for this plot
+#plots[[4]] # Get just the key
+
+dev.off()
+
+
+
+
+```
+
+```{r}
+
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+all.markers <- FindAllMarkers(object = sub_Seted,logfc.threshold = 1)
+head(all.markers, n = 10)
+
+all.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+```
+
