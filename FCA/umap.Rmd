@@ -535,3 +535,15 @@ all.markers %>%
     slice_max(n = 2, order_by = avg_log2FC)
 ```
 
+
+
+
+
+```{r}
+TEST<-subset(sub_Seted,percent.NPF > 0.3)
+
+
+
+DoHeatmap(object = TEST)
+```
+
