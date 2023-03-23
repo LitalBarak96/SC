@@ -475,9 +475,9 @@ sub_Seted <- NormalizeData(object = sub_Seted)
 sub_Seted <- FindVariableFeatures(object = sub_Seted)
 sub_Seted <- ScaleData(object = sub_Seted)
 sub_Seted <- RunPCA(object = sub_Seted)
-sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:20)
+sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:5)
 sub_Seted <- FindClusters(object = sub_Seted)
-sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:20)
+sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:5)
 ```
 
 
@@ -540,10 +540,26 @@ all.markers %>%
 
 
 ```{r}
-TEST<-subset(sub_Seted,percent.NPF > 0.3)
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+
+TEST<-subset(sub_Seted,percent.NPF > 0.3 &percent.fru>0.57)
+TEST[[]]
+
+avg_logFC=1
+
+all.markers <- FindAllMarkers(object = sub_Seted)
+top20 <- all.markers %>% group_by(cluster) %>% top_n(20, avg_logFC)
+DoHeatmap(object = TEST, genes.use = top20$gene, slim.col.label = TRUE, remove.key = TRUE)
+
+
+p<-DoHeatmap(object = TEST)
+
+DoHeatmap(object = TEST,features ="NPF")
 
 
 
-DoHeatmap(object = TEST)
+GetAssayData(object = TEST, slot = "counts")
 ```
 
