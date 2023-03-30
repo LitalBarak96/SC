@@ -1,0 +1,155 @@
+---
+title: "heatmaps"
+output: html_document
+date: "2023-03-29"
+---
+
+```{r}
+library(Seurat)
+#library(dittoSeq)
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+all.markers <- FindAllMarkers(object = sub_Seted)
+top10 <- all.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
+
+
+
+
+
+
+TEST<-subset(sub_Seted,percent.Tbh>0.33 & percent.Tdc2 >0.05 & percent.fru >0.57  )
+
+#all.markers <- FindAllMarkers(object = sub_Seted)
+#top20 <- all.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/19.3.23/heatmap_Tbh_tdc2_fru_all_genes.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+#dittoHeatmap(TEST,top20$gene,annot.by = "names")
+
+
+DoHeatmap(TEST)
+
+
+  #  dittoHeatmap(TEST,top10$gene,annot.by = "names",show_colnames = FALSE,show_rownames = TRUE)
+
+dev.off()
+```
+
+
+
+
+```{r}
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+row.names(sub_Seted@meta.data)[sub_Seted$names ==" Tdc2 Tbh fru"]
+
+DoHeatmap(sub_Seted,cells = row.names(sub_Seted@meta.data)[sub_Seted$names ==" Tdc2 Tbh fru"]
+)
+
+```
+
+
+
+```{r}
+
+
+test<-subset(SERUAT_HEAD,subset = percent.fru > 0)
+
+
+
+
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.fru)/100 , 
+                               y =percent.fru,
+                               color=ifelse(percent.fru >=0.57,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  geom_smooth() + stat_cor()
+
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.fru)/100 , 
+                               y =nFeature_RNA ,
+                               color=ifelse(percent.fru >=0.57,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  geom_smooth() + stat_cor()
+
+
+
+
+
+
+
+
+ggplot(data=test@meta.data,aes(x = nCount_RNA , 
+                               y =percent.fru,
+                               color=ifelse(percent.fru >=0.57,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  geom_smooth() + stat_cor()
+
+
+```
+
+
+
+
+```{r}
+
+test<-subset(SERUAT_HEAD,subset = percent.NPF > 0)
+
+
+
+
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.NPF)/100 , 
+                               y =percent.NPF,
+                               color=ifelse(percent.NPF >=0.3,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+   stat_cor()
+
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.NPF)/100 , 
+                               y =nFeature_RNA ,
+                               color=ifelse(percent.NPF >=0.3,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  stat_cor()
+
+
+
+ggplot(data=test@meta.data,aes(x = percent.NPF , 
+                               y =nFeature_RNA ,
+                               color=ifelse(percent.NPF >=0.3,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  stat_cor()
+
+```
+

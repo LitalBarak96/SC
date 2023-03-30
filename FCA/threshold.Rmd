@@ -1,0 +1,119 @@
+---
+title: "threshold"
+output: html_document
+date: "2023-03-30"
+---
+
+
+```{r}
+library(Seurat)
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+
+
+
+
+#removed the 0 from the dataset 
+
+test<-subset(SERUAT_HEAD,subset = percent.fru > 0)
+
+
+# the number of reads vs the precentage seprate by the threshold
+
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.fru)/100 , 
+                               y =percent.fru,
+                               color=ifelse(percent.fru >=0.57,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  geom_smooth() + stat_cor()
+
+
+
+# the reads vs number of genes per cell ,we see that cells that pass the threshold don't have a lot of genes that expressed
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.fru)/100 , 
+                               y =nFeature_RNA ,
+                               color=ifelse(percent.fru >=0.57,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  geom_smooth() + stat_cor()
+
+
+
+
+
+
+# number of counts vs the % of cells 
+
+ggplot(data=test@meta.data,aes(x = nCount_RNA , 
+                               y =percent.fru,
+                               color=ifelse(percent.fru >=0.57,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  geom_smooth() + stat_cor()
+```
+
+
+
+
+
+
+##NPF 
+
+```{r}
+
+test<-subset(SERUAT_HEAD,subset = percent.NPF > 0)
+
+
+
+
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.NPF)/100 , 
+                               y =percent.NPF,
+                               color=ifelse(percent.NPF >=0.3,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+   stat_cor()
+
+ggplot(data=test@meta.data,aes(x = (nCount_RNA * percent.NPF)/100 , 
+                               y =nFeature_RNA ,
+                               color=ifelse(percent.NPF >=0.3,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  stat_cor()
+
+
+
+ggplot(data=test@meta.data,aes(x = percent.NPF , 
+                               y =nFeature_RNA ,
+                               color=ifelse(percent.NPF >=0.3,T,F)
+                             # color=ifelse(percent.fru >=0.3,T,F)
+
+                               ))+
+  geom_point(size =2, alpha =0.3)+theme_bw() +
+  # facet_grid(~(nCount_RNA * percent.fru)/100 >50)+
+  stat_cor()
+
+```
+
+
+
+
+# histogram of number of genes per cell
+
+```{r}
+ hist(SERUAT_HEAD@meta.data$nFeature_RNA,breaks = 1000,xlim = c(0,2000))
+```
+
