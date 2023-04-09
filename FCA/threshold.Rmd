@@ -125,4 +125,74 @@ test <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
  hist(test@meta.data$nFeature_RNA,breaks = 1000,xlim = c(0,2000))
 
 ```
+```{r}
+library(Seurat)
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+
+
+library(ggpubr)
+library(ggplot2)
+#removed the 0 from the dataset 
+
+test<-subset(SERUAT_HEAD,subset = percent.fru > 0)
+
+
+```
+
+```{r}
+
+
+ #hist(test@meta.data$nFeature_RNA,breaks = 1000,xlim = c(0,2000))
+
+
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(Matrix)
+library(tidyr)
+library(stringr)
+library("gridExtra")
+library(loomR)
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+View(SERUAT_HEAD@meta.data)
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'), 
+                                    sep = '_')
+
+new<-SplitObject(SERUAT_HEAD, split.by = "identity")
+
+
+#FCA1<-new$FCA1
+
+FCA1<-new$FCA1
+FCA4<-new$FCA4
+FCA5<-new$FCA5
+FCA6<-new$FCA6
+FCA7<-new$FCA7
+FCA8<-new$FCA8
+FCA9<-new$FCA9
+FCA10<-new$FCA10
+FCA11<-new$FCA11
+FCA12<-new$FCA12
+FCA13<-new$FCA13
+FCA14<-new$FCA14
+FCA15<-new$FCA15
+
+
+
+hist(FCA1@meta.data$nFeature_RNA,breaks = 500, col='red')
+hist(FCA4@meta.data$nFeature_RNA,breaks = 500, col='green',add = TRUE)
+
+
+"https://www.geeksforgeeks.org/how-to-plot-multiple-histograms-in-r/"
+
+```
 
