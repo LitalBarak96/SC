@@ -190,9 +190,10 @@ FCA15<-new$FCA15
 
 hist(FCA1@meta.data$nFeature_RNA,breaks = 500, col='red')
 hist(FCA4@meta.data$nFeature_RNA,breaks = 500, col='green',add = TRUE)
+hist(FCA5@meta.data$nFeature_RNA,breaks = 500, col='blue',add = TRUE,alpha())
 
 
 "https://www.geeksforgeeks.org/how-to-plot-multiple-histograms-in-r/"
-
+"https://www.hdsu.org/irtg2021/day2/01.html"
 ```
 
