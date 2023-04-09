@@ -197,3 +197,60 @@ hist(FCA5@meta.data$nFeature_RNA,breaks = 500, col='blue',add = TRUE,alpha())
 "https://www.hdsu.org/irtg2021/day2/01.html"
 ```
 
+
+
+
+
+
+
+
+```{r}
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+
+
+
+gene_name<-"all"
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+#View(SERUAT_HEAD@meta.data)
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'), 
+                                    sep = '_')
+
+################################################
+#test<-subset(SERUAT_HEAD,subset = percent.ple > 0)
+
+
+new<-SplitObject(SERUAT_HEAD, split.by = "identity")
+
+
+
+
+plotname<-paste("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/9.4.23/",gene_name,"_all_hist_reads.tiff",sep = "")
+tiff(file=plotname,units="in",height=11,width=11,res=600)
+par(mfrow = c(3, 5),mar = c(2.1, 2.1, 6, 2.1),xaxs = "i",yaxs = "i",cex.axis=1.1,cex.lab=1.1)
+for(i in 1:length(new)){
+
+
+
+  hist(new[[i]]@meta.data$nCount_RNA,breaks = 1000, col='red',main =paste0("FCA",i,sep=""))
+
+ title_<-paste("hist reads per fca ",gene_name,sep = "")
+  #dev.off()
+  mtext(title_, side = 3, line =-2, outer = TRUE ,cex=1)
+}
+dev.off()
+
+
+
+```
+
