@@ -53,7 +53,7 @@ head_FCA<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_OF_FC
   precnt_name<-paste("percent.",gene_name,sep="")
   FCA[[precnt_name]] <- PercentageFeatureSet(FCA,features =gene_name)
   
-  gene_head<-as.data.frame(get(precnt_name,FCA@meta.data))
+  gene_had<-as.data.frame(get(precnt_name,FCA@meta.data))
   colnames(gene_head)<-"head"
 
   

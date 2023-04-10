@@ -60,7 +60,7 @@ ggplot(data=test@meta.data,aes(x = percent.fru ,
   geom_smooth() + stat_cor()
 ```
 
-
+caret', 'tclust', 'ranger', 'dtw', 'SDMTools', 'Hmisc', 'metap
 
 
 
@@ -251,6 +251,51 @@ for(i in 1:length(new)){
 dev.off()
 
 
+
+```
+
+
+```{r}
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+
+test<-subset(SERUAT_HEAD,subset = percent.Tbh > 0)
+glu<-test
+glu <- NormalizeData(object = glu)
+glu <- FindVariableFeatures(object = glu)
+glu <- ScaleData(object = glu)
+glu <- RunPCA(object = glu)
+ElbowPlot(SERUAT_HEAD)
+
+glu <- FindNeighbors(object = glu, dims = 1:20)
+glu <- FindClusters(object = glu)
+glu <- RunUMAP(object = glu, dims = 1:20)
+
+
+Idents(object = glu) <- glu@meta.data$Tbh
+
+
+plotname<-paste("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/9.4.23/thresh_Tbh_.tiff",sep = "")
+tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+DimPlot(object = glu,label.size
+=3.5,pt.size = 1.5)
+
+dev.off()
+
+```
+
+
+
+
+```{r}
+
+
+
+
+Idents(object = glu) <- glu@meta.data$percent.fru
+
+DimPlot(object = glu,label=TRUE,label.size
+=3.5,pt.size = 1.5)
 
 ```
 
