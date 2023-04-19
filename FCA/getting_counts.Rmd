@@ -1,0 +1,27 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-04-19"
+output: html_document
+---
+```{r}
+
+
+gene1<- FetchData(SERUAT_HEAD, vars = "NPF")
+
+
+GENES<-rownames(SERUAT_HEAD)
+CELLs<-colnames(SERUAT_HEAD)
+names(SERUAT_HEAD)
+dim(x = SERUAT_HEAD)
+indMyGene<-which(GENES=="NPF")
+indMyCell<-which(GENES=="NPF")
+
+CountMyGeneMyCell<-GetAssayData(object = SERUAT_HEAD, slot = 'counts')[indMyGene, indMyCell]
+
+
+TEST<-GetAssayData(object = SERUAT_HEAD, slot = "counts")
+
+SERUAT_HEAD@assays[["RNA"]]@counts
+```
+
