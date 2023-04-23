@@ -10,12 +10,12 @@ library(loomR)
 library(Seurat)
 library(ggplot2)
 library(dplyr)
-loom_file <- connect(filename = "/home/alu/aluguest/Lital_galitLab/s_fca_biohub_antenna_10x.loom", mode = "r+", skip.validate=TRUE)
+loom_file <- connect(filename = "D:/seq_data/FCA/r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
 matrix_data <- as.data.frame(loom_file[["matrix"]][,])
   rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
   colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
-  SERUAT_antena_N <- CreateSeuratObject(counts = t(matrix_data), project = "antena", min.cells = 0, min.features=0)
-  saveRDS(SERUAT_antena_N, "/home/alu/aluguest/Lital_galitLab/seuruat_antena_non_normelize.rds")
+  SERUAT_antena_N <- CreateSeuratObject(counts = t(matrix_data), project = "head", min.cells = 0, min.features=0)
+#  saveRDS(SERUAT_antena_N, "/home/alu/aluguest/Lital_galitLab/seuruat_antena_non_normelize.rds")
 
 ```
 

@@ -7,6 +7,8 @@ output: html_document
 ```{r}
 
 
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
+
 gene1<- FetchData(SERUAT_HEAD, vars = "NPF")
 
 
@@ -21,7 +23,24 @@ CountMyGeneMyCell<-GetAssayData(object = SERUAT_HEAD, slot = 'counts')[indMyGene
 
 
 TEST<-GetAssayData(object = SERUAT_HEAD, slot = "counts")
+test<-SERUAT_HEAD@assays[["RNA"]]@counts
+test<-SERUAT_HEAD@assays[["RNA"]]@scale.data
+test<-as.data.frame(test)
+t<-test["NPF",]
 
-SERUAT_HEAD@assays[["RNA"]]@counts
+```
+
+```{r}
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
+
+PostnHigh.obj <- subset(SERUAT_HEAD, subset = NPF > 6)
+
+pbmc <- SetAssayData(object = SERUAT_HEAD, slot = "scale.data")
+
+NPF<-FetchData(object = SERUAT_HEAD, vars = "NPF")
+
+# Feature plot - visualize feature expression in low-dimensional space
+FeaturePlot(SERUAT_HEAD, features = "NPF",raster = FALSE)
+
 ```
 
