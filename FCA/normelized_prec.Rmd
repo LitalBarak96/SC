@@ -1,0 +1,27 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-04-30"
+output: html_document
+---
+```{r}
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+
+
+
+ View(SERUAT_HEAD@meta.data)
+SERUAT_HEAD@meta.data$norm_NPF<- FetchData(SERUAT_HEAD, vars = "NPF")
+
+SERUAT_HEAD@meta.data$norm_ple<- FetchData(SERUAT_HEAD, vars = "ple")
+SERUAT_HEAD@meta.data$norm_NPFR<- FetchData(SERUAT_HEAD, vars = "NPFR")
+SERUAT_HEAD@meta.data$norm_Tdc2<- FetchData(SERUAT_HEAD, vars = "Tdc2")
+SERUAT_HEAD@meta.data$norm_Crz<- FetchData(SERUAT_HEAD, vars = "Crz")
+
+SERUAT_HEAD@meta.data$norm_Tbh<- FetchData(SERUAT_HEAD, vars = "Tbh")
+SERUAT_HEAD@meta.data$norm_fru<- FetchData(SERUAT_HEAD, vars = "fru")
+saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/seuruat_head30_4.rds")
+
+
+SERUAT_HEAD@assays$RNA@data
+```
+
