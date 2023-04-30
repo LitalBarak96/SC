@@ -5,7 +5,7 @@ date: "2023-04-30"
 output: html_document
 ---
 ```{r}
-SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head30_4.rds")
 
 
 
@@ -19,7 +19,7 @@ SERUAT_HEAD@meta.data$norm_Crz<- FetchData(SERUAT_HEAD, vars = "Crz")
 
 SERUAT_HEAD@meta.data$norm_Tbh<- FetchData(SERUAT_HEAD, vars = "Tbh")
 SERUAT_HEAD@meta.data$norm_fru<- FetchData(SERUAT_HEAD, vars = "fru")
-saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/seuruat_head30_4.rds")
+#saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/seuruat_head30_4.rds")
 
 
 SERUAT_HEAD@assays$RNA@data

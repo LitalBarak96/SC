@@ -30,7 +30,7 @@ library(loomR)
 
 
 
-SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head30_4.rds")
  
 SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
 
@@ -52,8 +52,11 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
   #remmber to rename the path to the username of he computer
   plotname<- paste(path_of_photos,"/",NUMBER_OF_FCA,".tiff",sep = "")
   #plotname<-paste("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/",gene_name,"/",NUMBER_OF_FCA,".tiff",sep = "")
-  precnt_name<-paste("percent.",gene_name,sep="")
-  FCA[[precnt_name]] <- PercentageFeatureSet(FCA,features =gene_name)
+  
+  precnt_name<- paste("norm_",gene_name,sep="")
+
+ # precnt_name<-paste("percent.",gene_name,sep="")
+  #FCA[[precnt_name]] <- PercentageFeatureSet(FCA,features =gene_name)
   
   gene_head<-as.data.frame(get(precnt_name,FCA@meta.data))
   colnames(gene_head)<-"head"
@@ -108,13 +111,13 @@ number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
 
 plot_or_not<-FALSE
-path_of_photos<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/"
+path_of_photos<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/"
 #gene<-"ple"
 #expceted_cell_num<-515
 
 
-list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Trh","Crz","Tbh","Ddc")
-list_of_expected_cells<-c(515,100,1454,265,40,989,300,265,1500)
+list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
+list_of_expected_cells<-c(515,100,1454,265,40,300,265)
 
 all_gene_csv<-NULL
 
@@ -131,7 +134,7 @@ if(dir.exists(full_path_of_gene)){
   for(i in 1:length(new)){
     y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
-   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.5,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
+   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,5,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
       temp<-c(expression_level,names_of_fca[i],gene)
     to_csv<-rbind(to_csv,temp)
   }
@@ -140,7 +143,7 @@ if(dir.exists(full_path_of_gene)){
   for(i in 1:length(new)){
     y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
-   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,0.3,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
+   expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,5,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
    
     temp<-c(expression_level,names_of_fca[i],gene)
     # colnames(temp)<-gene
@@ -149,7 +152,7 @@ if(dir.exists(full_path_of_gene)){
   }
 }
 
-of_all<-head_FCA_sum(gene,expceted_cell_num,0,0.5,SERUAT_HEAD,"ALL",full_path_of_gene,plot_or_not)
+of_all<-head_FCA_sum(gene,expceted_cell_num,0,5,SERUAT_HEAD,"ALL",full_path_of_gene,plot_or_not)
 
 temp<-c(of_all,"ALL",gene)
 to_csv<-rbind(to_csv,temp)
@@ -170,10 +173,10 @@ all_gene_csv<-rbind(all_gene_csv,to_csv)
 
 
 
-#full_path_csv<-paste(path_of_photos,"all_genes",".csv",sep = "")
-#colnames(all_gene_csv)<-c("value","FCA","Gene")
-#all_gene_csv$value<-as.numeric(all_gene_csv$value)
-#write.csv(all_gene_csv, full_path_csv, row.names=FALSE)
+full_path_csv<-paste(path_of_photos,"all_genes",".csv",sep = "")
+colnames(all_gene_csv)<-c("value","FCA","Gene")
+all_gene_csv$value<-as.numeric(all_gene_csv$value)
+write.csv(all_gene_csv, full_path_csv, row.names=FALSE)
 
 
 ```
@@ -185,13 +188,16 @@ all_gene_csv<-rbind(all_gene_csv,to_csv)
 ```{r}
 
 library(ggplot2)
-all_gene_csv<-read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/all_genes.csv")
+all_gene_csv<-read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv")
 
 
 all_gene_csv$value<-as.numeric(all_gene_csv$value)
 
 
-plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/group_meeting/threshold.tiff"
+#path_of_photos<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/"
+
+
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/threshold.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
@@ -218,6 +224,7 @@ dev.off()
 
 
 ```{r}
+
 
 path_of_photos<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/27.2.23/"
 
