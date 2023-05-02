@@ -29,6 +29,8 @@ SERUAT_HEAD@assays$RNA@data
 #i got from the script of split_cumelative_all_graphs
 ```{r}
 
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+
 library(spatstat.utils)
 library(loomR)
 library(Seurat)
@@ -54,24 +56,74 @@ SERUAT_HEAD@meta.data$identity<-as.factor(SERUAT_HEAD@meta.data$identity)
 new<-SplitObject(SERUAT_HEAD, split.by = "identity")
 
 
-list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
-
 
 number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
 
-for(gene in 1 :length(list_of_gene)){
-  
+
+#i didnt do it generic beacuse subset need the name to be said explicitly
+
+
+
+lists_of_gene_per_FCA<-list()
+
+j =7
+list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
+
+
 for(i in 1:length(new)){
  # names_of_fca[1] <-paste0('^',names_of_fca[1],'$')
  FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[i],]
- current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% list_of_gene[gene],]$value
+ current_fca<-new[[i]]
+#current_FCA_gene<- current_fca@meta.data[,grepl(list_of_gene[gene], colnames(current_fca@meta.data))] 
+  current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% list_of_gene[[j]],]$value
+  #change that one by the name of the watned gene
+subseted_data<- subset(current_fca,Tbh > current_value_threshold)
 
-  
+subseted_data@meta.data$type<-list_of_gene[[j]]
+list_of_fca[[i]]<-subseted_data
+
+# current_FCA_gene<-FetchData(current_fca, vars =list_of_gene[gene] )
+
   #all_gene_csv[grepl(names_of_fca[1], all_gene_csv$FCA), ]
 
-}
+
   
 }
+lists_of_gene_per_FCA[[j]]<-Merge_Seurat_List(list_of_fca)
+
+for(i in 1:7){
+  Idents(lists_of_gene_per_FCA[[i]])<-lists_of_gene_per_FCA[[i]]$type
+
+}
+#anchors <-FindIntegrationAnchors(lists_of_gene_per_FCA)
+
+
+marged_all_genes<-Merge_Seurat_List(lists_of_gene_per_FCA)
+
+marged_all_genes <- FindVariableFeatures(object = marged_all_genes)
+marged_all_genes <- ScaleData(object = marged_all_genes)
+
+marged_all_genes <- RunPCA(object = marged_all_genes)
+
+marged_all_genes<-RunUMAP(marged_all_genes,dims = 1:20)
+
+```
+
+
+
+```{r}
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/umap_after_threshold_norm.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+DimPlot(marged_all_genes,
+         label=TRUE ,label.size
+=3.5,pt.size = 1.5)
+
+dev.off()
+
+
+
 ```
 
