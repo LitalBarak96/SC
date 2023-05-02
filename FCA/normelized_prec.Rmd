@@ -10,6 +10,7 @@ SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head30_4.rds")
 
 
  View(SERUAT_HEAD@meta.data)
+SERUAT_HEAD@meta.data$norm_Tk<- FetchData(SERUAT_HEAD, vars = "Tk")
 SERUAT_HEAD@meta.data$norm_NPF<- FetchData(SERUAT_HEAD, vars = "NPF")
 
 SERUAT_HEAD@meta.data$norm_ple<- FetchData(SERUAT_HEAD, vars = "ple")
@@ -70,7 +71,7 @@ lists_of_gene_per_FCA<-list()
 j =7
 list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
 
-
+#each gene run the section sepreatly by order of those and dont forget to change in colum 80 the gene
 for(i in 1:length(new)){
  # names_of_fca[1] <-paste0('^',names_of_fca[1],'$')
  FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[i],]
@@ -124,6 +125,30 @@ DimPlot(marged_all_genes,
 dev.off()
 
 
+
+```
+
+```{r}
+ SERUAT_HEAD@meta.data$norm_Tk<- FetchData(SERUAT_HEAD, vars = "Tk")
+#Tk_seubset<- subset(SERUAT_HEAD,Tk > 0)
+#Npfr_seubset<- subset(SERUAT_HEAD,Tk > 0)
+
+tk_NPFR<-subset(SERUAT_HEAD,NPFR > 0 & Tk > 0)
+
+
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/tk_npfr_featuerplot.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+FeaturePlot(tk_NPFR,features = c("Tk","NPFR"))
+
+
+dev.off()
+#SERUAT_HEAD@meta.data$type<-list_of_gene[[j]]
+
+DimPlot(tk_NPFR,
+         label=TRUE ,label.size
+=3.5,pt.size = 1.5)
 
 ```
 
