@@ -9,7 +9,7 @@ SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head30_4.rds")
 
 
 
- View(SERUAT_HEAD@meta.data)
+ #View(SERUAT_HEAD@meta.data)
 SERUAT_HEAD@meta.data$norm_Tk<- FetchData(SERUAT_HEAD, vars = "Tk")
 SERUAT_HEAD@meta.data$norm_NPF<- FetchData(SERUAT_HEAD, vars = "NPF")
 
@@ -23,7 +23,7 @@ SERUAT_HEAD@meta.data$norm_fru<- FetchData(SERUAT_HEAD, vars = "fru")
 #saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/seuruat_head30_4.rds")
 
 
-SERUAT_HEAD@assays$RNA@data
+#SERUAT_HEAD@assays$RNA@data
 ```
 
 
@@ -130,11 +130,13 @@ dev.off()
 
 ```{r}
  SERUAT_HEAD@meta.data$norm_Tk<- FetchData(SERUAT_HEAD, vars = "Tk")
+SERUAT_HEAD@meta.data$norm_NPFR<- FetchData(SERUAT_HEAD, vars = "NPFR")
 #Tk_seubset<- subset(SERUAT_HEAD,Tk > 0)
 #Npfr_seubset<- subset(SERUAT_HEAD,Tk > 0)
 
-tk_NPFR<-subset(SERUAT_HEAD,NPFR > 0 & Tk > 0)
+tk_NPFR<-subset(SERUAT_HEAD, NPFR > 2.9 )
 
+tk<-subset(tk_NPFR, Tk > 0 )
 
 plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/tk_npfr_featuerplot.tiff"
 
@@ -151,4 +153,218 @@ DimPlot(tk_NPFR,
 =3.5,pt.size = 1.5)
 
 ```
+```{r}
 
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(tidyr)
+
+
+all_gene_csv<-as.data.frame(read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'), 
+                                  sep = '_')
+View(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD@meta.data$identity<-as.factor(SERUAT_HEAD@meta.data$identity)
+#new<-SplitObject(SERUAT_HEAD, split.by = "identity")
+
+
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+
+#i didnt do it generic beacuse subset need the name to be said explicitly
+
+
+
+lists_of_gene_per_FCA<-list()
+
+j =7
+list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
+
+#each gene run the section sepreatly by order of those and dont forget to change in colum 80 the gene
+for(i in 1:length(new)){
+ # names_of_fca[1] <-paste0('^',names_of_fca[1],'$')
+ FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[i],]
+ current_fca<-new[[i]]
+#current_FCA_gene<- current_fca@meta.data[,grepl(list_of_gene[gene], colnames(current_fca@meta.data))] 
+  current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% list_of_gene[[j]],]$value
+  #change that one by the name of the watned gene
+subseted_data<- subset(current_fca,Tbh > current_value_threshold)
+
+subseted_data@meta.data$type<-list_of_gene[[j]]
+list_of_fca[[i]]<-subseted_data
+
+# current_FCA_gene<-FetchData(current_fca, vars =list_of_gene[gene] )
+
+  #all_gene_csv[grepl(names_of_fca[1], all_gene_csv$FCA), ]
+
+
+  
+}
+lists_of_gene_per_FCA[[j]]<-Merge_Seurat_List(list_of_fca)
+
+for(i in 1:7){
+  Idents(lists_of_gene_per_FCA[[i]])<-lists_of_gene_per_FCA[[i]]$type
+
+}
+#anchors <-FindIntegrationAnchors(lists_of_gene_per_FCA)
+
+
+marged_all_genes<-Merge_Seurat_List(lists_of_gene_per_FCA)
+
+marged_all_genes <- FindVariableFeatures(object = marged_all_genes)
+marged_all_genes <- ScaleData(object = marged_all_genes)
+
+marged_all_genes <- RunPCA(object = marged_all_genes)
+
+marged_all_genes<-RunUMAP(marged_all_genes,dims = 1:20)
+
+```
+
+
+
+```{r}
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+
+
+
+ #View(SERUAT_HEAD@meta.data)
+#SERUAT_HEAD@meta.data$norm_Tk<- FetchData(SERUAT_HEAD, vars = "Tk")
+SERUAT_HEAD@meta.data$NPF<- FetchData(SERUAT_HEAD, vars = "NPF")
+
+SERUAT_HEAD@meta.data$ple<- FetchData(SERUAT_HEAD, vars = "ple")
+SERUAT_HEAD@meta.data$NPFR<- FetchData(SERUAT_HEAD, vars = "NPFR")
+SERUAT_HEAD@meta.data$Tdc2<- FetchData(SERUAT_HEAD, vars = "Tdc2")
+SERUAT_HEAD@meta.data$Crz<- FetchData(SERUAT_HEAD, vars = "Crz")
+
+SERUAT_HEAD@meta.data$Tbh<- FetchData(SERUAT_HEAD, vars = "Tbh")
+SERUAT_HEAD@meta.data$fru<- FetchData(SERUAT_HEAD, vars = "fru")
+
+
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'), 
+                                  sep = '_')
+
+SERUAT_HEAD@meta.data$identity<-as.factor(SERUAT_HEAD@meta.data$identity)
+View(SERUAT_HEAD@meta.data)
+
+
+all_gene_csv<-as.data.frame(read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
+
+
+
+
+ 
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("s_",gene_names,sep="")
+
+
+
+
+
+
+SERUAT_HEAD@meta.data$s_ple<-""
+SERUAT_HEAD@meta.data$s_NPF<-""
+SERUAT_HEAD@meta.data$s_Tdc2<-""
+SERUAT_HEAD@meta.data$s_Crz<-""
+SERUAT_HEAD@meta.data$s_Tbh<-""
+SERUAT_HEAD@meta.data$s_fru<-""
+
+
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% list_of_gene[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],list_of_gene[[gene_i]]] >current_value_threshold)
+
+  
+}
+}
+
+for(i in 1:length(fullname)){
+  
+SERUAT_HEAD@meta.data[fullname[i]]<-c(SERUAT_HEAD@meta.data[fullname[i]] > threshold_values[i])
+ 
+}
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+  }
+    if(SERUAT_HEAD@meta.data$NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    if(SERUAT_HEAD@meta.data$NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+    }
+  
+
+}
+
+
+SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
+
+test<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+
+
+
+
+```
