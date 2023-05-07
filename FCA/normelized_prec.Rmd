@@ -362,7 +362,7 @@ unique(SERUAT_HEAD@meta.data$names)
 
 sub_Seted<-subset(SERUAT_HEAD, names != "")
 
-test<-SplitObject(SERUAT_HEAD, split.by = "names")
+#test<-SplitObject(SERUAT_HEAD, split.by = "names")
 
 
 
@@ -370,5 +370,6 @@ test<-SplitObject(SERUAT_HEAD, split.by = "names")
 
 
 
-
+identy <- sub_Seted$identity
+barplot( as.character(identy))
 ```
