@@ -303,50 +303,50 @@ for(gene_i in 1:length(gene_names)){
 for(fca_i in 1:length(names_of_fca)){
 FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
 
-current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% list_of_gene[[gene_i]],]$value
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
 
 
-SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],list_of_gene[[gene_i]]] >current_value_threshold)
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] >current_value_threshold)
 
   
 }
 }
-
-for(i in 1:length(fullname)){
-  
-SERUAT_HEAD@meta.data[fullname[i]]<-c(SERUAT_HEAD@meta.data[fullname[i]] > threshold_values[i])
- 
-}
+# 
+# for(i in 1:length(fullname)){
+#   
+# SERUAT_HEAD@meta.data[fullname[i]]<-c(SERUAT_HEAD@meta.data[fullname[i]] > threshold_values[i])
+#  
+# }
 
 SERUAT_HEAD@meta.data$names<-""
 
 
 for(i in 1:nrow(SERUAT_HEAD@meta.data)){
-  if(SERUAT_HEAD@meta.data$ple[i] == TRUE){
+  if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
 
   }
-    if(SERUAT_HEAD@meta.data$NPF[i] == TRUE){
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
 
     }
-    if(SERUAT_HEAD@meta.data$NPFR[i] == TRUE){
+    if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
 
     }
-    if(SERUAT_HEAD@meta.data$Tdc2[i] == TRUE){
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
 
     }
-      if(SERUAT_HEAD@meta.data$Crz[i] == TRUE){
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
 
       }
-      if(SERUAT_HEAD@meta.data$Tbh[i] == TRUE){
+      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
 
       }
-        if(SERUAT_HEAD@meta.data$fru[i] == TRUE){
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
 
     }
@@ -357,11 +357,15 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
 
+
+unique(SERUAT_HEAD@meta.data$names)
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
 test<-SplitObject(SERUAT_HEAD, split.by = "names")
 
 
 
-sub_Seted<-subset(SERUAT_HEAD, names != "")
 
 
 
