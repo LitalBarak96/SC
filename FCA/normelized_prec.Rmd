@@ -270,8 +270,7 @@ SERUAT_HEAD@meta.data$identity<-as.factor(SERUAT_HEAD@meta.data$identity)
 View(SERUAT_HEAD@meta.data)
 
 
-all_gene_csv<-as.data.frame(read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
-
+all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
 
 
 
@@ -364,12 +363,75 @@ sub_Seted<-subset(SERUAT_HEAD, names != "")
 
 #test<-SplitObject(SERUAT_HEAD, split.by = "names")
 
+table(sub_Seted@meta.data$identity)
 
 
+barplot(table(sub_Seted@meta.data$identity))
 
 
+table(sub_Seted@meta.data$names)
 
 
-identy <- sub_Seted$identity
-barplot( as.character(identy))
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/08.05.23/frq_per_gene_per_fca.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+barplot(table(sub_Seted@meta.data$names))
+
+dev.off()
+
+
+#identy <- sub_Seted$identity
+
+#barplot( as.character(identy))
 ```
+
+
+
+```{r}
+cols<-DiscretePalette(23, palette = NULL)
+
+#fru
+cols[3]<-"#b6c9e3"
+cols[11]<-"#d197ab"
+  
+
+cols[15]<-"#FF0000"
+#ple
+#NPF TBH
+cols[8]<-"#b59670"
+#PLE FRU
+cols[16]<-"#3531a3"
+#tBH FRU
+cols[19]<-"#70b4b5"
+
+
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/08.05.23/umap_after_threshold.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(object = sub_Seted,cols= cols,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+dev.off()
+
+
+```
+reclustring
+```{r}
+sub_Seted <- NormalizeData(object = sub_Seted)
+sub_Seted <- FindVariableFeatures(object = sub_Seted)
+sub_Seted <- ScaleData(object = sub_Seted)
+sub_Seted <- RunPCA(object = sub_Seted)
+sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:5)
+sub_Seted <- FindClusters(object = sub_Seted)
+sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:5)
+```
+
