@@ -238,7 +238,6 @@ marged_all_genes<-RunUMAP(marged_all_genes,dims = 1:20)
 
 ```{r}
 
-
 SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
 
 
@@ -270,7 +269,7 @@ SERUAT_HEAD@meta.data$identity<-as.factor(SERUAT_HEAD@meta.data$identity)
 View(SERUAT_HEAD@meta.data)
 
 
-all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
 
 
 
@@ -371,15 +370,15 @@ barplot(table(sub_Seted@meta.data$identity))
 
 table(sub_Seted@meta.data$names)
 
-
-plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/08.05.23/frq_per_gene_per_fca.tiff"
-
-tiff(file=plotname,units="in",height=13,width=18,res=600)
-
-
-barplot(table(sub_Seted@meta.data$names))
-
-dev.off()
+# 
+# plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/08.05.23/frq_per_gene_per_fca.tiff"
+# 
+# tiff(file=plotname,units="in",height=13,width=18,res=600)
+# 
+# 
+# barplot(table(sub_Seted@meta.data$names))
+# 
+# dev.off()
 
 
 #identy <- sub_Seted$identity
@@ -396,6 +395,10 @@ cols<-DiscretePalette(23, palette = NULL)
 cols[3]<-"#b6c9e3"
 cols[11]<-"#d197ab"
   
+cols[6]<-"#9F2B68"
+
+
+cols[5]<-"#FBCEB1"
 
 cols[15]<-"#FF0000"
 #ple
@@ -412,7 +415,7 @@ Idents(object = sub_Seted) <- sub_Seted@meta.data$names
 
 
 
-plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/08.05.23/umap_after_threshold.tiff"
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/08.05.23/umap_reclustred.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
@@ -433,5 +436,31 @@ sub_Seted <- RunPCA(object = sub_Seted)
 sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:5)
 sub_Seted <- FindClusters(object = sub_Seted)
 sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:5)
+```
+
+
+```{r}
+sub_Seted <- FindClusters(sub_Seted , resolution = 0.1)
+
+Idents(sub_Seted) <- "RNA_snn_res.0.1"
+
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/08.05.23/umap_5_reclstuer.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(object = sub_Seted,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+dev.off()
+```
+find markers
+```{r}
+all.markers <- FindAllMarkers(object = sub_Seted,logfc.threshold = 1)
+head(all.markers, n = 10)
+
+all.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
 ```
 
