@@ -238,6 +238,15 @@ marged_all_genes<-RunUMAP(marged_all_genes,dims = 1:20)
 
 ```{r}
 
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(tidyr)
+
+
 SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
 
 
@@ -457,6 +466,52 @@ dev.off()
 find markers
 ```{r}
 all.markers <- FindAllMarkers(object = sub_Seted,logfc.threshold = 1)
+head(all.markers, n = 10)
+
+all.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+```
+
+```{r}
+per_gene_marker<-SplitObject(sub_Seted, split.by = "names")
+
+p_fru<-per_gene_marker[[1]]
+
+
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/fru_bf_reclstuer.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+DimPlot(object = p_fru,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+dev.off()
+
+p_fru <- NormalizeData(object = p_fru)
+p_fru <- FindVariableFeatures(object = p_fru)
+p_fru <- ScaleData(object = p_fru)
+p_fru <- RunPCA(object = p_fru)
+p_fru <- FindNeighbors(object = p_fru, dims = 1:5)
+p_fru <- FindClusters(object = p_fru)
+p_fru <- RunUMAP(object = p_fru, dims = 1:5)
+
+
+
+
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/fru_af_reclstuer.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(object = p_fru,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+dev.off()
+
+
+
+all.markers <- FindAllMarkers(object = p_fru,logfc.threshold = 1)
 head(all.markers, n = 10)
 
 all.markers %>%
