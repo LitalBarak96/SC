@@ -468,9 +468,9 @@ find markers
 all.markers <- FindAllMarkers(object = sub_Seted,logfc.threshold = 1)
 head(all.markers, n = 10)
 
-all.markers %>%
+test<-all.markers %>%
     group_by(cluster) %>%
-    slice_max(n = 2, order_by = avg_log2FC)
+    slice_max(n = 10, order_by = avg_log2FC)
 ```
 
 ```{r}
