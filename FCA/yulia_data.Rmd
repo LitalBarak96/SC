@@ -1,0 +1,47 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-05-15"
+output: html_document
+---
+
+
+```{r}
+
+
+library("stringr")
+
+list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
+list_of_counts<-list.files("D:/seq_data/yulia",full.names = TRUE,pattern = "counts")
+
+list_of_counts<-as.data.frame(list_of_counts)
+main_data<-NULL
+
+#to get the gene id
+  test<-read.table(gzfile(list_of_counts$list_of_counts[1]), header=TRUE) 
+main_data$Geneid<-test$Geneid
+main_data<-as.data.frame(main_data)
+  
+
+for(cell_name in 1:length(list_of_cells)){
+  tmp_file_names_current_gene <- list_of_counts %>%
+  filter(str_detect( list_of_counts,list_of_cells[cell_name]))
+  for(reapts_current_gene in 1:nrow(tmp_file_names_current_gene)){
+    
+    tmp<-read.table(gzfile(tmp_file_names_current_gene$list_of_counts[reapts_current_gene]), header=TRUE)
+    
+    tmp_newname<-as.data.frame(tmp$Counts)
+    
+    colnames(tmp_newname)<-paste(list_of_cells[cell_name],"_rep",reapts_current_gene,"_counts",sep = "")
+    
+    main_data<-cbind(main_data,tmp_newname)
+  }
+}
+
+
+
+write.csv(main_data, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv", row.names=FALSE)
+
+
+```
+
