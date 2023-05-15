@@ -38,10 +38,42 @@ for(cell_name in 1:length(list_of_cells)){
   }
 }
 
+rownames(main_data) <- main_data[,1]
 
 
 write.csv(main_data, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv", row.names=FALSE)
 
 
+```
+
+
+```{r}
+
+list_of_marker_fru<-c("fru","Pzl",
+"Rgk1",
+"rad",
+"pros",
+"lncRNA:CR44024",
+"CG42613",
+"dati",
+"ab",
+"CG32204"
+)
+
+
+
+main_fru <- main_data[ , grepl( "fru" , names( main_data ) ) ]
+
+main_markers_fru<-NULL
+
+for(i in 1:length(list_of_marker_fru)){
+ main_markers_fru<-rbind(main_markers_fru,main_fru[list_of_marker_fru[i],]) 
+}
+
+
+main_markers_fru<-na.omit(main_markers_fru)
+#rownames(main_markers_fru) <- main_data[,1]
+
+  #df1['fru',]
 ```
 
