@@ -22,7 +22,7 @@ library(plotly)
 library("heatmaply")
 library(dplyr)
 library("DESeq2")
-library(EnhancedVolcano)
+#library(EnhancedVolcano)
 
 #(!require("BiocManager", quietly = TRUE))
 
