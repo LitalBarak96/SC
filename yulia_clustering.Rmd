@@ -91,17 +91,17 @@ main_data<-read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly 
 list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
 avarges<-NULL
 #avarges$Geneid<-main_data$Geneid
-avarges$avg_fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_npf<-rowMeans(x=main_data[ , grepl( "npf" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_npfr<-rowMeans(x=main_data[ , grepl( "npfr" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_tdc2<-rowMeans(x=main_data[ , grepl( "tdc2" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_crz<-rowMeans(x=main_data[ , grepl( "crz" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_th<-rowMeans(x=main_data[ , grepl( "th" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
-avarges$avg_ok107<-rowMeans(x=main_data[ , grepl( "ok107" , names( main_data ) ) ], na.rm = TRUE)
+avarges$fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
+avarges$dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npf<-rowMeans(x=main_data[ , grepl( "npf" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npfr<-rowMeans(x=main_data[ , grepl( "npfr" , names( main_data ) ) ], na.rm = TRUE)
+avarges$tdc2<-rowMeans(x=main_data[ , grepl( "tdc2" , names( main_data ) ) ], na.rm = TRUE)
+avarges$crz<-rowMeans(x=main_data[ , grepl( "crz" , names( main_data ) ) ], na.rm = TRUE)
+avarges$th<-rowMeans(x=main_data[ , grepl( "th" , names( main_data ) ) ], na.rm = TRUE)
+avarges$trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
+avarges$ok107<-rowMeans(x=main_data[ , grepl( "ok107" , names( main_data ) ) ], na.rm = TRUE)
 
-avarges$avg_elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na.rm = TRUE)
+avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na.rm = TRUE)
 
 
 avarges<-as.data.frame(avarges)
@@ -116,7 +116,7 @@ rownames(avarges)<-main_data$GeneSymbol
 # 
 # dev.off()
 
-
+write.csv(avarges, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/avg_ten_cell_type.csv", row.names=TRUE)
 ```
 
 
@@ -217,13 +217,115 @@ down<-as.data.frame(down)
 write.csv(down, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/downregulated.csv",
           row.names = TRUE)
 
+
+data_frame_merge <- merge(up, down,
+                          by = 'row.names', all = TRUE)
+```
+
+
+
+```{r}
+#data_frame_merge <- merge(up, down,
+                    #      by = 'row.names', all = TRUE)
+genes <- c(data_frame_merge$Row.names)
+mat <- assay(dds)[genes, ]
+mat<-scale(mat)
+#mat <- mat - rowMeans(mat)
+df <- as.data.frame(colData(dds)[,c("cell","reapet")])
+
+
+pheatmap(mat, annotation_col = df,  cluster_cols=FALSE,show_rownames=FALSE,cluster_rows=FALSE)
+
 ```
 
 ```{r}
+
+
+dt[dt$fct %in% data_frame_merge$Row.names,]
+
+pheatmap(data_subset_norm_all,cluster_cols = FALSE, color = my_palette, annotation_col = my_sample_col,main= paste("sig genes pvalue <= 0.05 and threshold LFC=0.58 ",nrow(data_subset_norm_all)), fontsize_row=5)
 # avarges[apply(avarges, 1, function(x) all(is.finite(x))), ]
 # 
 # 
 # heatmap(as.matrix(avarges))
 
+```
+
+
+
+```{r}
+
+data_frame_merge <- merge(up, down,
+                          by = 'row.names', all = TRUE)
+genes <- c(data_frame_merge$Row.names)
+mat <- assay(dds)[genes, ]
+
+list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
+avarges<-NULL
+
+main_data<-mat
+#avarges$Geneid<-main_data$Geneid
+avarges$fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
+avarges$dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npf<-rowMeans(x=main_data[ , grepl( "npf" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npfr<-rowMeans(x=main_data[ , grepl( "npfr" , names( main_data ) ) ], na.rm = TRUE)
+avarges$tdc2<-rowMeans(x=main_data[ , grepl( "tdc2" , names( main_data ) ) ], na.rm = TRUE)
+avarges$crz<-rowMeans(x=main_data[ , grepl( "crz" , names( main_data ) ) ], na.rm = TRUE)
+avarges$th<-rowMeans(x=main_data[ , grepl( "th" , names( main_data ) ) ], na.rm = TRUE)
+avarges$trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
+avarges$ok107<-rowMeans(x=main_data[ , grepl( "ok107" , names( main_data ) ) ], na.rm = TRUE)
+
+avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na.rm = TRUE)
+
+
+avarges<-as.data.frame(avarges)
+
+rownames(avarges)<-main_data$GeneSymbol
+```
+
+
+
+
+```{r}
+# cts <- (read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/avg_ten_cell_type.csv",sep=",",row.names="GeneSymbol"))
+# coldata <- read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test_for_avg.csv", row.names=1)
+# coldata_not_factorial <- read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test_for_avg.csv")
+# data_noTPM <- (cts)
+# data<-data.frame(row.names=rownames(cts))
+# 
+# 
+# 
+# 
+# num_of_exp =10
+# for (i in 1:num_of_exp){
+#   temp.df<-data.frame()
+#   temp.df<-data_noTPM %>%
+#     select(starts_with(coldata_not_factorial[i,1]))
+#   
+#   
+#   data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
+# }
+# 
+# #coldata$reapet <- factor(coldata$reapet)
+# coldata$cell <- factor(coldata$cell)
+# 
+# all(rownames(coldata) %in% colnames(data))
+# all(rownames(coldata) == colnames(data))
+# data <- data[, rownames(coldata)]
+# all(rownames(coldata) == colnames(data))
+# 
+# 
+# dds <- DESeqDataSetFromMatrix(countData = round(data),
+#                               colData = coldata,
+#                               design = ~ cell)
+# dds
+# dds$cell<-relevel(dds$cell,ref = "elav")
+# 
+# dds <- DESeq(dds)
+# 
+# resultsNames(dds)
+# 
+# 
+# res <- results(dds)
 ```
 
