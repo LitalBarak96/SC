@@ -1,13 +1,14 @@
+
 ---
-title: "Untitled"
+  title: "Untitled"
 author: "lital barak"
 date: "2023-05-15"
 output: html_document
 ---
-
-
-
-```{r}
+  
+  
+  
+  ```{r}
 
 ```
 
@@ -23,14 +24,14 @@ list_of_counts<-as.data.frame(list_of_counts)
 main_data<-NULL
 
 #to get the gene id
-  test<-read.table(gzfile(list_of_counts$list_of_counts[1]), header=TRUE) 
+test<-read.table(gzfile(list_of_counts$list_of_counts[1]), header=TRUE) 
 main_data$Geneid<-test$Geneid
 main_data<-as.data.frame(main_data)
-  
+
 
 for(cell_name in 1:length(list_of_cells)){
   tmp_file_names_current_gene <- list_of_counts %>%
-  filter(str_detect( list_of_counts,list_of_cells[cell_name]))
+    filter(str_detect( list_of_counts,list_of_cells[cell_name]))
   for(reapts_current_gene in 1:nrow(tmp_file_names_current_gene)){
     
     tmp<-read.table(gzfile(tmp_file_names_current_gene$list_of_counts[reapts_current_gene]), header=TRUE)
@@ -55,14 +56,14 @@ write.csv(main_data, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly
 ```{r}
 
 list_of_marker_fru<-c("fru","Pzl",
-"Rgk1",
-"rad",
-"pros",
-"lncRNA:CR44024",
-"CG42613",
-"dati",
-"ab",
-"CG32204"
+                      "Rgk1",
+                      "rad",
+                      "pros",
+                      "lncRNA:CR44024",
+                      "CG42613",
+                      "dati",
+                      "ab",
+                      "CG32204"
 )
 
 
@@ -72,20 +73,20 @@ main_fru <- main_data[ , grepl( "fru" , names( main_data ) ) ]
 main_markers_fru<-NULL
 
 for(i in 1:length(list_of_marker_fru)){
- main_markers_fru<-rbind(main_markers_fru,main_fru[list_of_marker_fru[i],]) 
+  main_markers_fru<-rbind(main_markers_fru,main_fru[list_of_marker_fru[i],]) 
 }
 
 
 main_markers_fru<-na.omit(main_markers_fru)
 #rownames(main_markers_fru) <- main_data[,1]
 
-  #df1['fru',]
+#df1['fru',]
 ```
 
 
 
 ```{r}
-main_data<-read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv")
+main_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv")
 
 
 list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
@@ -115,8 +116,8 @@ rownames(avarges)<-main_data$GeneSymbol
 # pheatmap(as.matrix(avarges), scale = "none",cluster_rows  = F,show_rownames = F, color=colorRampPalette(c("navy", "white", "red"))(50))
 # 
 # dev.off()
-
-write.csv(avarges, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/avg_ten_cell_type.csv", row.names=TRUE)
+# 
+# write.csv(avarges, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/avg_ten_cell_type.csv", row.names=TRUE)
 ```
 
 
@@ -141,9 +142,9 @@ library("DESeq2")
 
 ```{r}
 
-cts <- (read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv",sep=",",row.names="GeneSymbol"))
-coldata <- read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv", row.names=1)
-coldata_not_factorial <- read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv")
+cts <- (read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv", row.names=1)
+coldata_not_factorial <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv")
 data_noTPM <- (cts)
 data<-data.frame(row.names=rownames(cts))
 ```
@@ -184,15 +185,28 @@ dds <- DESeq(dds)
 resultsNames(dds)
 
 
-res <- results(dds)
 
-#keep <- rowSums(counts(dds)) >= 50
-#dds <- dds[keep,]
+#res <- results(dds)
+
+
+table_counts_normalized <- counts(dds, normalized=TRUE)
+
+
+#keep <- ((counts(dds,normalized=TRUE)) >= 30)
+
+
+#and a minimum of least of 30 normalized counts in
+#one of the repeats
+
+keep <-  rowSums( counts(dds, normalized=TRUE) >= 30 ) >= 1  
+#keep <- rowSums(counts(dds,normalized=TRUE)) >= 30
+dds <- dds[keep,]
+res <- results(dds)
 
 #vsdata <-vst(dds,blind=FALSE)
 
 #autoplotly::autoplotly((plotPCA(vsdata, intgroup="cell")+geom_text(aes(label=name),vjust=3)+labs(title = "PCA:  10 cell type"))
-          #             , data = vsdata, colour = 'Species', frame = TRUE)
+#             , data = vsdata, colour = 'Species', frame = TRUE)
 
 
 #elav is my control
@@ -202,52 +216,63 @@ resultsNames(dds)
 
 ```
 
+```{r}
+
+```
 
 
 
 ```{r}
 up<-subset(res, padj<.05 & log2FoldChange>=1)
 up<-as.data.frame(up)
-write.csv(up, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/upregulated.csv",
+write.csv(up, "C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/upregulated.csv",
           row.names = TRUE)
 
 #creating a csv file with all the values with pval<.05 & log2FoldChange>=1 from T VS NT for down regulated genes
 down<-subset(res, padj<.05 & log2FoldChange<=-1)
 down<-as.data.frame(down)
-write.csv(down, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/downregulated.csv",
+write.csv(down, "C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/downregulated.csv",
           row.names = TRUE)
 
 
-data_frame_merge <- merge(up, down,
-                          by = 'row.names', all = TRUE)
+
+all<-subset(res, padj<0.05 & abs(log2FoldChange)>=1)
+all<-as.data.frame(all)
+
+
+#data_frame_merge <- merge(up, down,
+#          by = 'row.names', all = TRUE)
 ```
 
 
 
 ```{r}
 #data_frame_merge <- merge(up, down,
-                    #      by = 'row.names', all = TRUE)
-genes <- c(data_frame_merge$Row.names)
-mat <- assay(dds)[genes, ]
-mat<-scale(mat)
+#      by = 'row.names', all = TRUE)
+genes <- c(row.names(all))
+
+
+mat<-table_counts_normalized[genes, ]
+#mat <- assay(dds)[genes, ]
+#mat<-scale(mat)
 #mat <- mat - rowMeans(mat)
 df <- as.data.frame(colData(dds)[,c("cell","reapet")])
 
 
-pheatmap(mat, annotation_col = df,  cluster_cols=FALSE,show_rownames=FALSE,cluster_rows=FALSE)
+pheatmap(mat, annotation_col = df,  scale = "row",cluster_cols=TRUE,show_rownames=TRUE,cluster_rows=FALSE)
 
 ```
 
 ```{r}
 
 
-dt[dt$fct %in% data_frame_merge$Row.names,]
-
-pheatmap(data_subset_norm_all,cluster_cols = FALSE, color = my_palette, annotation_col = my_sample_col,main= paste("sig genes pvalue <= 0.05 and threshold LFC=0.58 ",nrow(data_subset_norm_all)), fontsize_row=5)
-# avarges[apply(avarges, 1, function(x) all(is.finite(x))), ]
+# dt[dt$fct %in% data_frame_merge$Row.names,]
 # 
-# 
-# heatmap(as.matrix(avarges))
+# pheatmap(data_subset_norm_all,cluster_cols = FALSE, color = my_palette, annotation_col = my_sample_col,main= paste("sig genes pvalue <= 0.05 and threshold LFC=0.58 ",nrow(data_subset_norm_all)), fontsize_row=5)
+# # avarges[apply(avarges, 1, function(x) all(is.finite(x))), ]
+# # 
+# # 
+# # heatmap(as.matrix(avarges))
 
 ```
 
@@ -255,15 +280,17 @@ pheatmap(data_subset_norm_all,cluster_cols = FALSE, color = my_palette, annotati
 
 ```{r}
 
-data_frame_merge <- merge(up, down,
-                          by = 'row.names', all = TRUE)
-genes <- c(data_frame_merge$Row.names)
-mat <- assay(dds)[genes, ]
+#data_frame_merge <- merge(up, down,
+#                by = 'row.names', all = TRUE)
+#genes <- c(data_frame_merge$Row.names)
+#mat <- assay(dds)[genes, ]
 
 list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
 avarges<-NULL
 
-main_data<-mat
+
+
+main_data<-as.data.frame(mat)
 #avarges$Geneid<-main_data$Geneid
 avarges$fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
 avarges$dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
@@ -280,7 +307,30 @@ avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na
 
 avarges<-as.data.frame(avarges)
 
-rownames(avarges)<-main_data$GeneSymbol
+rownames(avarges)<-rownames(main_data)
+
+
+# 
+# genes <- c(row.names(all))
+# 
+# 
+# mat<-table_counts_normalized[genes, ]
+# #mat <- assay(dds)[genes, ]
+# #mat<-scale(mat)
+# #mat <- mat - rowMeans(mat)
+# df <- as.data.frame(colData(dds)[,c("cell","reapet")])
+
+
+#avarges<-scale(avarges, center = TRUE, scale = TRUE)
+
+
+mat_new<-as.matrix(avarges)
+
+
+pheatmap(mat_new,  cluster_cols=FALSE,show_rownames=FALSE,cluster_rows=FALSE)
+
+pheatmap(mat_new, scale = "row",cluster_rows  = F,show_rownames = T, color=colorRampPalette(c("navy", "white", "red"))(50),fontsize_row = 3, fontsize_col = 8,cutree_cols =10)
+
 ```
 
 
@@ -327,5 +377,7 @@ rownames(avarges)<-main_data$GeneSymbol
 # 
 # 
 # res <- results(dds)
+
+#pheatmap(as.matrix(above_30th_avg), scale = "none",cluster_rows  = F,show_rownames = T, color=colorRampPalette(c("navy", "white", "red"))(50),fontsize_row = 3, fontsize_col = 8,cutree_cols =10)
 ```
 
