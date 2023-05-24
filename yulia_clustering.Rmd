@@ -189,7 +189,6 @@ resultsNames(dds)
 #res <- results(dds)
 
 
-table_counts_normalized <- counts(dds, normalized=TRUE)
 
 
 #keep <- ((counts(dds,normalized=TRUE)) >= 30)
@@ -198,9 +197,9 @@ table_counts_normalized <- counts(dds, normalized=TRUE)
 #and a minimum of least of 30 normalized counts in
 #one of the repeats
 
-keep <-  rowSums( counts(dds, normalized=TRUE) >= 30 ) >= 1  
-#keep <- rowSums(counts(dds,normalized=TRUE)) >= 30
-dds <- dds[keep,]
+#keep <-  rowSums( counts(dds, normalized=TRUE) >= 30 ) >= 1  
+keep <- rowSums(counts(dds,normalized=TRUE)) >= 30
+#dds <- dds[keep,]
 res <- results(dds)
 
 #vsdata <-vst(dds,blind=FALSE)
@@ -211,6 +210,7 @@ res <- results(dds)
 
 #elav is my control
 #dds$cell<-relevel(dds$cell,ref = "elav")
+table_counts_normalized <- counts(dds, normalized=TRUE)
 
 resultsNames(dds)
 
@@ -239,9 +239,9 @@ write.csv(down, "C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly p
 all<-subset(res, padj<0.05 & abs(log2FoldChange)>=1)
 all<-as.data.frame(all)
 
-
-#data_frame_merge <- merge(up, down,
-#          by = 'row.names', all = TRUE)
+# # 
+# data_frame_merge <- merge(up, down,
+#           by = 'row.names', all = TRUE)
 ```
 
 
@@ -329,7 +329,7 @@ mat_new<-as.matrix(avarges)
 
 pheatmap(mat_new,  cluster_cols=FALSE,show_rownames=FALSE,cluster_rows=FALSE)
 
-pheatmap(mat_new, scale = "row",cluster_rows  = F,show_rownames = T, color=colorRampPalette(c("navy", "white", "red"))(50),fontsize_row = 3, fontsize_col = 8,cutree_cols =10)
+pheatmap(mat_new, scale = "row",cluster_rows  = T,show_rownames = F, color=colorRampPalette(c("navy", "white", "red"))(50),fontsize_row = 3, fontsize_col = 8,cutree_cols =10)
 
 ```
 
