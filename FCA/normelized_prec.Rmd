@@ -263,7 +263,7 @@ SERUAT_HEAD@meta.data$Crz<- FetchData(SERUAT_HEAD, vars = "Crz")
 SERUAT_HEAD@meta.data$Tbh<- FetchData(SERUAT_HEAD, vars = "Tbh")
 SERUAT_HEAD@meta.data$fru<- FetchData(SERUAT_HEAD, vars = "fru")
 
-
+SERUAT_HEAD@meta.data$elav<- FetchData(SERUAT_HEAD, vars = "elav")
 
 SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
 
@@ -278,7 +278,7 @@ SERUAT_HEAD@meta.data$identity<-as.factor(SERUAT_HEAD@meta.data$identity)
 View(SERUAT_HEAD@meta.data)
 
 
-all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/all_genes.csv"))
 
 
 
@@ -288,7 +288,7 @@ number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
 
 #threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
-gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru","elav")
 
 fullname<-paste("s_",gene_names,sep="")
 
@@ -303,6 +303,7 @@ SERUAT_HEAD@meta.data$s_Tdc2<-""
 SERUAT_HEAD@meta.data$s_Crz<-""
 SERUAT_HEAD@meta.data$s_Tbh<-""
 SERUAT_HEAD@meta.data$s_fru<-""
+SERUAT_HEAD@meta.data$s_elav<-""
 
 
 for(gene_i in 1:length(gene_names)){
@@ -356,6 +357,10 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
         if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
 
+        }
+      if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+
     }
   
 
@@ -375,6 +380,7 @@ table(sub_Seted@meta.data$identity)
 
 
 barplot(table(sub_Seted@meta.data$identity))
+barplot(table(sub_Seted@meta.data$names))
 
 
 table(sub_Seted@meta.data$names)
@@ -388,6 +394,9 @@ table(sub_Seted@meta.data$names)
 # barplot(table(sub_Seted@meta.data$names))
 # 
 # dev.off()
+
+
+#saveRDS(sub_Seted,"D:/seq_data/FCA/seuruat_head30_5_elav.rds")
 
 
 #identy <- sub_Seted$identity
