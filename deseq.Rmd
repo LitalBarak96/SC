@@ -1,0 +1,247 @@
+---
+title: "deseq"
+author: "lital barak"
+date: "2022-11-27"
+output: html_document
+---
+```{r}
+library(stringr)
+library(tibble)
+library(dplyr)
+library(data.table)
+library(tidyr)
+library(ggplot2)
+library(gplots)
+library(ggthemes)
+library(ggrepel)
+library(pheatmap)
+library(gridExtra)
+library(patchwork)
+library(openxlsx)
+library(readxl)
+library(RColorBrewer)
+library(DESeq2)
+library(Rtsne)
+library(factoextra)
+library(vegan)
+library(biomaRt)
+library(flowCore) 
+library(corrplot)
+library(psych)
+library(DataExplorer)
+library(apeglm)
+library(GGally)
+library(Rcpp)
+library(EnrichmentBrowser)
+library(mygene)
+library(plotly)
+#library(xlsx)
+library(stringr)
+library(EnhancedVolcano)
+library("png")
+library("plotly")
+library(grid)
+```
+
+
+
+```{r}
+DE_result_dir<-"D:/seq_data"
+cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/seq_data/Mated/meta.csv", row.names=1)
+
+data_noTPM <- select(cts, -contains("TPM"))
+data<-data.frame(row.names=rownames(cts))
+
+
+coldata$condition <- factor(coldata$condition)
+
+coldata$repeat.<-factor(coldata$repeat.)
+#coldata$neuron<-factor(coldata$neuron)
+
+
+#NPF_cell<-data_noTPM %>%
+ # select(matches("NPFR"))
+
+
+sex_cell<-data_noTPM %>%
+  select(matches(
+rownames(coldata)))
+
+
+colnames(sex_cell)<-gsub("_counts","",colnames(sex_cell))
+
+#coldata$condition <- factor(coldata$condition)
+#coldata$repeat. <- factor(coldata$repeat.)
+
+all(rownames(sex_cell) %in% colnames(sex_cell))
+all(rownames(coldata) == colnames(sex_cell))
+
+dds <- DESeqDataSetFromMatrix(countData = round(sex_cell),
+                              colData = coldata,
+                              design= ~condition+repeat.)
+
+#dds$cell <- relevel(dds$cell, ref = "Npfr") 
+#dds$condition <- relevel(dds$condition, ref = "Mated") 
+
+dds <- DESeq(dds)
+# Returns the names of the estimated effects (coefficents) of the model
+resultsNames(dds) #"Group_Post_vs_CTRL"
+# Get the Pval, Padj and LFC for each gene
+res <- results(dds)
+# Print a summary of the results from a DESeq analysis
+summary(res) # ~19000 genes
+
+dds <- dds[rowMeans(counts(dds))>25, ]
+dds <- DESeq(dds)
+resultsNames(dds) 
+
+res <- results(dds, name = "neuron_Tdc2_vs_Npfr")
+
+summary(res) # ~6000 genes
+
+
+#res_treat <- results(dds, name = "cell_Tdc2_vs_Npfr")
+#write.csv(res_treat,  file=paste0(DE_result_dir,"/Genes_info.csv"),
+#          row.names = TRUE)
+
+```
+
+
+
+
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+DESeq2::plotPCA(vsd, intgroup="repeat.") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
+
+
+DESeq2::plotPCA(vsd, intgroup="neuron") + geom_label(aes(label=name)) + labs(title = "PCA according to group - Before removing batch effect")
+
+```
+
+### Remove the batch effect:
+```{r}
+mat <- assay(vsd)
+mat <- limma::removeBatchEffect(mat, vsd$neuron)# remove according to experiment
+assay(vsd) <- mat
+```
+
+```{r}
+DESeq2::plotPCA(vsd, intgroup="repeat.") + geom_label(aes(label=name)) + labs(title = "PCA according to group - After removing batch effect")
+
+
+DESeq2::plotPCA(vsd, intgroup="neuron") + geom_label(aes(label=name)) + labs(title = "PCA according to group - After removing batch effect")
+
+```
+
+```{r}
+pheatmap(cor(assay(vsd)), main="Samples Correlation Heatmap")
+```
+
+```{r}
+
+
+res_treat <- results(dds, name = "condition_Mated_vs_Rejected")
+res_df<- as.data.frame(res_treat)
+thresh<-0.58
+pVal<-0.05
+pAdj<-0.01
+
+# Padj = FDR correction - all the genes that Padj <= 0.1
+gene_res_padj_sig <- subset(res_df, padj <= pAdj)
+print(paste("gene_res_padj_sig:",nrow(gene_res_padj_sig)))
+
+# Pval - all the genes that Pval <= 0.05
+gene_res_pval_sig <- subset(res_df, pvalue <= pVal)
+print(paste("gene_res_pval_sig:",nrow(gene_res_pval_sig)))
+
+# Padj - all the genes that Padj<=0.1 and LFC>=thresh
+gene_res_padj_sig <- subset(gene_res_padj_sig,abs(log2FoldChange) >=thresh)
+print(paste("gene_res_padj_sig",thresh,":",nrow(gene_res_padj_sig)))
+
+# Pval - all the genes that Pval<=0.05 and LFC>=thresh
+gene_res_pval_sig <- subset(gene_res_pval_sig,abs(log2FoldChange) >=thresh)
+print(paste("gene_res_pval_sig",thresh,":",nrow(gene_res_pval_sig)))
+
+write.table(rownames(gene_res_padj_sig), 
+              file = paste0(DE_result_dir,"/sig_genes_padj_lfc",".txt"),  
+              sep = "\t", row.names = F, col.names = FALSE, quote = FALSE)
+
+write.table(rownames(gene_res_pval_sig), 
+              file = paste0(DE_result_dir,"/sig_genes_pval_lfc",".txt"),  
+              sep = "\t", row.names = F, col.names = FALSE, quote = FALSE)
+
+openxlsx::write.xlsx (gene_res_padj_sig, paste0(DE_result_dir,"/gene_res_padj_sig_all_data",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+
+openxlsx::write.xlsx (gene_res_pval_sig, paste0(DE_result_dir,"/gene_res_pval_sig_all_data",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+```
+
+
+
+# Volcano plot
+## Significant genes with FDR <= 0.1
+```{r Volcano plot FDR}
+plots<-EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'padj', labSize = 3.0,
+    legendLabSize = 10,
+    legendIconSize = 3.5,
+    pCutoff = 0.05)
+
+```
+
+## Significant genes with P-value <= 0.05
+```{r Volcano plot P-value}
+EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'pvalue', labSize = 3.0,
+    legendLabSize = 10,
+    legendIconSize = 3.5,
+    FCcutoff = thresh, pCutoff = pVal)
+
+
+```
+# Heatmaps
+```{r,message=FALSE, warning=FALSE, results='hide'}
+my_palette <- colorRampPalette(c("blue", "white", "red"))(n = 50)
+
+cal_z_score <- function(x){
+  (x - mean(x)) / sd(x)
+}
+
+save_pheatmap_png <- function(x,file, width=1200, height=2500, res = 150) {
+  png(file=file, width = width, height = height, res = res)
+  grid::grid.newpage()
+  grid::grid.draw(x$gtable)
+  dev.off()
+}
+```
+
+## Significant genes with pValue <= 0.05 and threshold LFC=0.58
+```{r Heatmap P-Value,message=FALSE, warning=FALSE, results='hide'}
+select = which((res$pvalue <=pVal) & (abs(res$log2FoldChange) >= thresh))
+heatmap_df_all = assay(vsd)[select,]
+
+data_subset_norm_all <- t(apply(heatmap_df_all, 1, cal_z_score))
+my_sample_col <- data.frame(group = rep(c("Mated", "Rejected","Virgin"), c(2,3,2)))
+row.names(my_sample_col) <- colnames(heatmap_df_all)
+
+pheatmap(data_subset_norm_all,cluster_cols = FALSE, color = my_palette, annotation_col = my_sample_col,main= paste("sig genes pvalue <= 0.05 and threshold LFC=0.58 ",nrow(data_subset_norm_all)), fontsize_row=5)
+```
+
+## Up genes with significant P-value
+```{r  Up genes Pval,message=FALSE, warning=FALSE, results='hide'}
+select = which((res$pvalue <=pVal) & (res$log2FoldChange) >= thresh)
+heatmap_df_up_pval = assay(vsd)[select,]
+
+data_subset_norm <- t(apply(heatmap_df_up_pval, 1, cal_z_score))
+my_sample_col <- data.frame(group = rep(c("CTRL", "Post"), c(8,8)))
+row.names(my_sample_col) <- colnames(heatmap_df_up_pval)
+
+pheatmap(data_subset_norm, color = my_palette,cluster_cols = FALSE, annotation_col = my_sample_col,main= paste("UP sig genes pvalue <= 0.05 and threshold LFC=0.58 ",nrow(data_subset_norm)))
+```

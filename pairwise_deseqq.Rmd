@@ -1,0 +1,273 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-01-30"
+---
+```{r}
+library(stringr)
+library(tibble)
+library(dplyr)
+library(data.table)
+library(tidyr)
+library(ggplot2)
+library(gplots)
+library(ggthemes)
+library(ggrepel)
+library(pheatmap)
+library(gridExtra)
+library(patchwork)
+library(openxlsx)
+library(readxl)
+library(RColorBrewer)
+library(DESeq2)
+library(Rtsne)
+library(factoextra)
+library(vegan)
+library(biomaRt)
+library(flowCore) 
+library(corrplot)
+library(psych)
+library(DataExplorer)
+library(apeglm)
+library(GGally)
+library(Rcpp)
+library(EnrichmentBrowser)
+library(mygene)
+library(plotly)
+#library(xlsx)
+library(stringr)
+library(EnhancedVolcano)
+library("png")
+library("plotly")
+library(grid)
+```
+
+
+for mated
+
+```{r}
+DE_result_dir<-"D:/seq_data"
+cts <- (read.csv("D:/seq_data/Salmon_TPM_wCounts.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/seq_data/Mated/meta.csv", row.names=1)
+
+data_noTPM <- select(cts, -contains("TPM"))
+data<-data.frame(row.names=rownames(cts))
+
+
+coldata$condition <- factor(coldata$condition)
+
+coldata$repeat.<-factor(coldata$repeat.)
+#coldata$neuron<-factor(coldata$neuron)
+
+
+#NPF_cell<-data_noTPM %>%
+ # select(matches("NPFR"))
+
+
+mated_cell<-data_noTPM %>%
+  select(matches(
+rownames(coldata)))
+
+
+colnames(mated_cell)<-gsub("_counts","",colnames(mated_cell))
+
+all(rownames(mated_cell) %in% colnames(mated_cell))
+all(rownames(coldata) == colnames(mated_cell))
+
+dds <- DESeqDataSetFromMatrix(countData = round(mated_cell),
+                              colData = coldata,
+                              design= ~condition+repeat.)
+
+
+dds <- DESeq(dds)
+
+resultsNames(dds) #"Group_Post_vs_CTRL"
+# Get the Pval, Padj and LFC for each gene
+res <- results(dds)
+# Print a summary of the results from a DESeq analysis
+summary(res) # ~19000 genes
+
+dds <- dds[rowMeans(counts(dds))>25, ]
+
+
+#ddsLRT <- DESeq(dds, test="LRT", reduced= ~ 1)
+#resLRT <- results(ddsLRT)
+#resultsNames(resLRT)
+
+#res_treat <- results(dds, name = "cell_Tdc2_vs_Npfr")
+#write.csv(res_treat,  file=paste0(DE_result_dir,"/Genes_info.csv"),
+#          row.names = TRUE)
+
+```
+
+
+function for up and down regulated
+```{r}
+
+
+DE_result_dir<-"D:/seq_data"
+
+logfold_condition<-function(dds_F,main_condition,second_condition,logfold_value){
+
+#dds_F$condition <- relevel(dds_F$condition, ref = main_condition) 
+
+#dds_F <- DESeq(dds_F)
+# Returns the names of the estimated effects (coefficents) of the model
+#resultsNames(dds_F) #"Group_Post_vs_CTRL"
+# Get the Pval, Padj and LFC for each gene
+#res <- results(dds_F)
+# Print a summary of the results from a DESeq analysis
+#summary(res) # ~19000 genes9
+
+#dds_F <- dds_F[rowMeans(counts(dds_F))>25, ]
+#dds_F <- DESeq(dds_F)
+#resultsNames(dds_F) 
+
+name_res<-paste("condition_",second_condition,"_vs_",main_condition,sep = "")
+
+res<-results(dds_F, name=name_res , test="Wald")
+
+  dir.create(paste(DE_result_dir,"/",name_res,sep = ""))
+
+dir.create(paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,sep = ""))
+  
+path_for_csv<-paste(DE_result_dir,"/",name_res,"/","logfold_value",logfold_value,"/",sep = "")
+
+
+summary(res) # ~6000 genes
+
+
+#res_treat <- results(dds_F, name = "condition_Mated_vs_Rejected")
+res_df<- as.data.frame(res)
+thresh<-logfold_value
+#pVal<-0.05
+pAdj<-0.05
+
+# Padj = FDR correction - all the genes that Padj <= 0.05
+gene_res_padj_sig <- subset(res_df, padj <= pAdj)
+print(paste("gene_res_padj_sig:",nrow(gene_res_padj_sig)))
+
+
+# Padj - all the genes that Padj<=00.1 and LFC>=thresh
+gene_res_padj_sig_uplogfold <- subset(gene_res_padj_sig,log2FoldChange >= thresh)
+print(paste("gene_res_padj_sig_logfold2_up",thresh,":",nrow(gene_res_padj_sig)))
+
+gene_res_padj_sig_downlogfold<-subset(gene_res_padj_sig,log2FoldChange <= -(thresh))
+print(paste("gene_res_padj_sig_logfold2_down",thresh,":",nrow(gene_res_padj_sig)))
+
+
+
+write.table(rownames(gene_res_padj_sig), 
+              file = paste0(path_for_csv,"sig_genes_padj_lfc",".txt"),  
+              sep = "\t", row.names = F, col.names = FALSE, quote = FALSE)
+
+
+openxlsx::write.xlsx (gene_res_padj_sig_uplogfold, paste0(path_for_csv,"gene_res_padj_sig_logfold2_up",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+
+openxlsx::write.xlsx (gene_res_padj_sig_downlogfold, paste0(path_for_csv,"gene_res_padj_sig_logfold2_down",".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+
+
+}
+
+
+
+
+#logfold_condition(dds,"Mated","Virgin",2)
+#logfold_condition(dds,"Mated","Rejected",2)
+
+
+#logfold_condition(dds,"Virgin","Mated",2)
+#logfold_condition(dds,"Virgin","Rejected",2)
+
+
+
+logfold_condition(dds,"Npfr","Tdc2",1)
+logfold_condition(dds,"Npfr","Trh",1)
+
+logfold_condition(dds,"Tdc2","Npfr",1)
+logfold_condition(dds,"Tdc2","Trh",1)
+
+logfold_condition(dds,"Trh","Npfr",1)
+logfold_condition(dds,"Trh","Tdc2",1)
+
+#Tdc2
+#Trh
+#Npfr
+
+
+#logfold_condition(dds,"Rejected","Mated",2)
+#logfold_condition(dds,"Rejected","Virgin",2)
+
+```
+
+
+commen gene
+
+```{r}
+library(dplyr)
+
+
+DE_result_dir<-"D:/seq_data"
+
+commen_genes_upNdown<-function(main_cond,second_cond,logfold_value){
+  
+  first_name<-paste("condition_",main_cond,"_vs_",second_cond,sep = "")
+  second_name<-paste("condition_",second_cond,"_vs_",main_cond,sep = "")
+  
+
+first<-paste(DE_result_dir,"/",first_name,"/","logfold_value",logfold_value,sep = "")
+second<-paste(DE_result_dir,"/",second_name,"/","logfold_value",logfold_value,sep = "")
+
+
+if(dir.exists(first) & dir.exists(second)){
+    upfirst<-read_excel(paste(first,"/","gene_res_padj_sig_logfold2_up.xlsx",sep = ""))
+    downsecond<-read_excel(paste(second,"/","gene_res_padj_sig_logfold2_down.xlsx",sep = ""))
+    
+    commen_genes<-inner_join(upfirst[,1], downsecond[,1])
+    dir.create(paste(DE_result_dir,"/",main_cond,sep = ""),showWarnings = FALSE)
+newwpath<-paste(DE_result_dir,"/",main_cond,sep = "")
+openxlsx::write.xlsx (commen_genes, paste0(newwpath,"/logfold",logfold_value,"comment_gene_",main_cond,"_N_",second_cond,".xlsx"),
+                              rowNames = TRUE, colNames = TRUE) 
+}else{
+   stop("one of the dirs dont exist")
+}
+
+}
+
+#commen_genes("Mated","Rejected","Virgin",2,"up")
+#commen_genes("Mated","Rejected","Virgin",2,"down")
+
+#commen_genes("Virgin","Rejected","Mated",2,"up")
+#commen_genes("Virgin","Rejected","Mated",2,"down")
+
+
+#Tdc2
+#Trh
+#Npfr
+
+
+#commen_genes("Npfr","Trh","Tdc2",1,"up")
+#commen_genes("Npfr","Trh","Tdc2",1,"down")
+
+#commen_genes("Tdc2","Npfr","Trh",1,"up")
+#commen_genes("Tdc2","Npfr","Trh",1,"down")
+
+#commen_genes("Trh","Npfr","Tdc2",1,"up")
+#commen_genes("Trh","Npfr","Tdc2",1,"down")
+
+
+commen_genes_upNdown("Npfr","Trh",1)
+commen_genes_upNdown("Trh","Npfr",1)
+
+commen_genes_upNdown("Tdc2","Npfr",1)
+commen_genes_upNdown("Npfr","Tdc2",1)
+
+commen_genes_upNdown("Trh","Tdc2",1)
+commen_genes_upNdown("Tdc2","Trh",1)
+```
+
+
+
+
