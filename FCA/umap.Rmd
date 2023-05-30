@@ -1,0 +1,622 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-01-30"
+---
+
+
+```{r}
+# install.packages("viridis")
+library(viridis)
+#install.packages("scCustomize")
+library(scCustomize)
+library(Seurat)
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+
+
+neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
+list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
+
+
+#clusters<-DimPlot(SERUAT_HEAD,reduction="umap",pt.size = 1, label = TRUE, label.size = 7,raster = FALSE)
+
+
+
+gene_name<-"fru"
+
+#pal <- viridis(n = 10, option = "C", direction = -1)
+
+#precnt_name<-paste("percent.",gene_name,sep="")
+#SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
+#saveRDS(SERUAT_HEAD,file = "D:/seq_data/FCA/seuruat_head6_3.rds")
+
+# THE ORDER IS FOR BETTER VISUAL THAT THEY ARE ON TOP 
+ple<-FeaturePlot(SERUAT_HEAD, paste("percent.","ple",sep=""),raster=FALSE,min.cutoff = 0.36,order = T)
+NPF<-FeaturePlot(SERUAT_HEAD, paste("percent.","NPF",sep=""),raster=FALSE,min.cutoff = 0.3,order = T)
+NPFR<-FeaturePlot(SERUAT_HEAD, paste("percent.","NPFR",sep=""),raster=FALSE,min.cutoff = 0.18,order = T)
+Tdc2<-FeaturePlot(SERUAT_HEAD, paste("percent.","Tdc2",sep=""),raster=FALSE,min.cutoff = 0.05,order = T)
+Crz<-FeaturePlot(SERUAT_HEAD, paste("percent.","Crz",sep=""),raster=FALSE,min.cutoff = 0.16,order = T)
+Tbh<-FeaturePlot(SERUAT_HEAD, paste("percent.","Tbh",sep=""),raster=FALSE,min.cutoff = 0.33,order = T)
+fru<-FeaturePlot(SERUAT_HEAD,paste("percent.","fru",sep=""),raster=FALSE,min.cutoff = 0.57,order = T)
+
+#FeaturePlot_scCustom
+#brp<-FeaturePlot(SERUAT_HEAD, "brp",raster=FALSE)
+
+#Syt1<-FeaturePlot(SERUAT_HEAD, "Syt1",raster=FALSE)
+#fru<-FeaturePlot(SERUAT_HEAD, "fru",raster=FALSE)
+
+
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.3.23/umap_percent_on_top.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+grid.arrange(ple, NPF, NPFR, Tbh,Tdc2,Crz,fru,ncol=3, nrow =3)
+
+dev.off()
+
+
+#grid.arrange(clusters, brp, NPFR, Dh44,Tdc2,Syt1, fru,NPF,ncol=4, nrow =2)
+
+#clusters|brp|NPFR|Dh44|Tdc2|Syt1|fru|NPF
+
+clusters <- DimPlot(SERUAT_HEAD, reduction = 'umap', group.by = 'RNA_snn_res.0.1', label = TRUE,raster=FALSE)
+condition <- DimPlot(SERUAT_HEAD, reduction = 'umap', group.by = 'tissu',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 5))
+
+
+DefaultAssay(SERUAT_HEAD)
+
+
+markers_cluster3 <- FindConservedMarkers(SERUAT_HEAD,
+                     ident.1 = 3,
+                     grouping.var = 'tissu')
+
+head(markers_cluster3)
+```
+
+
+
+
+
+
+```{r}
+
+library(Seurat)
+plots<-FeaturePlot(SERUAT_HEAD,features = c("percent.NPFR", "percent.NPF"),raster=FALSE,order = T,blend = TRUE,cols =  c("white", "#ff0000", "#00ff00"),pt.size = 2,combine = FALSE,min.cutoff = 0.14,blend.threshold= 0) & scale_colour_gradientn(colours = rev(brewer.pal(n = 11, name = "RdBu")))
+
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/5.3.23/umap_percen_NPFR_NPF_test.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+#plots[[3]] + NoLegend()  # Get just the co-expression plot, built-in legend is meaningless for this plot
+#plots[[4]] # Get just the key
+CombinePlots(plots[3:4])
+
+dev.off()
+
+```
+```{r}
+library("tidyverse")
+
+
+p1<-plots[[3]]
+head(p1$data)
+
+
+p1$data %>%
+  count(percent.fru_percent.Tdc2)
+```
+```{r}
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
+
+SERUAT_HEAD$test<-SERUAT_HEAD$percent.ple
+
+
+SERUAT_HEAD$percent.NPFR_PLE<-"ple_NPFR.neg"
+
+SERUAT_HEAD$percent.ple[WhichCells(SERUAT_HEAD, expression = percent.NPFR > 0.18)] <- "NPFR.pos"
+
+Idents(SERUAT_HEAD) <- "percent.ple"
+
+# pbmc_small$lyz.group <- "lyz.pos"
+# pbmc_small$lyz.group[WhichCells(pbmc_small, expression = LYZ < 5)] <- "lyz.neg"
+# Idents(SERUAT_HEAD) <- "lyz.group"
+```
+I WANTED TO CREAT A NEW COLOM THAT CONATIN TRUE OR FALSE FOR ALL THE CELLS THAT CONTAIN BOTH OF THE KARGER EXPRESSION LEVEL THAT WE FOUND ERLIEAR
+
+
+
+
+
+```{r}
+
+NPF_<-as.data.frame(SERUAT_HEAD@meta.data$percent.NPF)
+NPFR_<-as.data.frame(SERUAT_HEAD@meta.data$percent.NPFR)
+
+
+test<-cbind(NPF_,NPFR_)
+colnames(test)<-c("NPF","NPFR")
+
+sub <- subset(test, NPF > 0.3 & NPFR > 0.18)
+
+
+```
+
+
+
+
+```{r}
+gene_name1<-"NPF"
+gene_name2<-"NPFR"
+
+threshold1<-0.05
+threshold2<-0.57
+
+  
+#precnt_name1<-paste("percent.",gene_name1,sep="")
+#precnt_name2<-paste("percent.",gene_name2,sep="")
+
+howmany_cells<-subset(SERUAT_HEAD,subset = percent.Tdc2 > threshold1 & percent.fru > threshold2)
+
+num<-nrow(howmany_cells@meta.data)
+
+
+#FeaturePlot(Tttest,features = c("percent.NPFR", "percent.NPF"),order = T,blend = TRUE)
+
+```
+
+
+```{r}
+
+
+
+
+gene_name1<-"NPF"
+gene_name2<-"NPFR"
+
+threshold1<-0.05
+threshold2<-0.57
+
+
+SERUAT_HEAD$ident<-SERUAT_HEAD$orig.ident
+SERUAT_HEAD$ident <- NULL
+SERUAT_HEAD$ident[SERUAT_HEAD$percent.fru > 0.57] <- "fru"
+
+  
+#precnt_name1<-paste("percent.",gene_name1,sep="")
+#precnt_name2<-paste("percent.",gene_name2,sep="")
+
+SERUAT_HEAD$percent.fru<-subset(SERUAT_HEAD,subset =  percent.fru > threshold2)
+
+num<-nrow(howmany_cells@meta.data)
+
+
+SplitObject(object, split.by = "ident")
+
+
+test<-subset(SERUAT_HEAD,subset = percent.Tdc2 > 0.05)
+
+test@meta.data$
+DimPlot(object = test)
+
+
+
+head(Idents(test))
+
+```
+
+
+
+
+
+
+
+<!-- ```{r} -->
+<!-- threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57) -->
+<!-- gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru") -->
+
+<!-- fullname<-paste("percent.",gene_names,sep="") -->
+
+
+<!-- temp<-NULL -->
+
+<!-- for(i in 1:length(fullname)){ -->
+
+<!-- temp<-cbind( temp,c(SERUAT_HEAD@meta.data[fullname[i]] > threshold_values[i])) -->
+
+<!-- } -->
+
+<!-- colnames(temp)<-gene_names -->
+
+
+<!-- temp<-as.data.frame(temp) -->
+
+
+
+
+<!-- temp$names<-"" -->
+
+
+<!-- for(i in 1:nrow(temp)){ -->
+<!--   if(temp$ple[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"ple") -->
+
+<!--   } -->
+<!--     if(temp$NPF[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"NPF") -->
+
+<!--     } -->
+<!--     if(temp$NPFR[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"NPFR") -->
+
+<!--     } -->
+<!--     if(temp$Tdc2[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"Tdc2") -->
+
+<!--     } -->
+<!--       if(temp$Crz[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"Crz") -->
+
+<!--       } -->
+<!--       if(temp$Tbh[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"Tbh") -->
+
+<!--       } -->
+<!--         if(temp$fru[i] == TRUE){ -->
+<!--     temp$names[i]<-paste(temp$names[i],"fru") -->
+
+<!--     } -->
+
+
+<!-- } -->
+
+
+<!-- #temp$names <- str_replace(temp$names, "St", "Street") -->
+
+
+
+<!-- ``` -->
+
+
+
+
+
+```{r}
+
+
+threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("percent.",gene_names,sep="")
+
+
+
+for(i in 1:length(fullname)){
+  
+SERUAT_HEAD@meta.data[fullname[i]]<-c(SERUAT_HEAD@meta.data[fullname[i]] > threshold_values[i])
+ 
+}
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+  }
+    if(SERUAT_HEAD@meta.data$NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    if(SERUAT_HEAD@meta.data$NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+    }
+  
+
+}
+
+
+SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
+
+test<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+
+
+my_seurat <- subset(sub_Seted, idents = 1:23)
+
+levels(Idents(my_seurat))
+
+
+#here I CAN CHOOSE THE COLORS
+my_cols <- c('3'='#F68282','15'='#31C53F','5'='#1FA195','1'='#B95FBB','13'='#D4D915',
+  '14'='#28CECA','9'='#ff9a36','8'='#2FF18B','11'='#aeadb3','6'='#faf4cf',
+  '2'='#CCB1F1','12'='#25aff5','7'='#A4DFF2','4'='#4B4BF7','16'='#AC8F14',
+  '10'='#E6C122','17'='#c00000','18'='#4B4BF0','19'='#AA4371','20'='#4B4BF4','21'='#37004D','22'='#00FF66','23'='#4B4BF0')
+
+my_cols2 <- my_cols[order(as.integer(names(my_cols)))]
+scales::show_col(my_cols2)
+
+
+
+
+my_cols <- c('Crz'='#F0A0FF','15'='#31C53F','5'='#1FA195','1'='#B95FBB','13'='#D4D915',
+  '14'='#28CECA','9'='#ff9a36','8'='#2FF18B','11'='#aeadb3','6'='#faf4cf',
+  '2'='#CCB1F1','12'='#25aff5','7'='#A4DFF2','4'='#4B4BF7','16'='#AC8F14',
+  '10'='#E6C122','17'='#c00000','18'='#4B4BF0','19'='#AA4371','20'='#4B4BF4','21'='#37004D','22'='#00FF66','23'='#4B4BF0')
+
+
+
+DimPlot(object = sub_Seted,cols = cols,group.by = "names",label=TRUE,label.size
+=3.5,pt.size = 1.5)
+
+
+
+cols<-DiscretePalette(23, palette = NULL)
+
+#fru
+cols[3]<-"#b6c9e3"
+cols[14]<-"#d197ab"
+  
+#ple
+#NPF TBH
+cols[8]<-"#b59670"
+#PLE FRU
+cols[16]<-"#3531a3"
+#tBH FRU
+cols[19]<-"#70b4b5"
+
+#saveRDS(SERUAT_HEAD,file = "D:/seq_data/FCA/seuruat_head12_3.rds")
+
+
+DimPlot(sub_Seted,
+        cols = cols, label=TRUE ,group.by = "names")
+
+
+
+DimPlot(sub_Seted,
+         label=TRUE)
+#DoHeatmap(sub_Seted,
+      #    features = c("gene1", "gene2"),
+       #   group.colors = my_cols2)
+
+
+
+```
+```{r}
+
+
+
+library(Seurat)
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+cols<-DiscretePalette(23, palette = NULL)
+
+
+#fru
+cols[3]<-"#b6c9e3"
+cols[14]<-"#d197ab"
+  
+#ple
+#NPF TBH
+cols[8]<-"#b59670"
+#PLE FRU
+cols[16]<-"#3531a3"
+#tBH FRU
+cols[19]<-"#70b4b5"
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/12.03.23/new_colors_1.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(sub_Seted,
+        cols = cols, label=TRUE ,group.by = "names",label.size
+=3.5,pt.size = 1.5)
+#plots[[3]] + NoLegend()  # Get just the co-expression plot, built-in legend is meaningless for this plot
+#plots[[4]] # Get just the key
+
+dev.off()
+
+
+
+DimPlot(sub_Seted,
+label=TRUE)
+```
+
+
+
+
+
+```{r}
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+```
+
+
+```{r}
+# find all markers of cluster 2
+all.markers <- FindAllMarkers(object = SERUAT_HEAD,logfc.threshold = 1)
+head(all.markers, n = 10)
+
+all.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+```
+
+
+# do all clustring after removing what is without exprssion
+```{r}
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+#test<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+sub_Seted <- NormalizeData(object = sub_Seted)
+sub_Seted <- FindVariableFeatures(object = sub_Seted)
+sub_Seted <- ScaleData(object = sub_Seted)
+sub_Seted <- RunPCA(object = sub_Seted)
+sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:5)
+sub_Seted <- FindClusters(object = sub_Seted)
+sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:5)
+```
+
+
+
+
+
+```{r}
+
+
+cols<-DiscretePalette(23, palette = NULL)
+
+#fru
+cols[3]<-"#b6c9e3"
+cols[14]<-"#d197ab"
+  
+#ple
+#NPF TBH
+cols[8]<-"#b59670"
+#PLE FRU
+cols[16]<-"#3531a3"
+#tBH FRU
+cols[19]<-"#70b4b5"
+
+
+
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/19.3.23/rcluster_genes_after_removing_wo_names.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(object = sub_Seted,cols= cols,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+#plots[[3]] + NoLegend()  # Get just the co-expression plot, built-in legend is meaningless for this plot
+#plots[[4]] # Get just the key
+
+dev.off()
+
+
+
+
+```
+
+```{r}
+
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+all.markers <- FindAllMarkers(object = sub_Seted,logfc.threshold = 1)
+head(all.markers, n = 10)
+
+all.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+```
+
+
+
+
+
+```{r}
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+
+TEST<-subset(sub_Seted,percent.NPF > 0.3 &percent.fru>0.57)
+TEST[[]]
+
+avg_logFC=2
+
+all.markers <- FindAllMarkers(object = sub_Seted)
+top10 <- all.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
+DoHeatmap(object = TEST, genes.use = top20$gene, slim.col.label = TRUE, remove.key = TRUE)
+
+
+p<-DoHeatmap(object = TEST)
+
+DoHeatmap(object = TEST,features ="NPF")
+
+test<-sub_Seted@assays$RNA@data
+
+GetAssayData(object = TEST, slot = "counts")
+```
+
+
+
+
+
+```{r}
+library(Seurat)
+library(dittoSeq)
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head12_3.rds")
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+all.markers <- FindAllMarkers(object = sub_Seted)
+top10 <- all.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
+
+
+
+
+
+
+TEST<-subset(sub_Seted,percent.Tbh>0.33 & percent.Tdc2 >0.05 & percent.fru >0.57  )
+
+#all.markers <- FindAllMarkers(object = sub_Seted)
+#top20 <- all.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/19.3.23/heatmap_Tbh_tdc2_fru_all_genes.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+#dittoHeatmap(TEST,top20$gene,annot.by = "names")
+
+
+DoHeatmap(TEST)
+
+
+  #  dittoHeatmap(TEST,top10$gene,annot.by = "names",show_colnames = FALSE,show_rownames = TRUE)
+
+dev.off()
+
+```
+

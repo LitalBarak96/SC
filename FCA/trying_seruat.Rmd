@@ -1,0 +1,525 @@
+---
+title: "Untitled"
+output: html_document
+date: '2022-08-21'
+---
+
+
+
+```{r}
+
+
+# Load loomR
+library(loomR)
+library(Seurat)
+
+setwd("E:/seq_data/FCA/")
+
+loom_file <- connect(filename = "r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
+
+
+
+
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+  matrix_data$annotation<-loom_file[["col_attrs/S_annotation"]][]
+
+  highNpfr<-(matrix_data[matrix_data$NPFR>1,])
+    drops <- c("annotation")
+    woAnn<-highNpfr[ , !(names(highNpfr) %in% drops)]
+    ann<- highNpfr["annotation"]
+
+    
+
+    test<-as.data.frame(all.genes)
+    
+    gene_of_interest <- "Syt1"
+
+    gene_of_interest %in% all.genes
+  SERUAT_NPFR <- CreateSeuratObject(counts = t(woAnn), project = "high Npfr", min.cells = 0, min.features=0)
+  
+  colOrd <- rownames(FetchData(SERUAT_NPFR,"ident"))
+RcolData <- ann %>% slice(match(colOrd, row.names(ann)))
+SERUAT_NPFR@meta.data <-cbind(SERUAT_NPFR@meta.data,RcolData$annotation)
+colnames(SERUAT_NPFR@meta.data)[which(names(SERUAT_NPFR@meta.data) == "RcolData$annotation")] <- "annotation"
+SERUAT_NPFR <- SetIdent(SERUAT_NPFR, value = SERUAT_NPFR@meta.data$annotation)
+
+
+ # SERUAT_NPFR[["percent.mt"]] <- PercentageFeatureSet(SERUAT_NPFR, pattern = "^MT-")
+  VlnPlot(SERUAT_NPFR, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
+  library(ggplot2)
+  library(dplyr)
+FeatureScatter(SERUAT_NPFR, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") +
+  geom_smooth(method = 'lm')
+  SERUAT_NPFR <- NormalizeData(SERUAT_NPFR, normalization.method = "LogNormalize", scale.factor = 10000)
+  View(SERUAT_NPFR@meta.data)
+  
+  SERUAT_NPFR <- FindVariableFeatures(SERUAT_NPFR, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(SERUAT_NPFR), 10)
+
+plot1 <- VariableFeaturePlot(SERUAT_NPFR)
+LabelPoints(plot = plot1, points = top10, repel = TRUE)
+
+
+all.genes <- rownames(SERUAT_NPFR)
+SERUAT_NPFR <- ScaleData(SERUAT_NPFR, features = all.genes)
+str(SERUAT_NPFR)
+SERUAT_NPFR <- RunPCA(SERUAT_NPFR, features = VariableFeatures(object = SERUAT_NPFR))
+
+print(SERUAT_NPFR[["pca"]], dims = 1:5, nfeatures = 5)
+DimHeatmap(SERUAT_NPFR, dims = 1, cells = 500, balanced = TRUE)
+
+ElbowPlot(SERUAT_NPFR)
+SERUAT_NPFR <- FindNeighbors(SERUAT_NPFR, dims = 1:15)
+
+SERUAT_NPFR <- FindClusters(SERUAT_NPFR, resolution = c(0.1,0.3, 0.5, 0.7, 1))
+View(SERUAT_NPFR@meta.data)
+DimPlot(SERUAT_NPFR, group.by = "RNA_snn_res.0.1", label = TRUE)
+Idents(SERUAT_NPFR)
+Idents(SERUAT_NPFR) <- "RNA_snn_res.0.1"
+Idents(SERUAT_NPFR)
+
+SERUAT_NPFR <- RunUMAP(SERUAT_NPFR, dims = 1:15)
+DimPlot(SERUAT_NPFR, reduction = "umap")
+DefaultAssay(SERUAT_NPFR) <- "RNA"
+Seurat::FeaturePlot(SERUAT_NPFR, "BRP")
+
+
+neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
+
+Seurat::FeaturePlot(SERUAT_NPFR, neruon_cell_genes, ncol=2)
+
+#monocyte_genes <- c("CD14", "CST3", "CD68", "CTSS")
+
+#plot <- DimPlot(SERUAT_NPFR, reduction = "umap")
+#LabelClusters(plot = plot, id = "ident")
+  
+
+Seurat::VlnPlot(SERUAT_NPFR,
+                features = neruon_cell_genes,
+                ncol = 2)
+
+seu_int <- Seurat::AddModuleScore(SERUAT_NPFR,
+                              features = list(neruon_cell_genes),
+                              name = "neruon_cell_genes")
+
+Seurat::FeaturePlot(SERUAT_NPFR, "neruon_cell_genes1")
+
+```
+
+
+
+```{r}
+# Install devtools from CRAN
+#install.packages("devtools")
+# Use devtools to install hdf5r and loomR from GitHub
+#devtools::install_github(repo = "hhoeflin/hdf5r")
+#devtools::install_github(repo = "mojaveazure/loomR", ref = "develop")
+#devtools::install_github('satijalab/seurat-data')
+#devtools::install_github("thomasp85/patchwork")
+
+# Load loomR
+library(loomR)
+library(Seurat)
+
+setwd("E:/seq_data/FCA/")
+
+loom_file <- connect(filename = "r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
+
+
+#coltest<-as.data.frame(as.factor(loom_file[["col_attrs/CellID"]][]))
+#colnames(coltest)<-"cellid"
+#rowtest<-as.data.frame(loom_file[["row_attrs/Gene"]][])
+
+#male_sample<-dplyr::filter(coltest, !grepl("Female",cellid))
+
+
+
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+  matrix_data$annotation<-loom_file[["col_attrs/S_annotation"]][]
+ # library("writexl")
+#write_xlsx(matrix_data,"E:/seq_data/FCA/loom_r_fac_head.xlsx")
+  #write.csv(matrix_data,"E:/seq_data/FCA/loom_r_fac_head.csv", row.names = TRUE)
+#head(matrix_data)
+  #small_test<-matrix_data[1:10,1:10]
+  
+
+
+  highNpfr<-(matrix_data[matrix_data$NPFR>1,])
+    drops <- c("annotation")
+    woAnn<-highNpfr[ , !(names(highNpfr) %in% drops)]
+    
+   ann<- highNpfr["annotation"]
+
+  SERUAT_NPFR <- CreateSeuratObject(counts = t(woAnn), project = "high Npfr", min.cells = 0, min.features=0)
+  
+  colOrd <- rownames(FetchData(SERUAT_NPFR,"ident"))
+RcolData <- ann %>% slice(match(colOrd, row.names(ann)))
+SERUAT_NPFR@meta.data <-cbind(SERUAT_NPFR@meta.data,RcolData$annotation)
+colnames(SERUAT_NPFR@meta.data)[which(names(SERUAT_NPFR@meta.data) == "RcolData$annotation")] <- "IsoPct"
+SERUAT_NPFR <- SetIdent(SERUAT_NPFR, value = status)
+
+SERUAT_NPFR <- SetIdent(SERUAT_NPFR, value = SERUAT_NPFR@meta.data$annotation)
+
+
+
+plot <- DimPlot(SERUAT_NPFR, reduction = "pca")
+LabelClusters(plot = plot, id = "ident")
+  
+  SERUAT_NPFR@meta.data <-cbind(SERUAT_NPFR@meta.data,ann$annotation)
+colnames(SERUAT_NPFR@meta.data)[which(names(SERUAT_NPFR@meta.data) == "ann$annotation")] <- "annotation"
+
+  AddMetaData(object = SERUAT_NPFR, metadata = ann$annotation, col.name = 'time.cell')
+
+ # SERUAT_NPFR[["percent.mt"]] <- PercentageFeatureSet(SERUAT_NPFR, pattern = "^MT-")
+  VlnPlot(SERUAT_NPFR, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
+FeatureScatter(SERUAT_NPFR, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") +
+  geom_smooth(method = 'lm')
+  SERUAT_NPFR <- NormalizeData(SERUAT_NPFR, normalization.method = "LogNormalize", scale.factor = 10000)
+  View(SERUAT_NPFR@meta.data)
+  
+  SERUAT_NPFR <- FindVariableFeatures(SERUAT_NPFR, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(SERUAT_NPFR), 10)
+
+plot1 <- VariableFeaturePlot(SERUAT_NPFR)
+LabelPoints(plot = plot1, points = top10, repel = TRUE)
+
+
+all.genes <- rownames(SERUAT_NPFR)
+SERUAT_NPFR <- ScaleData(SERUAT_NPFR, features = all.genes)
+str(SERUAT_NPFR)
+SERUAT_NPFR <- RunPCA(SERUAT_NPFR, features = VariableFeatures(object = SERUAT_NPFR))
+
+print(SERUAT_NPFR[["pca"]], dims = 1:5, nfeatures = 5)
+DimHeatmap(SERUAT_NPFR, dims = 1, cells = 500, balanced = TRUE)
+
+ElbowPlot(SERUAT_NPFR)
+SERUAT_NPFR <- FindNeighbors(SERUAT_NPFR, dims = 1:15)
+
+SERUAT_NPFR <- FindClusters(SERUAT_NPFR, resolution = c(0.1,0.3, 0.5, 0.7, 1))
+View(SERUAT_NPFR@meta.data)
+DimPlot(SERUAT_NPFR, group.by = "RNA_snn_res.0.3", label = TRUE)
+Idents(SERUAT_NPFR)
+Idents(SERUAT_NPFR) <- "RNA_snn_res.0.3"
+Idents(SERUAT_NPFR)
+
+SERUAT_NPFR <- RunUMAP(SERUAT_NPFR, dims = 1:15)
+DimPlot(SERUAT_NPFR, reduction = "umap")
+DefaultAssay(SERUAT_NPFR) <- "RNA"
+Seurat::FeaturePlot(SERUAT_NPFR, "NPF")
+
+
+```
+
+
+
+
+
+```{r}
+singler = CreateSinglerSeuratObject(counts, annot = NULL, project.name,
+  min.genes = 200, technology = "10X", species = "drosophila", citation = "",
+  ref.list = list(), normalize.gene.length = F, variable.genes = "de",
+  fine.tune = T, reduce.file.size = T, do.signatures = T, min.cells = 2,
+  npca = 10, regress.out = "nUMI", do.main.types = T,
+  reduce.seurat.object = T, numCores = SingleR.numCores)
+save(singler,file='singler_object.RData')
+```
+
+```{r}
+library(Seurat)
+library(SeuratData)
+library(patchwork)
+# install dataset
+InstallData("ifnb")
+ifnb.list <- SplitObject(ifnb, split.by = "stim")
+```
+
+
+
+```{r}
+
+
+fca_seurat <- NormalizeData(fca_seurat, normalization.method = "LogNormalize", scale.factor = 10000)
+
+```
+
+
+
+```{r}
+lfile[["col_attrs/CellID"]][] # cell ID
+lfile[["col_attrs/sex"]][] # fly sex
+lfile[["col_attrs/transf_annotation"]][] #cell annotations
+lfile[["matrix"]][,] # matrix of expression of all genes
+lfile[["row_attrs/Gene"]][] # All genes, 16310
+```
+
+
+
+```{r}
+library(loomR)
+library(Seurat)
+
+setwd("E:/seq_data/FCA/")
+
+loom_file <- connect(filename = "r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
+loom_file
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+  fca_seurat <- CreateSeuratObject(counts = t(matrix_data), project = "test", min.cells = 0, min.features=0)
+  
+  
+  
+  which(grepl("NPF",rownames(x = fca_seurat)))
+rownames(x = fca_seurat)[7436]
+
+test<-rownames(x = fca_seurat)
+test<-as.data.frame(test)
+which(rownames(x = fca_seurat) == "NPF")
+
+
+fca_seurat <- NormalizeData(fca_seurat, normalization.method = "LogNormalize", scale.factor = 10000)
+fca_seurat <- FindVariableFeatures(fca_seurat, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(fca_seurat), 10)
+
+# plot variable features with and without labels
+plot1 <- VariableFeaturePlot(fca_seurat)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot1 + plot2
+
+
+all.genes <- rownames(fca_seurat)
+fca_seurat <- ScaleData(fca_seurat, features = all.genes)
+
+fca_seurat <- RunPCA(fca_seurat, features = VariableFeatures(object = fca_seurat))
+# Examine and visualize PCA results a few different ways
+print(fca_seurat[["pca"]], dims = 1:5, nfeatures = 5)
+
+
+VizDimLoadings(fca_seurat, dims = 1:2, reduction = "pca")
+
+
+DimPlot(fca_seurat, reduction = "pca",raster=FALSE)
+
+DimHeatmap(fca_seurat, dims = 1, cells = 500, balanced = TRUE)
+
+DimHeatmap(fca_seurat, dims = 1:20, cells = 500, balanced = TRUE)
+
+
+# NOTE: This process can take a long time for big datasets, comment out for expediency. More
+# approximate techniques such as those implemented in ElbowPlot() can be used to reduce
+# computation time
+#pbmc <- JackStraw(pbmc, num.replicate = 100)
+#pbmc <- ScoreJackStraw(pbmc, dims = 1:20)
+#JackStrawPlot(pbmc, dims = 1:15)
+
+ElbowPlot(fca_seurat)
+
+fca_seurat <- FindNeighbors(fca_seurat, dims = 1:10)
+fca_seurat <- FindClusters(fca_seurat, resolution = 0.5)
+# Look at cluster IDs of the first 5 cells
+head(Idents(fca_seurat), 5)
+# If you haven't installed UMAP, you can do so via reticulate::py_install(packages =
+# 'umap-learn')
+fca_seurat <- RunUMAP(fca_seurat, dims = 1:10)
+# note that you can set `label = TRUE` or use the LabelClusters function to help label
+# individual clusters
+DimPlot(fca_seurat, reduction = "umap",raster=FALSE)
+
+cluster2.markers <- FindMarkers(fca_seurat, ident.1 = 2, min.pct = 0.25)
+head(cluster2.markers, n = 5)
+
+
+pbmc.markers <- FindAllMarkers(fca_seurat, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+pbmc.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+
+
+
+
+VlnPlot(fca_seurat, features = c("NPFR"))
+  
+  
+  
+```
+
+```{r}
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+remotes::install_github("mojaveazure/seurat-disk")
+```
+
+#HEAD relaxed
+
+
+```{r}
+library(Seurat)
+library(SeuratDisk)
+path_to_fca<-"D:/seq_data/FCA/r_fca_biohub_head_10x.h5ad"
+
+#l6.immune <- Connect(filename = "C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.loom", mode = "r")
+#l6.immune
+#l6.seurat <- as.Seurat(l6.immune)
+#Idents(l6.seurat) <- "ClusterName"
+#VlnPlot(l6.seurat, features = c("Sparc", "Ftl1", "Junb", "Ccl4"), ncol = 2)
+
+Convert(path_to_fca,dest = "h5seurat",overwrite = TRUE)
+seurat_anndata<-LoadH5Seurat("D:/seq_data/FCA/r_fca_biohub_head_10x.h5seurat")
+
+pbmc <- seurat_anndata
+
+
+```
+
+
+
+```{r}
+l6.immune <- Connect(filename = "D:/seq_data/FCA/r_fca_biohub_head_10x.loom", mode = "r")
+l6.immune
+
+gene_names <-  l6.immune[["row_attrs/Gene"]][]
+
+gene_of_interest <- "NPFR"
+
+gene_of_interest %in% gene_names
+l6.seurat <- as.Seurat(l6.immune)
+```
+
+#head s
+
+```{r}
+library(Seurat)
+library(SeuratDisk)
+path_to_fca<-"D:/seq_data/FCA/s_fca_biohub_head_10x.h5ad"
+
+#l6.immune <- Connect(filename = "C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.loom", mode = "r")
+#l6.immune
+#l6.seurat <- as.Seurat(l6.immune)
+#Idents(l6.seurat) <- "ClusterName"
+#VlnPlot(l6.seurat, features = c("Sparc", "Ftl1", "Junb", "Ccl4"), ncol = 2)
+
+Convert(path_to_fca,dest = "h5seurat",overwrite = TRUE)
+seurat_anndata<-LoadH5Seurat("D:/seq_data/FCA/s_fca_biohub_head_10x.h5seurat")
+
+pbmc <- seurat_anndata
+
+
+```
+
+```{r}
+
+
+which(grepl("NPF",rownames(x = pbmc)))
+rownames(x = pbmc)[1078]
+
+test<-rownames(x = pbmc)
+test<-as.data.frame(test)
+which(rownames(x = pbmc) == "NPF")
+
+
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(pbmc), 10)
+
+# plot variable features with and without labels
+plot1 <- VariableFeaturePlot(pbmc)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot1 + plot2
+
+
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes)
+
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+# Examine and visualize PCA results a few different ways
+print(pbmc[["pca"]], dims = 1:5, nfeatures = 5)
+
+
+VizDimLoadings(pbmc, dims = 1:2, reduction = "pca")
+
+
+DimPlot(pbmc, reduction = "pca")
+
+DimHeatmap(pbmc, dims = 1, cells = 500, balanced = TRUE)
+
+DimHeatmap(pbmc, dims = 1:20, cells = 500, balanced = TRUE)
+
+
+# NOTE: This process can take a long time for big datasets, comment out for expediency. More
+# approximate techniques such as those implemented in ElbowPlot() can be used to reduce
+# computation time
+#pbmc <- JackStraw(pbmc, num.replicate = 100)
+#pbmc <- ScoreJackStraw(pbmc, dims = 1:20)
+#JackStrawPlot(pbmc, dims = 1:15)
+
+ElbowPlot(pbmc)
+
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = 0.5)
+# Look at cluster IDs of the first 5 cells
+head(Idents(pbmc), 5)
+# If you haven't installed UMAP, you can do so via reticulate::py_install(packages =
+# 'umap-learn')
+pbmc <- RunUMAP(pbmc, dims = 1:10)
+# note that you can set `label = TRUE` or use the LabelClusters function to help label
+# individual clusters
+DimPlot(pbmc, reduction = "umap")
+
+cluster2.markers <- FindMarkers(pbmc, ident.1 = 2, min.pct = 0.25)
+head(cluster2.markers, n = 5)
+
+
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+pbmc.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+
+
+
+cluster0.markers <- FindMarkers(pbmc, ident.1 = 0, logfc.threshold = 0.25, test.use = "roc", only.pos = TRUE)
+
+VlnPlot(pbmc, features = c("NPFR"))
+
+```
+
+#anetna
+```{r}
+library(Seurat)
+library(SeuratDisk)
+path_to_fca<-"C:/Users/barakli8/Downloads/s_fca_biohub_antenna_10x.h5ad"
+
+#l6.immune <- Connect(filename = "C:/Users/barakli8/Downloads/s_fca_biohub_head_10x.loom", mode = "r")
+#l6.immune
+#l6.seurat <- as.Seurat(l6.immune)
+#Idents(l6.seurat) <- "ClusterName"
+#VlnPlot(l6.seurat, features = c("Sparc", "Ftl1", "Junb", "Ccl4"), ncol = 2)
+
+Convert(path_to_fca,dest = "h5seurat",overwrite = TRUE)
+seurat_anndata<-LoadH5Seurat("C:/Users/barakli8/Downloads/s_fca_biohub_antenna_10x.h5seurat")
+
+pbmc <- seurat_anndata
+
+test<-rownames(x = pbmc)
+
+
+```
+
+
+```{r}
+library(Seurat)
+library(SeuratDisk)
+library(tidyverse)
+```

@@ -1,0 +1,613 @@
+---
+title: "lital_seruat_head"
+output: html_document
+---
+
+
+```{r}
+
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+loom_file <- connect(filename = "D:/seq_data/FCA/r_fca_biohub_head_10x.loom", mode = "r+", skip.validate=TRUE)
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+  SERUAT_antena_N <- CreateSeuratObject(counts = t(matrix_data), project = "head", min.cells = 0, min.features=0)
+#  saveRDS(SERUAT_antena_N, "/home/alu/aluguest/Lital_galitLab/seuruat_antena_non_normelize.rds")
+
+```
+
+
+```{r}
+
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(Matrix)
+library(tidyr)
+library(stringr)
+library("gridExtra")
+
+
+SERUAT_HEAD <-readRDS("/home/alu/aluguest/Lital_galitLab/seuruat_head5_12.rds")
+
+SERUAT_HEAD <- NormalizeData(object = SERUAT_HEAD)
+SERUAT_HEAD <- FindVariableFeatures(object = SERUAT_HEAD)
+SERUAT_HEAD <- ScaleData(object = SERUAT_HEAD)
+SERUAT_HEAD <- RunPCA(object = SERUAT_HEAD)
+ElbowPlot(SERUAT_HEAD)
+SERUAT_HEAD <- FindNeighbors(object = SERUAT_HEAD, dims = 1:20)
+SERUAT_HEAD <- FindClusters(object = SERUAT_HEAD)
+SERUAT_HEAD <- RunUMAP(object = SERUAT_HEAD, dims = 1:20)
+
+#SERUAT_HEAD <- FindClusters(SERUAT_HEAD , resolution = seq(0.1,4,0.2))
+
+SERUAT_HEAD <- FindClusters(SERUAT_HEAD , resolution = c(0.1,0.3))
+
+Idents(SERUAT_HEAD) <- "RNA_snn_res.0.1"
+
+saveRDS(SERUAT_HEAD, "/home/alu/aluguest/Lital_galitLab/seuruat_head5_12.rds")
+
+neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
+list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
+
+
+clusters<-DimPlot(SERUAT_HEAD,reduction="umap",pt.size = 1, label = TRUE, label.size = 7,raster = FALSE)
+brp<-FeaturePlot(SERUAT_HEAD, "brp",raster=FALSE)
+  
+NPFR<-FeaturePlot(SERUAT_HEAD, "NPFR",raster=FALSE)
+
+Dh44<-FeaturePlot(SERUAT_HEAD, "Dh44",raster=FALSE)
+
+Tdc2<-FeaturePlot(SERUAT_HEAD, "Tdc2",raster=FALSE)
+
+Syt1<-FeaturePlot(SERUAT_HEAD, "Syt1",raster=FALSE)
+fru<-FeaturePlot(SERUAT_HEAD, "fru",raster=FALSE)
+
+NPF<-FeaturePlot(SERUAT_HEAD, "NPF",raster=FALSE)
+
+
+grid.arrange(clusters, brp, NPFR, Dh44,Tdc2,Syt1, fru,NPF,ncol=4, nrow =2)
+
+#clusters|brp|NPFR|Dh44|Tdc2|Syt1|fru|NPF
+
+clusters <- DimPlot(SERUAT_HEAD, reduction = 'umap', group.by = 'RNA_snn_res.0.1', label = TRUE,raster=FALSE)
+condition <- DimPlot(SERUAT_HEAD, reduction = 'umap', group.by = 'tissu',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 5))
+
+
+DefaultAssay(SERUAT_HEAD)
+
+
+markers_cluster3 <- FindConservedMarkers(SERUAT_HEAD,
+                     ident.1 = 3,
+                     grouping.var = 'tissu')
+
+head(markers_cluster3)
+
+```
+
+```{r}
+
+
+na <- CreateSeuratObject(counts = t(matrix_data), project = "Antena", min.cells = 0, min.features=0)
+
+  
+  
+  
+  
+
+#annotation<-loom_file[["attrs/annotations"]][]
+#loom_file[["col_attrs/"]][]
+
+SERUAT_Antena <- NormalizeData(object = SERUAT_Antena)
+SERUAT_Antena <- FindVariableFeatures(object = SERUAT_Antena)
+SERUAT_Antena <- ScaleData(object = SERUAT_Antena)
+SERUAT_Antena <- RunPCA(object = SERUAT_Antena)
+ElbowPlot(SERUAT_Antena)
+SERUAT_Antena <- FindNeighbors(object = SERUAT_Antena, dims = 1:20)
+SERUAT_Antena <- FindClusters(object = SERUAT_Antena)
+SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:20)
+
+saveRDS(SERUAT_HEAD, "/home/alu/aluguest/Lital_galitLab/seuruat_head5_12.rds")
+
+
+```
+
+
+```{r}
+
+
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(Matrix)
+library(tidyr)
+library(stringr)
+library("gridExtra")
+library(loomR)
+
+
+SERUAT_Antena <-readRDS("/home/alu/aluguest/Lital_galitLab/seuruat_antena_non_normelize.rds")
+
+
+
+    all.genes <- rownames(SERUAT_Antena)
+
+    all_genes<-as.data.frame(rownames(SERUAT_Antena))
+
+    DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'RNA_snn_res.0.8', label = TRUE,raster=FALSE)
+    
+    
+FeaturePlot(SERUAT_Antena, "Obp69a",raster=FALSE, group.by = "Sex")
+
+
+SERUAT_Antena$sample <- rownames(SERUAT_Antena@meta.data)
+
+SERUAT_Antena$sample<-str_replace(SERUAT_Antena$sample, "__", "_")
+
+View(SERUAT_Antena@meta.data)
+SERUAT_Antena@meta.data <- separate(SERUAT_Antena@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
+         sep = '_')
+
+
+DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+
+
+DimPlot(SERUAT_Antena, reduction = 'umap', split.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+
+
+obps_gene<- grep('Obp', all.genes, value=TRUE)
+
+
+FeaturePlot(SERUAT_Antena, obps_gene, ncol=7,raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 5))
+
+high_obps<-c("Obp19a","Obp19d","Obp28a","Obp56d","Obp69a","Obp83a","Obp83b")
+
+highest_obps<-c("Obp19d","Obp69a","Obp83a","Obp83b")
+
+FeaturePlot(object = SERUAT_Antena, highest_obps, ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE,split.by = "Sex")
+
+FeaturePlot(object = SERUAT_Antena, obps_gene[30:37], ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE)
+plots <- FeaturePlot(object = SERUAT_Antena, obps_gene[1:10], ncol=2,raster=FALSE)
+
+plots <- lapply(X = plots, FUN = function(x) x + theme(plot.title = element_text(size = 3)))
+
+Reduce( '+', plots ) +
+      patchwork::plot_layout( ncol = 3 )
+```
+
+
+
+```{r}
+# The [[ operator can add columns to object metadata. This is a great place to stash QC stats
+
+library(stringr)
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head_non_norm.rds")
+
+SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena_non_normelize.rds")
+
+
+
+   
+
+```
+
+
+
+
+```{r}
+
+
+list_of_freq<-c(100,50,20,10,5,2,1,0.5,0.1,0.05)
+
+list_of_xlimit<-c(10,5,2)
+
+
+# list_of_freq<-c(20)
+# list_of_xlimit<-c(2)
+list_of_gene<-c("Crz","ple","Tdc2","trh","fru","NPF","Obp69a","Or67d","Or65a","brp","sNPF","Tbh","Adar","orb2","NPFR")
+
+
+for(m in 1:length(list_of_xlimit)){
+for(j in 1: length(list_of_freq)){
+precentage<-list_of_freq[j]
+xlimit<-list_of_xlimit[m]
+plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/11.1.23/","freq",precentage,"exp",xlimit,".tiff",sep = "")
+tiff(file=plotname,units="in",height=11,width=11,res=600)
+par(mfrow = c(3, 5),mar = c(2.1, 2.1, 6, 2.1),xaxs = "i",yaxs = "i",cex.axis=1.1,cex.lab=1.1)
+for(i in 1:length(list_of_gene)){
+current_gene<-list_of_gene[i]
+main_title <-paste(current_gene)
+antena_and_head_list<-head_antena(current_gene)
+
+gene_antena_density<-antena_and_head_list[[1]]
+gene_head_density<-antena_and_head_list[[2]]
+# plot(gene_head_density, freq = FALSE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value),xlim = c(0,5)) 
+ #plot(gene_antena_density,freq = FALSE, col=alpha('green',0.5),ylim =c(0,y_value),add = TRUE,xlim = c(0,5))
+ 
+ 
+  plot(gene_antena_density,freq = FALSE, col=alpha('blue',0.7),ylim =c(0,precentage),main=main_title, xlab="relative expression",ylab = "frequency",xlim = c(0,xlimit))
+  plot(gene_head_density, freq = FALSE,col=alpha('yellow',0.5), add = TRUE,ylim =c(0,precentage),xlim = c(0,xlimit)) 
+ title_<-paste("frequency is",precentage,"relative expression is",xlimit,"yellow is head blue is antena ")
+  #dev.off()
+  mtext(title_, side = 3, line =-2, outer = TRUE ,cex=1)
+}
+dev.off()
+}
+}
+
+```
+
+
+
+
+```{r}
+
+all.genes_antena<-as.data.frame(rownames(SERUAT_Antena))
+all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
+
+head_antena<-function(gene_name){
+  
+  precnt_name<-paste("percent.",gene_name,sep="")
+  SERUAT_Antena[[precnt_name]] <- PercentageFeatureSet(SERUAT_Antena,features =gene_name)
+  SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
+  
+  gene_head<-as.data.frame(get(precnt_name,SERUAT_HEAD@meta.data))
+  gene_antena<-as.data.frame(get(precnt_name,SERUAT_Antena@meta.data))
+  colnames(gene_head)<-"head"
+  colnames(gene_antena)<-"antena"
+  
+  
+  gene_head_density <- hist(gene_head$head, breaks=seq(0,10,l=200),plot = FALSE)         # Store output of hist function
+gene_head_density$density <- gene_head_density$counts /    # Compute density values
+  sum(gene_head_density$counts) * 100
+
+
+gene_antena_density <- hist(gene_antena$antena, breaks=seq(0,10,l=200),plot = FALSE)         # Store output of hist function
+gene_antena_density$density <- gene_antena_density$counts /    # Compute density values
+  sum(gene_antena_density$counts) * 100
+
+# 
+# main_title <-paste(gene_name)
+# 
+# # plot(gene_head_density, freq = FALSE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value),xlim = c(0,5)) 
+#  #plot(gene_antena_density,freq = FALSE, col=alpha('green',0.5),ylim =c(0,y_value),add = TRUE,xlim = c(0,5))
+#  
+#  
+#   plot(gene_antena_density,freq = FALSE, col=alpha('green',0.5),ylim =c(0,y_value),main=main_title, xlab='%',xlim = c(0,xlimit))
+#   plot(gene_head_density, freq = FALSE,col=alpha('red',0.5), add = TRUE,ylim =c(0,y_value),xlim = c(0,xlimit)) 
+
+return(list(gene_antena_density,gene_head_density))
+}
+
+
+
+list_of_gene<-c("Crz","ple","Tdc2","trh","fru","NPF","Obp69a","Or67d","Or65a","brp","sNPF","Tbh","Adar","orb2","NPFR")
+
+list_of_freq<-c(100,50,20,10,5,2,1,0.5,0.1,0.05)
+
+list_of_xlimit<-c(10,5,2)
+main_path<-"C:/Users/barakli8\OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level"
+for(m in 1:length(list_of_xlimit)){
+for(j in 1: length(list_of_freq)){
+par(mfrow = c(3, 5))
+for(i in 1:length(list_of_gene)){
+current_gene<-list_of_gene[i]
+precentage<-list_of_freq[j]
+xlimit<-list_of_xlimit[m]
+dir.create(paste(main_path,"/",precentage,sep = ""))
+dir.create(paste(main_path,"/",precentage,"/",xlimit,sep = ""))
+plotname<-paste("C:/Users/lital/Desktop/seruat_head_anetna/",precentage,"/",xlimit,"/",current_gene,".png",sep = "")
+png(file=plotname)
+main_title <-paste(current_gene)
+antena_and_head_list<-head_antena(current_gene)
+
+gene_antena_density<-antena_and_head_list[[1]]
+gene_head_density<-antena_and_head_list[[2]]
+# plot(gene_head_density, freq = FALSE,col=alpha('red',0.5), main=main_title, xlab='%',ylim =c(0,y_value),xlim = c(0,5)) 
+ #plot(gene_antena_density,freq = FALSE, col=alpha('green',0.5),ylim =c(0,y_value),add = TRUE,xlim = c(0,5))
+ 
+ 
+  plot(gene_antena_density,freq = FALSE, col=alpha('blue',0.7),ylim =c(0,precentage),main=main_title, xlab="relative expression",ylab = "frequency",xlim = c(0,xlimit))
+  plot(gene_head_density, freq = FALSE,col=alpha('yellow',0.5), add = TRUE,ylim =c(0,precentage),xlim = c(0,xlimit)) 
+dev.off()
+}
+}
+}
+
+
+
+```
+
+
+
+
+
+
+
+
+```{r}
+
+par( mar= c(1,15,15,1) )
+head_antena(current_gene,precentage,xlimit)
+par(new=TRUE)
+head_antena(current_gene,precentage,1)
+
+```
+
+
+```{r}
+
+all.genes_antena<-as.data.frame(rownames(SERUAT_Antena))
+
+SERUAT_Antena[["percent.npfr"]] <- PercentageFeatureSet(SERUAT_Antena,features ="NPFR")
+SERUAT_Antena[["percent.Ilp2"]] <- PercentageFeatureSet(SERUAT_Antena,features ="Ilp2")
+SERUAT_Antena[["percent.Or85b"]] <- PercentageFeatureSet(SERUAT_Antena,features ="Or85b")
+SERUAT_Antena[["percent.Crz"]] <- PercentageFeatureSet(SERUAT_Antena,features ="Crz")
+
+
+
+all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
+
+SERUAT_HEAD[["percent.npfr"]] <- PercentageFeatureSet(SERUAT_HEAD,features ="NPFR")
+SERUAT_HEAD[["percent.Ilp2"]] <- PercentageFeatureSet(SERUAT_HEAD,features ="Ilp2")
+SERUAT_HEAD[["percent.Or85b"]] <- PercentageFeatureSet(SERUAT_HEAD,features ="Or85b")
+SERUAT_HEAD[["percent.Ilp5"]] <- PercentageFeatureSet(SERUAT_HEAD,features ="Ilp5")
+SERUAT_HEAD[["percent.Crz"]] <- PercentageFeatureSet(SERUAT_HEAD,features ="Crz")
+
+
+
+SERUAT_Antena$sample <- rownames(SERUAT_Antena@meta.data)
+
+SERUAT_Antena$sample<-str_replace(SERUAT_Antena$sample, "__", "_")
+
+SERUAT_Antena@meta.data <- separate(SERUAT_Antena@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
+         sep = '_')
+View(SERUAT_Antena@meta.data)
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
+         sep = '_')
+View(SERUAT_HEAD@meta.data)
+
+```
+
+```{r}
+npfr_head<-as.data.frame(SERUAT_HEAD@meta.data$percent.npfr)
+Ilp2_head<-as.data.frame(SERUAT_HEAD@meta.data$percent.Ilp2)
+Or85b_head<-as.data.frame(SERUAT_HEAD@meta.data$percent.Or85b)
+Ilp5_head<-as.data.frame(SERUAT_HEAD@meta.data$percent.Ilp5)
+Crz_head<-as.data.frame(SERUAT_HEAD@meta.data$percent.Crz)
+
+
+npfr_antena<-as.data.frame(SERUAT_Antena@meta.data$percent.npfr)
+Ilp2_antena<-as.data.frame(SERUAT_Antena@meta.data$percent.Ilp2)
+Or85b_antena<-as.data.frame(SERUAT_Antena@meta.data$percent.Or85b)
+Crz_antena<-as.data.frame(SERUAT_Antena@meta.data$percent.Crz)
+
+
+
+
+npfr_head_density <- hist(npfr_head$`SERUAT_HEAD@meta.data$percent.npfr`, breaks=200,plot = FALSE)         # Store output of hist function
+npfr_head_density$density <- npfr_head_density$counts /    # Compute density values
+  sum(npfr_head_density$counts) * 100
+
+
+npfr_antena_density <- hist(npfr_antena$`SERUAT_Antena@meta.data$percent.npfr`, breaks=200,plot = FALSE)         # Store output of hist function
+npfr_antena_density$density <- npfr_antena_density$counts /    # Compute density values
+  sum(npfr_antena_density$counts) * 100
+
+
+ plot(npfr_head_density, freq = FALSE,col='red', main='head (red) vs antena (green) NPFR', xlab='%',ylim =c(0,1)) 
+ plot(npfr_antena_density,freq = FALSE, col='green',ylim =c(0,1),add = TRUE)
+
+
+
+hist(npfr_head$`SERUAT_HEAD@meta.data$percent.npfr`, col='red', xlim=c(0, 0.7), main='head (red) vs antena (green) NPFR', xlab='x',breaks=200,ylim =c(0,50))
+hist(npfr_antena$`SERUAT_Antena@meta.data$percent.npfr`, col='green', add=TRUE,breaks=200,ylim =c(0,50))
+
+
+
+hist(Ilp2_head$`SERUAT_HEAD@meta.data$percent.Ilp2`, col='red', xlim=c(0, 12),breaks=2000, main='head (red) vs antena (green) Ilp2', xlab='x',ylim =c(0,20))
+hist(Ilp2_antena$`SERUAT_Antena@meta.data$percent.Ilp2`, col='green', add=TRUE,breaks=300)
+
+
+hist(npfr_head$`SERUAT_HEAD@meta.data$percent.npfr`)
+h <- hist(npfr_head$`SERUAT_HEAD@meta.data$percent.npfr`,breaks=280,xlim =c(0.1,0.7),ylim =c(0,45))
+
+
+
+
+h
+text(h$mids,h$counts,labels=h$counts, adj=c(0.5, -0.5))
+```
+
+ilp2
+
+
+```{r}
+
+
+
+
+hist(Ilp2_head$`SERUAT_HEAD@meta.data$percent.Ilp2`, col='red', xlim=c(0, 12),breaks=2000, main='head (red) vs antena (green) Ilp2', xlab='x',ylim =c(0,20))
+hist(Ilp2_antena$`SERUAT_Antena@meta.data$percent.Ilp2`, col='green', add=TRUE,breaks=300)
+
+
+ilp2_head_density <- hist(Ilp2_head$`SERUAT_HEAD@meta.data$percent.Ilp2`, breaks=200,plot = FALSE)         # Store output of hist function
+ilp2_head_density$density <- ilp2_head_density$counts /    # Compute density values
+  sum(ilp2_head_density$counts) * 100
+
+
+ilp2_antena_density <- hist(Ilp2_antena$`SERUAT_Antena@meta.data$percent.Ilp2`, breaks=200,plot = FALSE)         # Store output of hist function
+ilp2_antena_density$density <- ilp2_antena_density$counts /    # Compute density values
+  sum(ilp2_antena_density$counts) * 100
+
+
+ plot(ilp2_head_density, freq = FALSE,col='red', main='head (red) vs antena (green) ilp2', xlab='%',ylim =c(0,1)) 
+ plot(ilp2_antena_density,freq = FALSE, col='green',ylim =c(0,1),add = TRUE)
+
+
+```
+
+
+
+or85b
+
+```{r}
+
+
+Or85b_head
+
+Or85b_antena
+
+
+or85b_head_density <- hist(Or85b_head$`SERUAT_HEAD@meta.data$percent.Or85b`, breaks=200,plot = FALSE)         # Store output of hist function
+or85b_head_density$density <- or85b_head_density$counts /    # Compute density values
+  sum(or85b_head_density$counts) * 100
+
+
+or85b_antena_density <- hist(Or85b_antena$`SERUAT_Antena@meta.data$percent.Or85b`, breaks=200,plot = FALSE)         # Store output of hist function
+or85b_antena_density$density <- or85b_antena_density$counts /    # Compute density values
+  sum(or85b_antena_density$counts) * 100
+
+
+ plot(or85b_head_density, freq = FALSE,col='red', main='head (red) vs antena (green) or85b', xlab='%',ylim =c(0,1)) 
+ plot(or85b_antena_density,freq = FALSE, col='green',ylim =c(0,1),add = TRUE)
+
+
+```
+
+ilp5
+
+```{r}
+
+ilp5_head_density <- hist(Ilp5_head$`SERUAT_HEAD@meta.data$percent.Ilp5`, breaks=200,plot = FALSE)         # Store output of hist function
+ilp5_head_density$density <- ilp5_head_density$counts /    # Compute density values
+  sum(ilp5_head_density$counts) * 100
+
+
+ plot(ilp5_head_density, freq = FALSE,col='red', main='ilp5 in head', xlab='%',ylim =c(0,0.2)) 
+```
+
+
+CRZ
+```{r}
+crz_head_density <- hist(Crz_head$`SERUAT_HEAD@meta.data$percent.Crz`, breaks=200,plot = FALSE)         # Store output of hist function
+crz_head_density$density <- crz_head_density$counts /    # Compute density values
+  sum(crz_head_density$counts) * 100
+
+
+crz_antena_density <- hist(Crz_antena$`SERUAT_Antena@meta.data$percent.Crz`, breaks=200,plot = FALSE)         # Store output of hist function
+crz_antena_density$density <- crz_antena_density$counts /    # Compute density values
+  sum(crz_antena_density$counts) * 100
+
+
+ plot(crz_head_density, freq = FALSE,col='red', main='head (red) vs antena (green) Crz', xlab='%',ylim =c(0,1)) 
+ plot(crz_antena_density,freq = FALSE, col='green',ylim =c(0,1),add = TRUE)
+
+
+```
+
+
+
+
+
+
+
+```{r}
+
+
+    
+
+SERUAT_Antena$sample <- rownames(SERUAT_Antena@meta.data)
+
+SERUAT_Antena$sample<-str_replace(SERUAT_Antena$sample, "__", "_")
+
+SERUAT_Antena@meta.data <- separate(SERUAT_Antena@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
+         sep = '_')
+View(SERUAT_Antena@meta.data)
+
+split_seurat <- SplitObject(SERUAT_Antena, split.by = "Sex")
+split_seurat <- split_seurat[c("Male", "Female")]
+
+split_seurat$Male
+# Visualize QC metrics as a violin plot
+VlnPlot(SERUAT_Antena, features = c("nFeature_RNA", "nCount_RNA", "percent.npfr"), ncol = 3)
+
+VlnPlot(split_seurat$Male, features = c("nFeature_RNA", "nCount_RNA", "percent.npfr"), ncol = 3)
+VlnPlot(split_seurat$Female, features = c("nFeature_RNA", "nCount_RNA", "percent.npfr"), ncol = 3)
+
+plot1 <- FeatureScatter(SERUAT_Antena, feature1 = "percent.npfr", feature2 = "nCount_RNA")
+
+```
+
+```{r}
+library(stringr)
+
+SERUAT_HEAD <-readRDS("/home/alu/aluguest/Lital_galitLab/seuruat_head_non_norm.rds")
+
+
+
+all_genes<-as.data.frame(rownames(SERUAT_HEAD))
+    
+SERUAT_HEAD[["percent.npfr"]] <- PercentageFeatureSet(SERUAT_HEAD,features ="NPFR")
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
+         sep = '_')
+View(SERUAT_HEAD@meta.data)
+```
+
+
+
+
+```{r}
+split_seurat <- SplitObject(SERUAT_HEAD, split.by = "Sex")
+split_seurat <- split_seurat[c("Male", "Female","MaleFemale")]
+
+split_seurat$Male
+# Visualize QC metrics as a violin plot
+VlnPlot(SERUAT_HEAD, features = c("nFeature_RNA", "nCount_RNA", "percent.npfr"), ncol = 3)
+
+VlnPlot(SERUAT_HEAD$Male, features = c("nFeature_RNA", "nCount_RNA", "percent.npfr"), ncol = 3)
+VlnPlot(SERUAT_HEAD$Female, features = c("nFeature_RNA", "nCount_RNA", "percent.npfr"), ncol = 3)
+
+FeatureScatter(SERUAT_HEAD, feature1 = "percent.npfr", feature2 = "nCount_RNA")
+
+```
+
+```{r}
+
+
+npfr_head<-as.data.frame(SERUAT_HEAD@meta.data$percent.npfr)
+
+hist(npfr_head$`SERUAT_HEAD@meta.data$percent.npfr`)
+h <- hist(npfr_head$`SERUAT_HEAD@meta.data$percent.npfr`,breaks=280,xlim =c(0.1,0.7),ylim =c(0,45))
+
+h
+text(h$mids,h$counts,labels=h$counts, adj=c(0.5, -0.5))
+```
+

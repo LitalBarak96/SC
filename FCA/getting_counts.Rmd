@@ -1,0 +1,46 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-04-19"
+output: html_document
+---
+```{r}
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
+
+gene1<- FetchData(SERUAT_HEAD, vars = "NPF")
+
+
+GENES<-rownames(SERUAT_HEAD)
+CELLs<-colnames(SERUAT_HEAD)
+names(SERUAT_HEAD)
+dim(x = SERUAT_HEAD)
+indMyGene<-which(GENES=="NPF")
+indMyCell<-which(GENES=="NPF")
+
+CountMyGeneMyCell<-GetAssayData(object = SERUAT_HEAD, slot = 'counts')[indMyGene, indMyCell]
+
+
+TEST<-GetAssayData(object = SERUAT_HEAD, slot = "counts")
+test<-SERUAT_HEAD@assays[["RNA"]]@counts
+test<-SERUAT_HEAD@assays[["RNA"]]@scale.data
+test<-as.data.frame(test)
+t<-test["NPF",]
+
+```
+
+```{r}
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
+
+PostnHigh.obj <- subset(SERUAT_HEAD, subset = NPF > 6)
+
+pbmc <- SetAssayData(object = SERUAT_HEAD, slot = "scale.data")
+
+NPF<-FetchData(object = SERUAT_HEAD, vars = "NPF")
+
+# Feature plot - visualize feature expression in low-dimensional space
+FeaturePlot(SERUAT_HEAD, features = "NPF",raster = FALSE)
+
+```
+

@@ -1,0 +1,238 @@
+---
+title: "lital_seruat_head"
+output: html_document
+---
+
+```{r}
+
+install.packages("devtools")
+# Use devtools to install hdf5r and loomR from GitHub
+devtools::install_github(repo = "hhoeflin/hdf5r")
+devtools::install_github(repo = "mojaveazure/loomR", ref = "develop")
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(Matrix)
+library(tidyr)
+library(stringr)
+library("gridExtra")
+library(loomR)
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+
+SERUAT_HEAD <- NormalizeData(object = SERUAT_HEAD)
+SERUAT_HEAD <- FindVariableFeatures(object = SERUAT_HEAD)
+SERUAT_HEAD <- ScaleData(object = SERUAT_HEAD)
+SERUAT_HEAD <- RunPCA(object = SERUAT_HEAD)
+ElbowPlot(SERUAT_HEAD)
+SERUAT_HEAD <- FindNeighbors(object = SERUAT_HEAD, dims = 1:10)
+SERUAT_HEAD <- FindClusters(object = SERUAT_HEAD)
+SERUAT_HEAD <- RunUMAP(object = SERUAT_HEAD, dims = 1:20)
+
+#SERUAT_HEAD <- FindClusters(SERUAT_HEAD , resolution = seq(0.1,4,0.2))
+
+SERUAT_HEAD <- FindClusters(SERUAT_HEAD , resolution = c(0.1,0.3))
+
+Idents(SERUAT_HEAD) <- "RNA_snn_res.0.1"
+
+saveRDS(SERUAT_HEAD, "/home/alu/aluguest/Lital_galitLab/seuruat_head5_12.rds")
+
+neruon_cell_genes <- c("elav", "NPF", "Syt1", "brp")
+list_of_gene_yulia<-c("Dh44","NPF","NPFR","Tdc2","Crz","Trh","trh","fru","Syt1")
+
+
+clusters<-DimPlot((SERUAT_HEAD),reduction="umap",pt.size = 1, label = TRUE, label.size = 7,raster = FALSE)
+brp<-FeaturePlot(SERUAT_HEAD, "brp",raster=FALSE,min.cutoff = 2)
+  
+NPFR<-FeaturePlot(SERUAT_HEAD, "NPFR",raster=FALSE)
+
+Dh44<-FeaturePlot(SERUAT_HEAD, "Dh44",raster=FALSE)
+
+Tdc2<-FeaturePlot(SERUAT_HEAD, "Tdc2",raster=FALSE,min.cutoff = 2)
+
+Syt1<-FeaturePlot(SERUAT_HEAD, "Syt1",raster=FALSE)
+fru<-FeaturePlot(SERUAT_HEAD, "fru",raster=FALSE)
+
+NPF<-FeaturePlot(SERUAT_HEAD, "NPF",raster=FALSE)
+
+
+grid.arrange(clusters, brp, NPFR, Dh44,Tdc2,Syt1, fru,NPF,ncol=4, nrow =2)
+
+#clusters|brp|NPFR|Dh44|Tdc2|Syt1|fru|NPF
+
+clusters <- DimPlot(SERUAT_HEAD, reduction = 'umap', group.by = 'RNA_snn_res.0.1', label = TRUE,raster=FALSE)
+condition <- DimPlot(SERUAT_HEAD, reduction = 'umap', group.by = 'tissu',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 5))
+
+
+DefaultAssay(SERUAT_HEAD)
+
+
+markers_cluster3 <- FindConservedMarkers(SERUAT_HEAD,
+                     ident.1 = 3,
+                     grouping.var = 'tissu')
+
+head(markers_cluster3)
+
+```
+
+
+
+```{r}
+ 
+ 
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+setwd("D:/seq_data/FCA/")
+
+loom_file <- connect(filename = "s_fca_biohub_antenna_10x.loom", mode = "r+", skip.validate=TRUE)
+
+
+
+
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+
+  
+SERUAT_Antena <- CreateSeuratObject(counts = t(matrix_data), project = "Antena", min.cells = 0, min.features=0)
+
+  
+  
+  
+  
+
+#annotation<-loom_file[["attrs/annotations"]][]
+#loom_file[["col_attrs/"]][]
+
+SERUAT_Antena <- NormalizeData(object = SERUAT_Antena)
+SERUAT_Antena <- FindVariableFeatures(object = SERUAT_Antena)
+SERUAT_Antena <- ScaleData(object = SERUAT_Antena)
+SERUAT_Antena <- RunPCA(object = SERUAT_Antena)
+ElbowPlot(SERUAT_Antena)
+SERUAT_Antena <- FindNeighbors(object = SERUAT_Antena, dims = 1:20)
+SERUAT_Antena <- FindClusters(object = SERUAT_Antena)
+SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:20)
+
+saveRDS(SERUAT_HEAD, "/home/alu/aluguest/Lital_galitLab/seuruat_head5_12.rds")
+
+
+```
+
+
+```{r}
+
+
+library(edgeR) # BiocManager::install("edgeR")
+library(limma)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(Matrix)
+library(tidyr)
+library(stringr)
+library("gridExtra")
+library(loomR)
+
+SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena6_12.rds")
+
+    all.genes <- rownames(SERUAT_Antena)
+
+    all_genes<-as.data.frame(rownames(SERUAT_Antena))
+
+   umap_antena<- DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'RNA_snn_res.0.8', label = TRUE,raster=FALSE)
+   tiff("umao_antena.tiff", units="in", width=7, height=5, res=300)
+umap_antena
+dev.off()
+   
+    
+    SERUAT_Antena$sample <- rownames(SERUAT_Antena@meta.data)
+
+SERUAT_Antena$sample<-str_replace(SERUAT_Antena$sample, "__", "_")
+
+View(SERUAT_Antena@meta.data)
+SERUAT_Antena@meta.data <- separate(SERUAT_Antena@meta.data, col = 'sample', into = c('Barcode','Test', 'Sex'), 
+         sep = '_')
+    
+obp69a<-FeaturePlot(SERUAT_Antena, "Obp69a",raster=FALSE)
+
+
+   tiff("obp69a.tiff", units="in", width=7, height=5, res=300)
+obp69a
+dev.off()
+   
+
+
+
+
+
+plot_sex<-DimPlot(SERUAT_Antena, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+tiff("sex_antena.tiff", units="in", width=7, height=5, res=300)
+plot_sex
+dev.off()
+
+plots_splits_sex<-DimPlot(SERUAT_Antena, reduction = 'umap', split.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+
+
+obps_gene<- grep('Obp', all.genes, value=TRUE)
+
+
+FeaturePlot(SERUAT_Antena, obps_gene, ncol=7,raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 5))
+
+
+
+
+obp69_sex<-FeaturePlot(object = SERUAT_Antena, "Obp69a", ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE,split.by = "Sex")
+
+tiff("sex_obps69.tiff", units="in", width=14, height=6, res=300)
+obp69_sex
+dev.off()
+
+
+high_obps<-c("Obp19a","Obp19d","Obp28a","Obp56d","Obp69a","Obp83a","Obp83b")
+
+highest_obps<-c("Obp19d","Obp69a","Obp83a","Obp83b")
+
+FeaturePlot(object = SERUAT_Antena, highest_obps, ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE,split.by = "Sex")
+
+obps<-FeaturePlot(object = SERUAT_Antena, obps_gene[29:37], ncol=3,raster=FALSE,pt.size=0.5,combine=TRUE)
+
+
+tiff("obps.tiff", units="in", width=14, height=9, res=300)
+obps
+dev.off()
+
+plots <- FeaturePlot(object = SERUAT_Antena, obps_gene[1:10], ncol=2,raster=FALSE)
+
+plots <- lapply(X = plots, FUN = function(x) x + theme(plot.title = element_text(size = 3)))
+
+Reduce( '+', plots ) +
+      patchwork::plot_layout( ncol = 3 )
+```
+
+#example of normaliztion and scaling
+
+```{r}
+
+
+SERUAT_Antena_new <-readRDS("D:/seq_data/FCA/seuruat_antena6_12.rds")
+
+original_count<-SERUAT_Antena_new@assays$RNA@counts[1:10,1:10]
+
+after_normelize<-SERUAT_Antena_new@assays[["RNA"]]@data[1:10,1:10]
+
+SERUAT_Antena@meta.data[["nCount_RNA"]]
+
+```
+

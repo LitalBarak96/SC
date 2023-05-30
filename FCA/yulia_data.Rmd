@@ -1,0 +1,131 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-05-15"
+output: html_document
+---
+
+
+
+```{r}
+
+```
+
+```{r}
+
+
+library("stringr")
+
+list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
+list_of_counts<-list.files("D:/seq_data/yulia",full.names = TRUE,pattern = "counts")
+
+list_of_counts<-as.data.frame(list_of_counts)
+main_data<-NULL
+
+#to get the gene id
+  test<-read.table(gzfile(list_of_counts$list_of_counts[1]), header=TRUE) 
+main_data$Geneid<-test$Geneid
+main_data<-as.data.frame(main_data)
+  
+
+for(cell_name in 1:length(list_of_cells)){
+  tmp_file_names_current_gene <- list_of_counts %>%
+  filter(str_detect( list_of_counts,list_of_cells[cell_name]))
+  for(reapts_current_gene in 1:nrow(tmp_file_names_current_gene)){
+    
+    tmp<-read.table(gzfile(tmp_file_names_current_gene$list_of_counts[reapts_current_gene]), header=TRUE)
+    
+    tmp_newname<-as.data.frame(tmp$Counts)
+    
+    colnames(tmp_newname)<-paste(list_of_cells[cell_name],"_rep",reapts_current_gene,"_counts",sep = "")
+    
+    main_data<-cbind(main_data,tmp_newname)
+  }
+}
+
+rownames(main_data) <- main_data[,1]
+
+
+write.csv(main_data, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv", row.names=FALSE)
+
+
+```
+
+
+```{r}
+
+list_of_marker_fru<-c("fru","Pzl",
+"Rgk1",
+"rad",
+"pros",
+"lncRNA:CR44024",
+"CG42613",
+"dati",
+"ab",
+"CG32204"
+)
+
+
+
+main_fru <- main_data[ , grepl( "fru" , names( main_data ) ) ]
+
+main_markers_fru<-NULL
+
+for(i in 1:length(list_of_marker_fru)){
+ main_markers_fru<-rbind(main_markers_fru,main_fru[list_of_marker_fru[i],]) 
+}
+
+
+main_markers_fru<-na.omit(main_markers_fru)
+#rownames(main_markers_fru) <- main_data[,1]
+
+  #df1['fru',]
+```
+
+
+
+```{r}
+main_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv")
+
+
+list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
+avarges<-NULL
+#avarges$Geneid<-main_data$Geneid
+avarges$avg_fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_npf<-rowMeans(x=main_data[ , grepl( "npf" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_npfr<-rowMeans(x=main_data[ , grepl( "npfr" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_tdc2<-rowMeans(x=main_data[ , grepl( "tdc2" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_crz<-rowMeans(x=main_data[ , grepl( "crz" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_th<-rowMeans(x=main_data[ , grepl( "th" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
+avarges$avg_ok107<-rowMeans(x=main_data[ , grepl( "ok107" , names( main_data ) ) ], na.rm = TRUE)
+
+avarges$avg_elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na.rm = TRUE)
+
+
+avarges<-as.data.frame(avarges)
+
+rownames(avarges)<-main_data$Geneid
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/pheatmap_all_main_genes_yulia.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+pheatmap(as.matrix(avarges), scale = "none",cluster_rows  = F,show_rownames = F, color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+
+
+```
+
+
+
+```{r}
+avarges[apply(avarges, 1, function(x) all(is.finite(x))), ]
+
+
+heatmap(as.matrix(avarges))
+
+```
+

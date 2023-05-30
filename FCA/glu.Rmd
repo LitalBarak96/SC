@@ -1,0 +1,111 @@
+---
+title: "glucla"
+output: html_document
+date: "2023-03-16"
+---
+```{r}
+
+library(Seurat)
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head6_3.rds")
+gene_name<-"GluClalpha"
+  precnt_name<-paste("percent.",gene_name,sep="")
+  SERUAT_HEAD[[precnt_name]] <- PercentageFeatureSet(SERUAT_HEAD,features =gene_name)
+threshold_values=0
+ fullname<-paste("percent.",gene_name,sep="")
+SERUAT_HEAD@meta.data[gene_name]<-c(SERUAT_HEAD@meta.data[fullname] > threshold_values)
+  SERUAT_HEAD@meta.data$names<-""
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$GluClalpha[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"GluClalpha")
+
+  }
+
+}
+
+  sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+  
+DimPlot(object = sub_Seted,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/hila_graphs/UMAP_ORIGIN.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+  
+DimPlot(object = SERUAT_HEAD,label=TRUE,label.size
+=3.5,pt.size = 1.5,raster=FALSE)
+
+ # FeaturePlot(SERUAT_HEAD,features ="percent.GluClalpha" ,raster=FALSE,order = T,cols =  c("white", #"#ff0000", "#00ff00"),pt.size = 2)
+  
+dev.off()
+
+  
+
+
+```
+```{r}
+all.markers <- FindConservedMarkers(object = sub_Seted,ident.1 = 22,grouping.var = "names" )
+head(all.markers, n = 10)
+
+
+
+all.markers <- FindMarkers(object = sub_Seted,ident.1 = 22 )
+
+
+
+all.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 2, order_by = avg_log2FC)
+```
+
+
+#trying to cluster glu
+
+```{r}
+test<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+
+glu<-test[[" GluClalpha"]]
+
+glu <- NormalizeData(object = glu)
+glu <- FindVariableFeatures(object = glu)
+glu <- ScaleData(object = glu)
+glu <- RunPCA(object = glu)
+glu <- FindNeighbors(object = glu, dims = 1:20)
+glu <- FindClusters(object = glu)
+glu <- RunUMAP(object = glu, dims = 1:20)
+
+```
+
+```{r}
+
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/hila_graphs/reclust_0_exp_glu.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+  
+
+DimPlot(object = glu,label=TRUE,label.size
+=3.5,pt.size = 1.5,group.by = "names")
+
+#DimPlot(object = glu,label=TRUE,label.size
+#=3.5,pt.size = 1.5,group.by = "names")
+
+ # FeaturePlot(SERUAT_HEAD,features ="percent.GluClalpha" ,raster=FALSE,order = T,cols =  c("white", #"#ff0000", "#00ff00"),pt.size = 2)
+  
+dev.off()
+
+  
+FeaturePlot(glu,"percent.GluClalpha",order = T)
+
+  
+DimPlot(object = glu,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+
+all.markers <- FindMarkers(object = glu,ident.1 = 18 )
+
+
+```
+
