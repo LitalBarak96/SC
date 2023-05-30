@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r}
-sub_Seted <-readRDS("D:/seq_data/FCA/seuruat_head18_5.rds")
+sub_Seted <-readRDS("D:/seq_data/FCA/seuruat_head30_5_elav.rds")
 
 library(Seurat)
 
@@ -19,6 +19,7 @@ Crz<-genes_splited[[4]]
 NPFR<-genes_splited[[5]]
 Tdc2<-genes_splited[[6]]
 NPF<-genes_splited[[7]]
+
 
 Idents(object = fru) <- fru@meta.data$identity
 
@@ -51,6 +52,29 @@ colnames(avg_NPF) = gsub("RNA.FCA", "NPF._rep", colnames(avg_NPF))
 
 ```
 
+```{r}
+avg_fru<-readRDS("D:/seq_data/FCA/avg_exp_fru.rds")
+
+avg_Tbh<-readRDS("D:/seq_data/FCA/avg_exp_tbh.rds")
+avg_ple<-readRDS("D:/seq_data/FCA/avg_exp_ple.rds")
+avg_Crz<-readRDS("D:/seq_data/FCA/avg_exp_Crz.rds")
+avg_NPFR<-readRDS("D:/seq_data/FCA/avg_exp_NPFR.rds")
+avg_Tdc2<-readRDS("D:/seq_data/FCA/avg_exp_tdc2.rds")
+avg_NPF<-readRDS("D:/seq_data/FCA/avg_exp_NPF.rds") 
+elav<-readRDS("D:/seq_data/FCA/avg_exp_elav.rds")
+
+colnames(avg_fru) = gsub("RNA.FCA", "fru_rep", colnames(avg_fru))
+colnames(avg_Tbh) = gsub("RNA.FCA", "Tbh_rep", colnames(avg_Tbh))
+colnames(avg_ple) = gsub("RNA.FCA", "ple_rep", colnames(avg_ple))
+colnames(avg_Crz) = gsub("RNA.FCA", "Crz_rep", colnames(avg_Crz))
+colnames(avg_NPFR) = gsub("RNA.FCA", "NPFR_rep", colnames(avg_NPFR))
+colnames(avg_Tdc2) = gsub("RNA.FCA", "Tdc2_rep", colnames(avg_Tdc2))
+colnames(avg_NPF) = gsub("RNA.FCA", "NPF._rep", colnames(avg_NPF))
+colnames(elav) = gsub("RNA.FCA", "elav_rep", colnames(elav))
+
+
+```
+
 
 
 
@@ -69,30 +93,34 @@ temp_<-NULL
 temp_<-colnames(avg_NPF)
 temp_<-as.data.frame(temp_)
 colnames(temp_)<-"sample"
-temp_$type<-"NPF"
+temp_$type<-"NPF."
 
 
 
 meta_data<-rbind(meta_data,temp_)
 
-# write.csv(meta_data, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data.csv", row.names=FALSE)
+
+
+
+ write.csv(meta_data, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=FALSE)
 
 ```
 
 
 
 ```{r}
-# write.csv(avg_fru, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/fru_avg_sc.csv", row.names=TRUE)
-# write.csv(avg_Tbh, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tbh_avg_sc.csv", row.names=TRUE)
-# write.csv(avg_ple, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/ple_avg_sc.csv", row.names=TRUE)
-# write.csv(avg_Crz, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Crz_avg_sc.csv", row.names=TRUE)
-# write.csv(avg_NPFR, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPFR_avg_sc.csv", row.names=TRUE)
-# write.csv(avg_Tdc2, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tdc2_avg_sc.csv", row.names=TRUE)
-# write.csv(avg_NPF, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPF_avg_sc.csv", row.names=TRUE)
+write.csv(avg_fru, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/fru_avg_sc.csv", row.names=TRUE)
+write.csv(avg_Tbh, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tbh_avg_sc.csv", row.names=TRUE)
+write.csv(avg_ple, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/ple_avg_sc.csv", row.names=TRUE)
+write.csv(avg_Crz, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Crz_avg_sc.csv", row.names=TRUE)
+write.csv(avg_NPFR, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPFR_avg_sc.csv", row.names=TRUE)
+write.csv(avg_Tdc2, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tdc2_avg_sc.csv", row.names=TRUE)
+write.csv(avg_NPF, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPF_avg_sc.csv", row.names=TRUE)
+write.csv(elav, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/elav_avg_sc.csv", row.names=TRUE)
 
 library("readxl")
 
-all_genes<-read_excel("D:/seq_data/FCA/all_gene_avg_sc.xlsx",)
+all_genes<-read_excel("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/all_gene_Avg_Elav.xlsx",)
 
 rowname_allgenes<-all_genes$...1
 
@@ -130,8 +158,8 @@ library("DESeq2")
 
 ```{r}
 cts <- all_genes
-coldata <- read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data.csv", row.names=1)
-coldata_not_factorial <-  read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data.csv")
+coldata <- read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=1)
+coldata_not_factorial <-  read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv")
 data_noTPM <- (cts)
 data<-data.frame(row.names=rownames(cts))
 ```
@@ -139,7 +167,7 @@ data<-data.frame(row.names=rownames(cts))
 
 
 ```{r}
-num_of_exp =91
+num_of_exp =104
 for (i in 1:num_of_exp){
   temp.df<-data.frame()
   temp.df<-data_noTPM %>%
@@ -156,6 +184,8 @@ all(rownames(coldata) %in% colnames(data))
 all(rownames(coldata) == colnames(data))
 data <- data[, rownames(coldata)]
 all(rownames(coldata) == colnames(data))
+coldata$type <- factor(coldata$type)
+
 ```
 
 
@@ -164,9 +194,11 @@ dds <- DESeqDataSetFromMatrix(countData = round(data),
                               colData = coldata,
                               design = ~ type)
 dds
-#dds$cell<-relevel(dds$cell,ref = "elav")
+dds$type<-relevel(dds$type,ref = "elav")
 
 dds <- DESeq(dds)
+#dds$condition<-relevel(dds$condition,ref = "Mated")
+
 
 resultsNames(dds)
 
@@ -193,6 +225,10 @@ res <- results(dds)
 
 all<-subset(res, pvalue<0.05 & abs(log2FoldChange)>=1)
 all<-as.data.frame(all)
+
+```
+
+```{r}
 
 ```
 
