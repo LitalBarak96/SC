@@ -109,18 +109,18 @@ meta_data<-rbind(meta_data,temp_)
 
 
 ```{r}
-write.csv(avg_fru, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/fru_avg_sc.csv", row.names=TRUE)
-write.csv(avg_Tbh, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tbh_avg_sc.csv", row.names=TRUE)
-write.csv(avg_ple, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/ple_avg_sc.csv", row.names=TRUE)
-write.csv(avg_Crz, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Crz_avg_sc.csv", row.names=TRUE)
-write.csv(avg_NPFR, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPFR_avg_sc.csv", row.names=TRUE)
-write.csv(avg_Tdc2, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tdc2_avg_sc.csv", row.names=TRUE)
-write.csv(avg_NPF, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPF_avg_sc.csv", row.names=TRUE)
-write.csv(elav, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/elav_avg_sc.csv", row.names=TRUE)
+# write.csv(avg_fru, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/fru_avg_sc.csv", row.names=TRUE)
+# write.csv(avg_Tbh, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tbh_avg_sc.csv", row.names=TRUE)
+# write.csv(avg_ple, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/ple_avg_sc.csv", row.names=TRUE)
+# write.csv(avg_Crz, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Crz_avg_sc.csv", row.names=TRUE)
+# write.csv(avg_NPFR, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPFR_avg_sc.csv", row.names=TRUE)
+# write.csv(avg_Tdc2, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/Tdc2_avg_sc.csv", row.names=TRUE)
+# write.csv(avg_NPF, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/NPF_avg_sc.csv", row.names=TRUE)
+# write.csv(elav, "C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/elav_avg_sc.csv", row.names=TRUE)
 
 library("readxl")
 
-all_genes<-read_excel("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/all_gene_Avg_Elav.xlsx",)
+all_genes<-read_excel("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/all_gene_Avg_Elav.xlsx",)
 
 rowname_allgenes<-all_genes$...1
 
@@ -158,8 +158,8 @@ library("DESeq2")
 
 ```{r}
 cts <- all_genes
-coldata <- read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=1)
-coldata_not_factorial <-  read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv")
+coldata <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=1)
+coldata_not_factorial <-  read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv")
 data_noTPM <- (cts)
 data<-data.frame(row.names=rownames(cts))
 ```
@@ -218,8 +218,10 @@ table_counts_normalized <- counts(dds, normalized=TRUE)
 
 
 #keep <-  rowSums( counts(dds, normalized=TRUE) >= 30 ) >= 1  
-keep <- rowSums(counts(dds,normalized=TRUE)) >= 30
+keep <- rowSums(counts(dds,normalized=TRUE)) >= 0
 dds <- dds[keep,]
+
+dds <- DESeq(dds)
 
 res <- results(dds)
 
@@ -228,7 +230,19 @@ all<-as.data.frame(all)
 
 ```
 
-```{r}
 
+
+
+```{r}
+fru_elav_tmp<-results(dds,name = "type_fru_vs_elav")
+elav_fru_res_tmp<-subset(fru_elav_tmp, pvalue<0.05 & abs(log2FoldChange)>=1)
+elav_fru_res_tmp<-as.data.frame(elav_fru_res_tmp)
+```
+
+```{r}
+elav_fru <- lfcShrink(dds, coef="type_fru_vs_elav")
+
+elav_fru_res<-subset(elav_fru, pvalue<0.05 & abs(log2FoldChange)>=1)
+elav_fru_res<-as.data.frame(elav_fru_res)
 ```
 
