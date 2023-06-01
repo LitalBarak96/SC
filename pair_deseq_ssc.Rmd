@@ -1,0 +1,148 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-06-01"
+---
+
+
+```{r}
+library(htmltools)
+library(DESeq2)
+library(ggplot2)
+library(autoplotly)
+library(factoextra)
+library("pheatmap")
+library("RColorBrewer")
+#library(limma)
+library("manhattanly")
+library("ggrepel")
+library(plotly)
+library("heatmaply")
+library(dplyr)
+library("DESeq2")
+```
+
+
+```{r}
+
+library("readxl")
+
+all_genes<-read_excel("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/all_gene_Avg_Elav.xlsx",)
+
+rowname_allgenes<-all_genes$...1
+
+
+all_genes<-all_genes[,-1]
+
+all_genes<-as.data.frame(all_genes)
+row.names(all_genes)<-rowname_allgenes
+
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+
+
+main_genes<-c("fru" , "Tbh" , "ple" , "Crz" , "NPFR", "Tdc2", "NPF.")
+
+elav_name<-"elav"
+
+
+
+ALL_data<-NULL
+
+for(i in 1:length(main_genes)){
+  
+groups<-main_genes[i]
+result_names<-paste("type_",groups,"_vs_elav",sep="")
+
+
+
+
+cts <- all_genes
+coldata <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=1)
+coldata_not_factorial <-  read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv")
+data_noTPM <- (cts)
+data<-data.frame(row.names=rownames(cts))
+
+
+
+cts_cells <- cts[,grep(groups, fixed = T,colnames(cts))]
+cts_elav<-cts[,grep("elav", colnames(cts))]
+
+curr_cts<-cbind(cts_cells,cts_elav)
+
+# Metadata file
+coldata_cells<- coldata_not_factorial[apply(coldata_not_factorial, 1, function(x) any(grepl(groups,fixed = T, x))),]
+coldata_elav<- coldata_not_factorial[apply(coldata_not_factorial, 1, function(x) any(grepl("elav", x))),]
+
+curr_coldata_not_factorial<-rbind(coldata_cells,coldata_elav)
+
+
+data_noTPM<-curr_cts
+
+num_of_exp =26
+for (i in 1:num_of_exp){
+  temp.df<-data.frame()
+  temp.df<-curr_cts %>%
+    select(starts_with(curr_coldata_not_factorial[i,1]))
+  
+  
+  data[curr_coldata_not_factorial[i,1]]<- rowMeans(temp.df)
+}
+
+curr_coldata<-curr_coldata_not_factorial
+
+rownames(curr_coldata) <- curr_coldata_not_factorial$sample
+curr_coldata$sample<-NULL
+
+curr_coldata$type <- factor(curr_coldata$type)
+#coldata$cell <- factor(coldata$cell)
+
+if(all(rownames(curr_coldata) %in% colnames(data)) ==FALSE){stop()}
+if(all(rownames(curr_coldata) == colnames(data)) ==FALSE){stop()}
+data <- data[, rownames(curr_coldata)]
+if(all(rownames(curr_coldata) == colnames(data))==FALSE){stop()}
+curr_coldata$type <- factor(curr_coldata$type)
+
+dds <- DESeqDataSetFromMatrix(countData = round(data),
+                              colData = curr_coldata,
+                              design = ~ type)
+dds
+dds$type<-relevel(dds$type,ref = "elav")
+
+dds <- DESeq(dds)
+
+
+resultsNames(dds)
+
+res <- results(dds,name =result_names)
+
+tmp_all<-subset(res, pvalue<0.05 & abs(log2FoldChange)>=1)
+tmp_all<-as.data.frame(all)
+tmp_all$name_of_comper<-result_names
+
+
+ALL_data<-bind_rows(ALL_data,tmp_all)
+}
+
+
+```
+
+
+
+
+
+```{r}
+cts_cells <- cts[,grep(groups,fixed = T, colnames(cts))]
+
+```
+
