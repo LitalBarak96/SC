@@ -59,9 +59,9 @@ elav_name<-"elav"
 
 ALL_data<-NULL
 
-for(i in 1:length(main_genes)){
+for(j in 1:length(main_genes)){
   
-groups<-main_genes[i]
+groups<-main_genes[j]
 result_names<-paste("type_",groups,"_vs_elav",sep="")
 
 
@@ -107,10 +107,10 @@ curr_coldata$sample<-NULL
 curr_coldata$type <- factor(curr_coldata$type)
 #coldata$cell <- factor(coldata$cell)
 
-if(all(rownames(curr_coldata) %in% colnames(data)) ==FALSE){stop()}
-if(all(rownames(curr_coldata) == colnames(data)) ==FALSE){stop()}
+if(all(rownames(curr_coldata) %in% colnames(data)) ==FALSE){stop("line 110")}
+if(all(rownames(curr_coldata) == colnames(data)) ==FALSE){stop("line 111")}
 data <- data[, rownames(curr_coldata)]
-if(all(rownames(curr_coldata) == colnames(data))==FALSE){stop()}
+if(all(rownames(curr_coldata) == colnames(data))==FALSE){stop("line 113")}
 curr_coldata$type <- factor(curr_coldata$type)
 
 dds <- DESeqDataSetFromMatrix(countData = round(data),
@@ -126,9 +126,13 @@ resultsNames(dds)
 
 res <- results(dds,name =result_names)
 
-tmp_all<-subset(res, pvalue<0.05 & abs(log2FoldChange)>=1)
-tmp_all<-as.data.frame(all)
+tmp_all<-subset(res, padj<0.05 & abs(log2FoldChange)>=1)
+tmp_all<-as.data.frame(tmp_all)
 tmp_all$name_of_comper<-result_names
+tmp_all$genes<-rownames(tmp_all)
+
+
+table_counts_normalized_tmp <- counts(dds, normalized=TRUE)
 
 
 ALL_data<-bind_rows(ALL_data,tmp_all)
@@ -142,7 +146,68 @@ ALL_data<-bind_rows(ALL_data,tmp_all)
 
 
 ```{r}
-cts_cells <- cts[,grep(groups,fixed = T, colnames(cts))]
+
+
+
+cts <- all_genes
+coldata <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=1)
+coldata_not_factorial <-  read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv")
+data_noTPM <- (cts)
+data<-data.frame(row.names=rownames(cts))
+
+
+num_of_exp =104
+for (i in 1:num_of_exp){
+  temp.df<-data.frame()
+  temp.df<-data_noTPM %>%
+    select(starts_with(coldata_not_factorial[i,1]))
+  
+  
+  data[coldata_not_factorial[i,1]]<- rowMeans(temp.df)
+}
+
+coldata$type <- factor(coldata$type)
+#coldata$cell <- factor(coldata$cell)
+
+all(rownames(coldata) %in% colnames(data))
+all(rownames(coldata) == colnames(data))
+data <- data[, rownames(coldata)]
+all(rownames(coldata) == colnames(data))
+coldata$type <- factor(coldata$type)
+
+
+dds <- DESeqDataSetFromMatrix(countData = round(data),
+                              colData = coldata,
+                              design = ~ type)
+dds
+dds$type<-relevel(dds$type,ref = "elav")
+
+dds <- DESeq(dds)
+
+
+table_counts_normalized <- counts(dds, normalized=TRUE)
+
+genes <- c(unique(ALL_data$genes))
+
+
+
+
+mat<-table_counts_normalized[genes, ]
+#mat <- assay(dds)[genes, ]
+#mat<-scale(mat)
+#mat <- mat - rowMeans(mat)
+df <- as.data.frame(colData(dds)[,"type"])
+
+rownames(df) <- colnames(dds)
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/SC_DESEQ_TO_ELAV_WO_CLUST_COL.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+pheatmap(mat, annotation_col = df,  scale = "row",cluster_cols=FALSE,show_rownames=FALSE,cluster_rows=TRUE,show_colnames =FALSE,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+
 
 ```
 
