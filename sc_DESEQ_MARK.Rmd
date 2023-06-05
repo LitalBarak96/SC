@@ -246,3 +246,44 @@ elav_fru_res<-subset(elav_fru, pvalue<0.05 & abs(log2FoldChange)>=1)
 elav_fru_res<-as.data.frame(elav_fru_res)
 ```
 
+
+```{r}
+library(Seurat)
+
+genes_splited<-SplitObject(sub_Seted,split.by = "names" )
+
+fru<-genes_splited[[" fru"]]
+Tbh<-genes_splited[[" Tbh"]]
+ple<-genes_splited[[" ple"]]
+Crz<-genes_splited[[" Crz"]]
+NPFR<-genes_splited[[" NPFR"]]
+Tdc2<-genes_splited[[" Tdc2"]]
+NPF<-genes_splited[[" NPF"]]
+elaV<-genes_splited[[" elav"]]
+
+Idents(object = fru) <- fru@meta.data$identity
+
+Idents(object = Tbh) <- Tbh@meta.data$identity
+Idents(object = ple) <- ple@meta.data$identity
+Idents(object = Crz) <- Crz@meta.data$identity
+Idents(object = NPFR) <- NPFR@meta.data$identity
+Idents(object = Tdc2) <- Tdc2@meta.data$identity
+Idents(object = NPF) <- NPF@meta.data$identity
+
+
+
+Idents(object=sub_Seted)<-sub_Seted@meta.data$names
+
+
+   DefaultAssay(sub_Seted)  <- "RNA"
+
+sub_Seted[["RNA"]]@counts<-as.matrix(sub_Seted[["RNA"]]@counts)+1
+
+tmp<-FindMarkers(sub_Seted, ident.1 = " elav", ident.2 = " fru", test.use = "DESeq2",slot = "counts")
+  
+  
+
+
+
+```
+
