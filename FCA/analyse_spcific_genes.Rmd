@@ -25,6 +25,19 @@ SERUAT_HEAD@meta.data$Syt1<- FetchData(SERUAT_HEAD, vars = "Syt1")
 SERUAT_HEAD@meta.data$elav<- FetchData(SERUAT_HEAD, vars = "elav")
 SERUAT_HEAD@meta.data$brp<- FetchData(SERUAT_HEAD, vars = "brp")
 
+
+
+SERUAT_HEAD@meta.data$NPF<- FetchData(SERUAT_HEAD, vars = "NPF")
+
+SERUAT_HEAD@meta.data$ple<- FetchData(SERUAT_HEAD, vars = "ple")
+SERUAT_HEAD@meta.data$NPFR<- FetchData(SERUAT_HEAD, vars = "NPFR")
+SERUAT_HEAD@meta.data$Tdc2<- FetchData(SERUAT_HEAD, vars = "Tdc2")
+SERUAT_HEAD@meta.data$Crz<- FetchData(SERUAT_HEAD, vars = "Crz")
+
+SERUAT_HEAD@meta.data$Tbh<- FetchData(SERUAT_HEAD, vars = "Tbh")
+SERUAT_HEAD@meta.data$fru<- FetchData(SERUAT_HEAD, vars = "fru")
+
+
 SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
 
 SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
@@ -39,7 +52,7 @@ View(SERUAT_HEAD@meta.data)
 ```
 
 ```{r}
-all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_new.csv"))
 
 
 
@@ -50,10 +63,17 @@ number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
 
 #threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
-gene_names<-c("Syt1","elav","brp")
+gene_names<-c("Syt1","elav","brp","ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
 
 fullname<-paste("s_",gene_names,sep="")
 
+
+SERUAT_HEAD@meta.data$s_ple<-""
+SERUAT_HEAD@meta.data$s_NPF<-""
+SERUAT_HEAD@meta.data$s_Tdc2<-""
+SERUAT_HEAD@meta.data$s_Crz<-""
+SERUAT_HEAD@meta.data$s_Tbh<-""
+SERUAT_HEAD@meta.data$s_fru<-""
 SERUAT_HEAD@meta.data$s_Syt1<-""
 SERUAT_HEAD@meta.data$s_brp<-""
 SERUAT_HEAD@meta.data$s_elav<-""
@@ -97,7 +117,35 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
       if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
 
+      }
+    if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+  }
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
     }
+    if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
   
 
 }
@@ -107,7 +155,11 @@ SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
 
 sub_Seted<-subset(SERUAT_HEAD, names != "")
 
-table(sub_Seted@meta.data$names)
+test<-as.data.frame(table(sub_Seted@meta.data$names))
+
+order_test<-test[order(test$Freq,decreasing=TRUE),]
+
+write.csv(order_test,"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/gene_with_neruons.csv",row.names = FALSE)
 
 ```
 
