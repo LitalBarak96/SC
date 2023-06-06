@@ -1,0 +1,130 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-06-06"
+output: html_document
+---
+
+```{r}
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(tidyr)
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+```
+
+```{r}
+SERUAT_HEAD@meta.data$Syt1<- FetchData(SERUAT_HEAD, vars = "Syt1")
+
+
+SERUAT_HEAD@meta.data$elav<- FetchData(SERUAT_HEAD, vars = "elav")
+SERUAT_HEAD@meta.data$brp<- FetchData(SERUAT_HEAD, vars = "brp")
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'), 
+                                  sep = '_')
+
+SERUAT_HEAD@meta.data$identity<-as.factor(SERUAT_HEAD@meta.data$identity)
+View(SERUAT_HEAD@meta.data)
+```
+
+```{r}
+all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes.csv"))
+
+
+
+```
+
+```{r}
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("Syt1","elav","brp")
+
+fullname<-paste("s_",gene_names,sep="")
+
+SERUAT_HEAD@meta.data$s_Syt1<-""
+SERUAT_HEAD@meta.data$s_brp<-""
+SERUAT_HEAD@meta.data$s_elav<-""
+```
+
+
+
+
+
+```{r}
+
+
+
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] >current_value_threshold)
+
+  
+}
+}
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$s_Syt1[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Syt1")
+
+  }
+    if(SERUAT_HEAD@meta.data$s_brp[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"brp")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+
+    }
+  
+
+}
+
+
+SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+table(sub_Seted@meta.data$names)
+
+```
+
+```{r}
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+
+
+plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(object = sub_Seted,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+dev.off()
+```
+
