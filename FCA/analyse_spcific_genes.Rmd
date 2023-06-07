@@ -52,7 +52,7 @@ View(SERUAT_HEAD@meta.data)
 ```
 
 ```{r}
-all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_new.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_new.csv"))
 
 
 
@@ -155,11 +155,58 @@ SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
 
 sub_Seted<-subset(SERUAT_HEAD, names != "")
 
+t<-grepl(" Syt1 brp elav",SERUAT_HEAD@meta.data$names)
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+t<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+
+
+
 test<-as.data.frame(table(sub_Seted@meta.data$names))
 
 order_test<-test[order(test$Freq,decreasing=TRUE),]
 
-write.csv(order_test,"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/gene_with_neruons.csv",row.names = FALSE)
+
+
+fru<-t[[" Syt1 brp elav fru"]]
+Crz<-t[[" Syt1 brp elav Crz"]]
+Tdc2<-t[[" Syt1 brp elav Tdc2"]]
+ple<-t[[" Syt1 brp elav ple"]]
+Tbh<-t[[" Syt1 brp elav Tbh"]]
+NPFR<-t[[" Syt1 brp elav NPFR"]]
+NPF<-t[[" Syt1 brp elav NPF"]]
+
+pbmc.big <- merge(fru, y = c(Crz, Tdc2,ple,Tbh,NPFR,NPF))
+Idents(object = pbmc.big) <- pbmc.big@meta.data$names
+
+
+
+saveRDS(pbmc.big,"D:/seq_data/FCA/syt1_brp_elav_genes.rds")
+
+
+
+glu<-pbmc.big
+glu <- NormalizeData(object = glu)
+glu <- FindVariableFeatures(object = glu)
+glu <- ScaleData(object = glu)
+glu <- RunPCA(object = glu)
+glu <- FindNeighbors(object = glu, dims = 1:20)
+glu <- FindClusters(object = glu)
+glu <- RunUMAP(object = glu, dims = 1:20)
+
+
+plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+
+
+DimPlot(object = pbmc.big,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+dev.off()
+
+# write.csv(order_test,"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/gene_with_neruons.csv",row.names = FALSE)
 
 ```
 
