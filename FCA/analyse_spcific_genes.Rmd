@@ -52,7 +52,7 @@ View(SERUAT_HEAD@meta.data)
 ```
 
 ```{r}
-all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_new.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_new.csv"))
 
 
 
@@ -196,15 +196,19 @@ glu <- FindClusters(object = glu)
 glu <- RunUMAP(object = glu, dims = 1:20)
 
 
-plotname<-"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1.tiff"
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1_genes.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
+Idents(object = glu) <- glu@meta.data$names
 
 
-DimPlot(object = pbmc.big,label=TRUE,label.size
+DimPlot(object = glu,label=TRUE,label.size
 =3.5,pt.size = 1.5)
 dev.off()
+
+
+table(glu@meta.data$names)
 
 # write.csv(order_test,"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/gene_with_neruons.csv",row.names = FALSE)
 
@@ -216,7 +220,7 @@ Idents(object = sub_Seted) <- sub_Seted@meta.data$names
 
 
 
-plotname<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1.tiff"
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
@@ -225,5 +229,9 @@ tiff(file=plotname,units="in",height=13,width=18,res=600)
 DimPlot(object = sub_Seted,label=TRUE,label.size
 =3.5,pt.size = 1.5)
 dev.off()
+```
+```{r}
+saveRDS(glu,"D:/seq_data/FCA/recluster_syt1_brp_elav_genes.rds")
+
 ```
 
