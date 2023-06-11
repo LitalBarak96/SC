@@ -1,0 +1,195 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-06-11"
+output: html_document
+---
+
+```{r}
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(tidyr)
+
+
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+
+SERUAT_HEAD@meta.data$Syt1<- FetchData(SERUAT_HEAD, vars = "Syt1")
+
+
+SERUAT_HEAD@meta.data$elav<- FetchData(SERUAT_HEAD, vars = "elav")
+SERUAT_HEAD@meta.data$brp<- FetchData(SERUAT_HEAD, vars = "brp")
+
+SERUAT_HEAD@meta.data$NPF<- FetchData(SERUAT_HEAD, vars = "NPF")
+
+SERUAT_HEAD@meta.data$ple<- FetchData(SERUAT_HEAD, vars = "ple")
+SERUAT_HEAD@meta.data$NPFR<- FetchData(SERUAT_HEAD, vars = "NPFR")
+SERUAT_HEAD@meta.data$Tdc2<- FetchData(SERUAT_HEAD, vars = "Tdc2")
+SERUAT_HEAD@meta.data$Crz<- FetchData(SERUAT_HEAD, vars = "Crz")
+
+SERUAT_HEAD@meta.data$Tbh<- FetchData(SERUAT_HEAD, vars = "Tbh")
+SERUAT_HEAD@meta.data$fru<- FetchData(SERUAT_HEAD, vars = "fru")
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'), 
+                                  sep = '_')
+all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_new.csv"))
+
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("Syt1","elav","brp","ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("s_",gene_names,sep="")
+
+
+SERUAT_HEAD@meta.data$s_ple<-""
+SERUAT_HEAD@meta.data$s_NPF<-""
+SERUAT_HEAD@meta.data$s_Tdc2<-""
+SERUAT_HEAD@meta.data$s_Crz<-""
+SERUAT_HEAD@meta.data$s_Tbh<-""
+SERUAT_HEAD@meta.data$s_fru<-""
+SERUAT_HEAD@meta.data$s_Syt1<-""
+SERUAT_HEAD@meta.data$s_brp<-""
+SERUAT_HEAD@meta.data$s_elav<-""
+
+
+
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] >current_value_threshold)
+
+  
+}
+}
+
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+#table(SERUAT_HEAD@meta.data$s_elav)
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$s_Syt1[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Syt1")
+
+  }
+    if(SERUAT_HEAD@meta.data$s_brp[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"brp")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+
+      }
+}
+# 
+# 
+# Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+# 
+# cols<-DiscretePalette(8, palette = NULL)
+# cols[6]<-"#FFFFFF"
+# 
+# 
+# 
+# plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/11.6.23/umap_neruons.tiff"
+# 
+# tiff(file=plotname,units="in",height=13,width=18,res=600)
+# 
+# 
+# 
+# DimPlot(object = SERUAT_HEAD,pt.size = 1.5,raster=FALSE,cols = cols)
+# dev.off()
+
+
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+
+
+
+SERUAT_HEAD<-sub_Seted
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+    if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+  }
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+  
+
+}
+
+
+only_neruons_genes<-SERUAT_HEAD
+
+
+sub_Seted<-subset(only_neruons_genes, names != "")
+
+
+glu<-sub_Seted
+glu <- NormalizeData(object = glu)
+glu <- FindVariableFeatures(object = glu)
+glu <- ScaleData(object = glu)
+glu <- RunPCA(object = glu)
+glu <- FindNeighbors(object = glu, dims = 1:20)
+glu <- FindClusters(object = glu)
+glu <- RunUMAP(object = glu, dims = 1:20)
+
+
+
+
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/11.6.23/umap_neruons_genes.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+
+DimPlot(object = glu,label=TRUE,label.size
+=3.5,pt.size = 1.5)
+dev.off()
+```
+
