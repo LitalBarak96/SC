@@ -287,3 +287,25 @@ tmp<-FindMarkers(sub_Seted, ident.1 = " elav", ident.2 = " fru", test.use = "DES
 
 ```
 
+```{r}
+
+table(glu@meta.data$names)
+
+sub_neruons<-glu
+head(Idents(sub_neruons))
+
+Idents(object = sub_neruons) <- sub_neruons@meta.data$names
+
+fru_gens<-FindMarkers(sub_neruons, ident.1 = " Syt1 brp elav fru", subset.ident  = " Syt1 brp elav", test.use = "DESeq2",slot = "counts",max.cells.per.ident = 50)
+
+
+all_fru<-subset(fru_gens, p_val_adj<0.05 & abs(avg_log2FC)>=1)
+
+
+npf_gens<-FindMarkers(sub_neruons, ident.1 = " Syt1 brp elav NPF", subset.ident  = " Syt1 brp elav", test.use = "DESeq2",slot = "counts",max.cells.per.ident = 50)
+
+
+all_npf<-subset(npf_gens, p_val_adj<0.05 & abs(avg_log2FC)>=1)
+
+```
+
