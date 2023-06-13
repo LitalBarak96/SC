@@ -105,19 +105,46 @@ SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fu
 SERUAT_HEAD@meta.data$names<-""
 
 
+
+
+# for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+#       if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
+#     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+# 
+#   }
+# }
+
+
+# for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+#   if(SERUAT_HEAD@meta.data$s_Syt1[i] == TRUE){
+#     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Syt1")
+# 
+#   }
+#     if(SERUAT_HEAD@meta.data$s_brp[i] == TRUE){
+#     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"brp")
+# 
+#     }
+#       if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
+#     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+# 
+#       }
+# }
+
+#SERUAT_HEAD<-sub_seted
+
 for(i in 1:nrow(SERUAT_HEAD@meta.data)){
-  if(SERUAT_HEAD@meta.data$s_Syt1[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Syt1")
-
-  }
-    if(SERUAT_HEAD@meta.data$s_brp[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"brp")
-
-    }
-      if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
-
-      }
+  # if(SERUAT_HEAD@meta.data$s_Syt1[i] == TRUE){
+  #   SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Syt1")
+  # 
+  # }
+  #   if(SERUAT_HEAD@meta.data$s_brp[i] == TRUE){
+  #   SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"brp")
+  # 
+  #   }
+  #     if(SERUAT_HEAD@meta.data$s_elav[i] == TRUE){
+  #   SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+  # 
+  #     }
     if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
 
@@ -153,15 +180,17 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
 
-sub_Seted<-subset(SERUAT_HEAD, names != "")
+#sub_Seted<-subset(SERUAT_HEAD, names = ' Syt1 brp elav')
 
 t<-grepl(" Syt1 brp elav",SERUAT_HEAD@meta.data$names)
 sub_Seted<-subset(SERUAT_HEAD, names != "")
 
+
+temp<-SERUAT_HEAD
 t<-SplitObject(SERUAT_HEAD, split.by = "names")
 
 
-
+sub_seted<-t[[" Syt1 brp elav"]]
 
 test<-as.data.frame(table(sub_Seted@meta.data$names))
 
@@ -186,7 +215,7 @@ saveRDS(pbmc.big,"D:/seq_data/FCA/syt1_brp_elav_genes.rds")
 
 
 
-glu<-pbmc.big
+glu<-sub_Seted
 glu <- NormalizeData(object = glu)
 glu <- FindVariableFeatures(object = glu)
 glu <- ScaleData(object = glu)
@@ -196,7 +225,7 @@ glu <- FindClusters(object = glu)
 glu <- RunUMAP(object = glu, dims = 1:20)
 
 
-plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1_genes.tiff"
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/11.6.23/only_neruons_genes_allgenes.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
