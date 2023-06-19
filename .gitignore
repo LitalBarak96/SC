@@ -3,10 +3,11 @@
 .RDataTmp
 .Rhistory
 .RDataTmp
+.RDataTmp1
 FCA/.RData
 FCA/.Rhistory
 FCA/.RDataTmp
-
+FCA/.RDataTmp1
 
 # History files
 .Rhistory
