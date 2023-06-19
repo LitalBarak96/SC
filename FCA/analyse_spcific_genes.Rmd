@@ -52,7 +52,7 @@ View(SERUAT_HEAD@meta.data)
 ```
 
 ```{r}
-all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_new.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/all_genes_0.csv"))
 
 
 
@@ -80,6 +80,10 @@ SERUAT_HEAD@meta.data$s_elav<-""
 ```
 
 
+```{r}
+elav_only <-readRDS("D:/seq_data/FCA/elav.rds")
+
+```
 
 
 
