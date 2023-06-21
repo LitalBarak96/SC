@@ -215,7 +215,7 @@ Idents(object = pbmc.big) <- pbmc.big@meta.data$names
 
 
 
-saveRDS(pbmc.big,"D:/seq_data/FCA/syt1_brp_elav_genes.rds")
+saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/elav_genes_new_thrshold.rds")
 
 
 
@@ -229,14 +229,14 @@ glu <- FindClusters(object = glu)
 glu <- RunUMAP(object = glu, dims = 1:20)
 
 
-plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/11.6.23/only_neruons_genes_allgenes.tiff"
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/18.6.23/elav_genes_new_threshold.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
 Idents(object = glu) <- glu@meta.data$names
 
-
-DimPlot(object = glu,label=TRUE,label.size
+# label=TRUE
+DimPlot(object = glu,label.size
 =3.5,pt.size = 1.5)
 dev.off()
 
@@ -249,22 +249,53 @@ table(glu@meta.data$names)
 
 ```{r}
 
-Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+# Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+Main_gene<-"Tdc2"
+num_of_genes<-length(table(glu@meta.data$names))
+
+my_cols<-DiscretePalette(num_of_genes, palette = NULL)
+
+
+list_of_gene_names<-names(table(glu@meta.data$names))
+
+library(stringr)
+
+#nums<- str_which(list_of_gene_names, "Crz")
+
+
+names(my_cols)<-list_of_gene_names
+
+  for(i in 1:num_of_genes){
+    if(!grepl(Main_gene, list_of_gene_names[i], fixed=TRUE)){
+      my_cols[list_of_gene_names[i]]<-"#FFFFFF"
+      print(i)
+    }
+ #   
+ #   if(i == any(nums)){
+ #     print(i)
+ #   }
+  }
+
+
+ 
 
 
 
-plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1.tiff"
+plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/18.6.23/",Main_gene,".tiff")
+#  
+# plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/5.6.23/umap_elav_Brp_syt1.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
 
 
-DimPlot(object = sub_Seted,label=TRUE,label.size
+DimPlot(object = glu,cols = my_cols,label=TRUE,label.size
 =3.5,pt.size = 1.5)
 dev.off()
 ```
+
 ```{r}
-saveRDS(glu,"D:/seq_data/FCA/recluster_syt1_brp_elav_genes.rds")
+#saveRDS(glu,"D:/seq_data/FCA/recluster_syt1_brp_elav_genes.rds")
 
 ```
 
