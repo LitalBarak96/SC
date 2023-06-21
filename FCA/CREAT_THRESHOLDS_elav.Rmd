@@ -115,7 +115,7 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
 number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
 
-plot_or_not<-TRUE
+plot_or_not<-FALSE
 path_of_photos<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/18.6.23/"
 #gene<-"ple"
 #expceted_cell_num<-515
@@ -137,7 +137,8 @@ for(i_gene in 1:length(list_of_gene)){
   to_csv<-NULL
 if(dir.exists(full_path_of_gene)){
   for(i in 1:length(new)){
-    y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
+    #change to 47000 beacuse elav cells only
+    y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/47000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
    expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,5,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
       temp<-c(expression_level,names_of_fca[i],gene)
@@ -146,7 +147,7 @@ if(dir.exists(full_path_of_gene)){
 }else{
   dir.create(full_path_of_gene)
   for(i in 1:length(new)){
-    y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/100000) # to find how many sample suppose to be
+    y_Vale_max_origin<-round((expceted_cell_num*ncol(new[[i]]))/47000) # to find how many sample suppose to be
     #y_Vale_max<-y_Vale_max_origin + 0.5 *(y_Vale_max_origin)
    expression_level<- head_FCA_sum(gene,y_Vale_max_origin,0,5,new[[i]],names_of_fca[i],full_path_of_gene,plot_or_not)
    
