@@ -277,18 +277,18 @@ names(my_cols)<-list_of_gene_names
 
   for(i in 1:num_of_genes){
     if(!grepl(Main_gene, list_of_gene_names[i], fixed=TRUE)){
-      my_cols[list_of_gene_names[i]]<-"#FFFFFF"
+      my_cols[list_of_gene_names[i]]<-"#e2e2e2"
       print(i)
     }
   }
 
 
-   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/18.6.23/",Main_gene,".tiff")
+   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/25.6.23/",Main_gene,".tiff")
   
- tiff(file=plotname,units="in",height=16,width=20,res=600)
+ tiff(file=plotname,units="in",height=14,width=14,res=1000)
 
 t<-DimPlot(object = glu,cols = my_cols,label=TRUE,label.size
-=3.5,pt.size = 2.5)
+=5,pt.size = 6)+ guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 30, face = "bold"))
 plot(t)
 #plot(t,xaxt = "n")
 dev.off()
@@ -349,9 +349,17 @@ dev.off()
 
 ```{r}
 
+#saveRDS(glu,"D:/seq_data/FCA/recluster_syt1_brp_elav_genes.rds")
+glu<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
 list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
 
-FeaturePlot(glu, features = list_of_gene)
+
+ plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/25.6.23/featureplot_elavpos.tiff")
+  tiff(file=plotname,units="in",height=20,width=20,res=1000)
+
+FeaturePlot(glu, features = list_of_gene, pt.size =5 )
+dev.off()
+
 
 ```
 
