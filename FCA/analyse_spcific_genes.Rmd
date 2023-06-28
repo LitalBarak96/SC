@@ -83,6 +83,8 @@ SERUAT_HEAD@meta.data$s_elav<-""
 ```{r}
 elav_only <-readRDS("D:/seq_data/FCA/elav.rds")
 
+SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_new_thrshold_reclustred.rds")
+
 ```
 
 
@@ -136,6 +138,9 @@ SERUAT_HEAD@meta.data$names<-""
 
 #SERUAT_HEAD<-sub_seted
 
+
+
+
 for(i in 1:nrow(SERUAT_HEAD@meta.data)){
   # if(SERUAT_HEAD@meta.data$s_Syt1[i] == TRUE){
   #   SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Syt1")
@@ -179,6 +184,15 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
         }
   
 
+}
+
+
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$names[i] == ""){
+   SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+   }
 }
 
 
@@ -248,7 +262,7 @@ table(glu@meta.data$names)
 ```
 
 ```{r}
-
+glu<-SERUAT_HEAD
 library(stringr)
 list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
 
@@ -269,7 +283,6 @@ for(gene in 1:length(list_of_gene)){
 
 my_cols<-DiscretePalette(num_of_genes, palette = NULL)
 
-
 list_of_gene_names<-names(table(glu@meta.data$names))
 
 
@@ -283,12 +296,12 @@ names(my_cols)<-list_of_gene_names
   }
 
 
-   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/25.6.23/",Main_gene,".tiff")
+   plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/tmp_for_25_6/",Main_gene,".tiff")
   
  tiff(file=plotname,units="in",height=14,width=14,res=1000)
 
 t<-DimPlot(object = glu,cols = my_cols,label=TRUE,label.size
-=5,pt.size = 6)+ guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 30, face = "bold"))
+=5,pt.size = 1)+ guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 30, face = "bold"))
 plot(t)
 #plot(t,xaxt = "n")
 dev.off()
