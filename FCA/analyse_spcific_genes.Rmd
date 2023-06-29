@@ -85,6 +85,8 @@ elav_only <-readRDS("D:/seq_data/FCA/elav.rds")
 
 SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_new_thrshold_reclustred.rds")
 
+# SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
+
 ```
 
 
@@ -189,12 +191,12 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 
 
-for(i in 1:nrow(SERUAT_HEAD@meta.data)){
-  if(SERUAT_HEAD@meta.data$names[i] == ""){
-   SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
-   }
-}
-
+# for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+#   if(SERUAT_HEAD@meta.data$names[i] == ""){
+#    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"elav")
+#    }
+# }
+# 
 
 SERUAT_HEAD@meta.data$names<-as.factor( SERUAT_HEAD@meta.data$names)
 
@@ -228,8 +230,8 @@ pbmc.big <- merge(fru, y = c(Crz, Tdc2,ple,Tbh,NPFR,NPF))
 Idents(object = pbmc.big) <- pbmc.big@meta.data$names
 
 
-
-saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/elav_genes_new_thrshold.rds")
+# 
+# saveRDS(glu,"D:/seq_data/FCA/elav_genes_reclustred_allgenes.rds")
 
 
 
@@ -243,15 +245,22 @@ glu <- FindClusters(object = glu)
 glu <- RunUMAP(object = glu, dims = 1:20)
 
 
-plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/18.6.23/elav_genes_new_threshold.tiff"
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/25.6.23/recclsuted_wo_elav/elav_genes_reclustered_all_genes.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
 Idents(object = glu) <- glu@meta.data$names
 
-# label=TRUE
+
+# t<-SplitObject(glu, split.by = "names")
+# # label=TRUE
+# elav<-DimPlot(object = t[[" elav"]],label.size
+# =3.5,pt.size = 1.5,cols ="white")
+
+
 DimPlot(object = glu,label.size
 =3.5,pt.size = 1.5)
+
 dev.off()
 
 
@@ -262,7 +271,9 @@ table(glu@meta.data$names)
 ```
 
 ```{r}
-glu<-SERUAT_HEAD
+#glu<-SERUAT_HEAD
+Idents(object = glu) <- glu@meta.data$names
+
 library(stringr)
 list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
 
@@ -285,23 +296,29 @@ my_cols<-DiscretePalette(num_of_genes, palette = NULL)
 
 list_of_gene_names<-names(table(glu@meta.data$names))
 
-
+my_plot_order_names<-c()
+the_last_to_plot_names<-c()
 names(my_cols)<-list_of_gene_names
 
   for(i in 1:num_of_genes){
     if(!grepl(Main_gene, list_of_gene_names[i], fixed=TRUE)){
+      my_plot_order_names<-c(my_plot_order_names,list_of_gene_names[i])
       my_cols[list_of_gene_names[i]]<-"#e2e2e2"
       print(i)
+    }else{
+      the_last_to_plot_names<-c(the_last_to_plot_names,list_of_gene_names[i])
     }
   }
 
+#my_plot_order_names<-c(my_plot_order_names,the_last_to_plot_names)
 
-   plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/tmp_for_25_6/",Main_gene,".tiff")
+
+   plotname<-paste0("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/25.6.23/recclsuted_wo_elav/",Main_gene,".tiff")
   
- tiff(file=plotname,units="in",height=14,width=14,res=1000)
+ tiff(file=plotname,units="in",height=11,width=11,res=1000)
 
 t<-DimPlot(object = glu,cols = my_cols,label=TRUE,label.size
-=5,pt.size = 1)+ guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 30, face = "bold"))
+=5,pt.size = 1,order =the_last_to_plot_names )+ guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
 plot(t)
 #plot(t,xaxt = "n")
 dev.off()
