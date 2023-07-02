@@ -14,8 +14,11 @@ library(dplyr)
 library(stringr)
 library(tidyr)
 
+elav_only <-readRDS("D:/seq_data/FCA/elav.rds")
 
 SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head5_12.rds")
+
+SERUAT_HEAD<-elav_only
 ```
 
 ```{r}
@@ -52,7 +55,7 @@ View(SERUAT_HEAD@meta.data)
 ```
 
 ```{r}
-all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/18.6.23/all_genes.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/all_genes_npf_0.csv"))
 
 
 
@@ -83,7 +86,7 @@ SERUAT_HEAD@meta.data$s_elav<-""
 ```{r}
 elav_only <-readRDS("D:/seq_data/FCA/elav.rds")
 
-SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_new_thrshold_reclustred.rds")
+SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
 
 # SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
 
@@ -94,7 +97,7 @@ SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_new_thrshold_reclustred.rds")
 ```{r}
 
 
-SERUAT_HEAD<-elav_only
+#SERUAT_HEAD<-elav_only
 for(gene_i in 1:length(gene_names)){
 
 for(fca_i in 1:length(names_of_fca)){
@@ -271,7 +274,7 @@ table(glu@meta.data$names)
 ```
 
 ```{r}
-#glu<-SERUAT_HEAD
+glu<-SERUAT_HEAD
 Idents(object = glu) <- glu@meta.data$names
 
 library(stringr)
@@ -299,6 +302,25 @@ list_of_gene_names<-names(table(glu@meta.data$names))
 my_plot_order_names<-c()
 the_last_to_plot_names<-c()
 names(my_cols)<-list_of_gene_names
+my_cols[" Crz"]<-"#fffdb6"
+my_cols[" fru"]<-"#ffc3ba"
+my_cols[" NPF"]<-"#adffbf"
+my_cols[" NPFR"]<-"#9fbdf8"
+my_cols[" ple"]<-"#9f9ff8"
+my_cols[" Tbh"]<-"#ff9ff8"
+my_cols[" Tdc2"]<-"#a4ceff"
+
+my_cols[" Crz fru"]<-"#564baa"
+my_cols[" NPF fru"]<-"#8e2baa"
+my_cols[" NPFR fru"]<-"#8e2b5c"
+my_cols[" NPFR Tdc2 Tbh"]<-"#1b7c4a"
+my_cols[" ple Tdc2"]<-"#1b5c9d"
+my_cols[" Tbh fru"]<-"#1b5433"
+my_cols[" Tdc2 fru"]<-"#089b33"
+my_cols[" Tdc2 Tbh"]<-"#593831"
+
+
+
 
   for(i in 1:num_of_genes){
     if(!grepl(Main_gene, list_of_gene_names[i], fixed=TRUE)){
@@ -309,16 +331,20 @@ names(my_cols)<-list_of_gene_names
       the_last_to_plot_names<-c(the_last_to_plot_names,list_of_gene_names[i])
     }
   }
-
+#NPF
+if(gene == 5){
+  my_cols[list_of_gene_names[6]]<-"#e2e2e2"
+  my_cols[list_of_gene_names[7]]<-"#e2e2e2"
+  my_cols[list_of_gene_names[8]]<-"#e2e2e2"
+}
 #my_plot_order_names<-c(my_plot_order_names,the_last_to_plot_names)
 
 
-   plotname<-paste0("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/25.6.23/recclsuted_wo_elav/",Main_gene,".tiff")
+   plotname<-paste0("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/recclsuted_wo_elav/",Main_gene,".tiff")
   
  tiff(file=plotname,units="in",height=11,width=11,res=1000)
 
-t<-DimPlot(object = glu,cols = my_cols,label=TRUE,label.size
-=5,pt.size = 1,order =the_last_to_plot_names )+ guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
+t<-DimPlot(object = glu,cols = my_cols,label=FALSE,pt.size = 1,order =the_last_to_plot_names )+ guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
 plot(t)
 #plot(t,xaxt = "n")
 dev.off()
@@ -372,7 +398,19 @@ dev.off()
 ```
 
 ```{r}
+glu<-SERUAT_HEAD
 #saveRDS(glu,"D:/seq_data/FCA/recluster_syt1_brp_elav_genes.rds")
+   plotname<-paste0("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/recclsuted_wo_elav/splited.tiff")
+
+
+tiff(file=plotname,units="in",height=15,width=20,res=1000)
+
+DimPlot(glu,split.by = "names",pt.size = 2.5)+facet_wrap(~names)
+
+dev.off()
+
+```
+```{r}
 
 ```
 
