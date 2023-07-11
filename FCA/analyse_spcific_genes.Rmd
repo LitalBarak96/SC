@@ -55,7 +55,7 @@ View(SERUAT_HEAD@meta.data)
 ```
 
 ```{r}
-all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/all_genes.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/all_genes.csv"))
 
 
 
@@ -234,7 +234,7 @@ Idents(object = pbmc.big) <- pbmc.big@meta.data$names
 
 
 # 
-# saveRDS(glu,"D:/seq_data/FCA/elav_genes_reclustred_allgenes.rds")
+ saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/11_7_head_elav_genes.rds")
 
 
 
@@ -418,7 +418,7 @@ dev.off()
 ```{r}
 
 #saveRDS(glu,"D:/seq_data/FCA/recluster_syt1_brp_elav_genes.rds")
-glu<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
+# glu<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
 list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
 
 
@@ -436,6 +436,8 @@ dev.off()
 
 ```{r}
 library(ggplot2)
+
+ SERUAT_HEAD<-readRDS("D:/seq_data/FCA/11_7_head_elav_genes.rds")
 glu<-SERUAT_HEAD
 Idents(object = glu) <- glu@meta.data$names
 
@@ -449,29 +451,30 @@ list_of_gene_names<-names(table(glu@meta.data$names))
  num_of_genes<-length(table(glu@meta.data$names))
 
 
-my_cols<-DiscretePalette(num_of_genes, palette = NULL)
+my_cols<-DiscretePalette(num_of_genes, palette = "glasbey")
+
 
 list_of_gene_names<-names(table(glu@meta.data$names))
 
 my_plot_order_names<-c()
 the_last_to_plot_names<-c()
 names(my_cols)<-list_of_gene_names
-my_cols[" Crz"]<-"#fffdb6"
-my_cols[" fru"]<-"#ffc3ba"
-my_cols[" NPF"]<-"#adffbf"
-my_cols[" NPFR"]<-"#9fbdf8"
-my_cols[" ple"]<-"#9f9ff8"
-my_cols[" Tbh"]<-"#ff9ff8"
-my_cols[" Tdc2"]<-"#a4ceff"
-
-my_cols[" Crz fru"]<-"#564baa"
-my_cols[" NPF fru"]<-"#8e2baa"
-my_cols[" NPFR fru"]<-"#8e2b5c"
-my_cols[" NPFR Tdc2 Tbh"]<-"#1b7c4a"
-my_cols[" ple Tdc2"]<-"#1b5c9d"
-my_cols[" Tbh fru"]<-"#1b5433"
-my_cols[" Tdc2 fru"]<-"#089b33"
-my_cols[" Tdc2 Tbh"]<-"#593831"
+# my_cols[" Crz"]<-"#fffdb6"
+# my_cols[" fru"]<-"#ffc3ba"
+# my_cols[" NPF"]<-"#adfff8"
+# my_cols[" NPFR"]<-"#9fbdf8"
+# my_cols[" ple"]<-"#9f9ff8"
+# my_cols[" Tbh"]<-"#ff9ff8"
+# my_cols[" Tdc2"]<-"#a4ceff"
+# 
+# my_cols[" Crz fru"]<-"#564baa"
+# my_cols[" NPF fru"]<-"#8e2baa"
+# my_cols[" NPFR fru"]<-"#8e2b5c"
+# my_cols[" NPFR Tdc2 Tbh"]<-"#1b7c4a"
+# my_cols[" ple Tdc2"]<-"#1b5c9d"
+# my_cols[" Tbh fru"]<-"#1b5433"
+# my_cols[" Tdc2 fru"]<-"#089b33"
+# my_cols[" Tdc2 Tbh"]<-"#593831"
 
 
 
@@ -509,21 +512,23 @@ for(gene in 2:length(list_of_gene_names)){
 
 
 
-   plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/recclsuted_per_genes_croess_elav/",trimws(list_of_gene_names[gene]),".tiff")
+   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/recclsuted_per_genes_croess_elav/",trimws(list_of_gene_names[gene]),".tiff")
   
  tiff(file=plotname,units="in",height=11,width=11,res=1000)
 
  
  if(nrow(t[[list_of_gene_names[gene]]]@meta.data) > 1){
    
-   if(nrow(t[[list_of_gene_names[gene]]]@meta.data) > 1 && nrow(t[[list_of_gene_names[gene]]]@meta.data) < 10){
-        my_plot<-DimPlot(object = t[[list_of_gene_names[gene]]],cols = my_cols[list_of_gene_names[gene]],pt.size = 3 )+guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(list_of_gene_names[gene])+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
+   if(nrow(t[[list_of_gene_names[gene]]]@meta.data) > 1 && nrow(t[[list_of_gene_names[gene]]]@meta.data) < 20){
+        my_plot<-DimPlot(object = t[[list_of_gene_names[gene]]],cols = my_cols[list_of_gene_names[gene]],pt.size = 5 )+guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(list_of_gene_names[gene])+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
+
 
 plot(my_plot)
 #plot(t,xaxt = "n")
 dev.off()
    }else{
-             my_plot<-DimPlot(object = t[[list_of_gene_names[gene]]],cols = my_cols[list_of_gene_names[gene]],pt.size = 1 )+guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(list_of_gene_names[gene])+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
+             my_plot<-DimPlot(object = t[[list_of_gene_names[gene]]],cols = my_cols[list_of_gene_names[gene]],pt.size = 1.1 )+guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(list_of_gene_names[gene])+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
+
 plot(my_plot)
 #plot(t,xaxt = "n")
 dev.off()
@@ -534,5 +539,96 @@ dev.off()
 
 }
 
+```
+
+```{r}
+
+
+library(ggplot2)
+
+SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
+glu<-SERUAT_HEAD
+Idents(object = glu) <- glu@meta.data$names
+
+t<-SplitObject(glu, split.by = "names")
+
+library(stringr)
+list_of_gene<-c("ple","NPFR","fru","Tdc2","NPF","Crz","Tbh")
+
+list_of_gene_names<-names(table(glu@meta.data$names))
+
+ num_of_genes<-length(table(glu@meta.data$names))
+
+
+my_cols<-DiscretePalette(num_of_genes, palette = NULL)
+
+list_of_gene_names<-names(table(glu@meta.data$names))
+
+my_plot_order_names<-c()
+the_last_to_plot_names<-c()
+names(my_cols)<-list_of_gene_names
+my_cols[" Crz"]<-"#fffdb6"
+my_cols[" fru"]<-"#ffc3ba"
+my_cols[" NPF"]<-"#adfff8"
+my_cols[" NPFR"]<-"#9fbdf8"
+my_cols[" ple"]<-"#9f9ff8"
+my_cols[" Tbh"]<-"#ff9ff8"
+my_cols[" Tdc2"]<-"#a4ceff"
+
+my_cols[" Crz fru"]<-"#564baa"
+my_cols[" NPF fru"]<-"#8e2baa"
+my_cols[" NPFR fru"]<-"#8e2b5c"
+my_cols[" NPFR Tdc2 Tbh"]<-"#1b7c4a"
+my_cols[" ple Tdc2"]<-"#1b5c9d"
+my_cols[" Tbh fru"]<-"#1b5433"
+my_cols[" Tdc2 fru"]<-"#089b33"
+my_cols[" Tdc2 Tbh"]<-"#593831"
+
+
+
+for(gene in 1:length(list_of_gene_names)){
+
+   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/recclsuted_per_genes_croess_elav/",trimws(list_of_gene_names[gene]),".tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=1000)
+
+ 
+ if(nrow(t[[list_of_gene_names[gene]]]@meta.data) > 1){
+   
+   if(nrow(t[[list_of_gene_names[gene]]]@meta.data) > 1 && nrow(t[[list_of_gene_names[gene]]]@meta.data) < 10){
+     
+     md <- t[[list_of_gene_names[gene]]]
+    coords <- Embeddings(glu[["umap"]])
+
+        my_plot<-DimPlot(object = t[[list_of_gene_names[gene]]],cols = my_cols[list_of_gene_names[gene]],pt.size = 3 )+guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(list_of_gene_names[gene])+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))+  scale_shape_manual(values=21:22)
+
+
+plot(my_plot)
+#plot(t,xaxt = "n")
+dev.off()
+   }else{
+             my_plot<-DimPlot(object = t[[list_of_gene_names[gene]]],cols = my_cols[list_of_gene_names[gene]],pt.size = 1 )+guides(color = guide_legend(override.aes = list(size=11,face="bold"), ncol=1) )+ggtitle(list_of_gene_names[gene])+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))+  scale_shape_manual(values=21:22)
+
+plot(my_plot)
+#plot(t,xaxt = "n")
+dev.off()
+   }
+
+ }
+
+
+}
+# get metadata
+md <- glu[[]]
+
+# get embeddings
+coords <- Embeddings(glu[["umap"]])
+
+# combine dataframes
+md <- cbind(md, coords)
+
+# plot
+ggplot(md, aes(x = UMAP_1, y = UMAP_2, fill = md$names)) +
+  geom_point(shape = 21, size = 2) + theme_classic()
 ```
 

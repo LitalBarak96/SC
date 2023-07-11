@@ -1,0 +1,114 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-07-11"
+output: html_document
+---
+
+
+```{r}
+
+# glu@meta.data$s_Syt1<-0
+# glu@meta.data$s_brp<-0
+# glu@meta.data$s_elav<-0
+all_gene_csv<-as.data.frame(read.csv("C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/2.7.23/all_genes.csv"))
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("Syt1","elav","brp","ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("s_",gene_names,sep="")
+
+elav_only <-readRDS("D:/seq_data/FCA/elav.rds")
+
+
+SERUAT_HEAD<-elav_only
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] >current_value_threshold)
+
+  
+}
+}
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+# 
+#     if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+#     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+# 
+#   }
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    # if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+    # 
+    # }
+    # if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+    # 
+    # }
+    #   if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+    # 
+    #   }
+    #   if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+    # 
+    #   }
+    #     if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+    # 
+    #     }
+    # 
+
+}
+
+
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+# spcific_gene<-SplitObject(SERUAT_HEAD, split.by = "names")
+# 
+# only_npf<-spcific_gene[[" NPF"]]
+
+
+
+```
+
+```{r}
+#  SERUAT_HEAD<-readRDS("D:/seq_data/FCA/11_7_head_elav_genes.rds")
+# glu<-SERUAT_HEAD
+# Idents(object = glu) <- glu@meta.data$names
+# 
+# t<-SplitObject(glu, split.by = "names")
+```
+
+
+```{r}
+#glu<-sub_Seted
+Idents(object = glu) <- glu@meta.data$names
+
+glu <- NormalizeData(object = glu)
+glu <- FindVariableFeatures(object = glu)
+glu <- ScaleData(object = glu)
+glu <- RunPCA(object = glu)
+glu <- FindNeighbors(object = glu, dims = 1:5)
+glu <- FindClusters(object = glu)
+glu <- RunUMAP(object = glu, dims = 1:5)
+```
+
