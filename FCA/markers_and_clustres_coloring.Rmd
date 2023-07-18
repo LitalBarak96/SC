@@ -123,9 +123,10 @@ the_last_to_plot_names<-c()
 
     }
   }
+Main_gene<-trimws(Main_gene)
 
 
-   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/ALL_GENES/",Main_gene,".tiff")
+   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/ALL_GENES/",Main_gene,".tiff")
   
  tiff(file=plotname,units="in",height=11,width=11,res=1000)
 
