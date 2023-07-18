@@ -1,0 +1,77 @@
+---
+title: "markers_and_clustes"
+author: "lital barak"
+date: "2023-07-18"
+output: html_document
+---
+```{r}
+ glu<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes_wo_elav_labels.rds")
+
+glu@meta.data$names<-""
+
+
+for(i in 1:nrow(glu@meta.data)){
+
+    if(glu@meta.data$s_fru[i] == TRUE){
+    glu@meta.data$names[i]<-paste(glu@meta.data$names[i],"fru")
+
+    }
+}
+
+
+sub_Seted<-subset(glu, names != "")
+
+
+sub_Seted <- NormalizeData(object = sub_Seted)
+sub_Seted <- FindVariableFeatures(object = sub_Seted)
+sub_Seted <- ScaleData(object = sub_Seted)
+sub_Seted <- RunPCA(object = sub_Seted)
+ElbowPlot(sub_Seted)
+#DimHeatmap(glu, dims = 1:2, balanced = TRUE)
+sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:10)
+sub_Seted <- FindClusters(object = sub_Seted)
+sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:10)
+
+
+
+   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/fru_reclustred.tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=1000)
+
+DimPlot(object = sub_Seted,label.size
+=3.5,pt.size = 1.5)
+ dev.off()
+
+markers <- FindAllMarkers(sub_Seted, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 1)
+markers<-subset(markers,p_val_adj<0.05)
+write.csv(markers$gene,"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/fru_pos_marker.csv")
+markers$gene
+```
+
+
+```{r}
+tmp<-sub_Seted
+markers<-markers %>% group_by(cluster) %>% slice_max(order_by = avg_log2FC, n = 2)
+tmp@meta.data$marker <- NA
+
+
+for(i in 1:length(markers$gene)){
+  tmp@meta.data$marker[tmp@meta.data$seurat_clusters == (i-1)] <- markers$gene[i]
+
+}
+
+# new.cluster.ids <- markers$gene
+# names(new.cluster.ids) <- levels(tmp)
+# Idents(tmp)<-new.cluster.ids
+Idents(tmp) <-tmp@meta.data$marker
+ 
+plotname<-"/home/alu/aluguest/Lital_galitLab/fru_with_markers_labels_log_fold.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+DimPlot(tmp, reduction = "umap", label = TRUE, pt.size = 0.5)+NoLegend()
+
+dev.off()
+
+```
+
