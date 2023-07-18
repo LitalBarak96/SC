@@ -1,0 +1,179 @@
+---
+title: "Untitled"
+author: "lital barak"
+date: "2023-07-18"
+output: html_document
+---
+```{r}
+
+sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+test<-AverageExpression(sub_Seted,slot = 'counts', group.by="ident",features = )
+```
+
+```{r}
+main_genes<-c(" fru" , " Tbh" , " ple" , " Crz" , " NPFR", " Tdc2", " NPF"," OK107")
+
+all<-NULL
+for(j in 1:length(main_genes)){
+  
+  sub_Seted@meta.data$names<-""
+
+SERUAT_HEAD<-sub_Seted
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+# 
+  if(j == 1) {
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+  }
+  if(j == 2){
+          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+  }
+
+  if(j == 3){
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+}
+  }
+  if(j == 4){
+    
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+  }
+  if(j == 5 ){
+    
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+  }
+  
+  if( j == 6){
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+  }
+
+  if(j== 7){
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+      }
+  }
+
+  if(j == 8){
+          if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+  
+}
+  }
+
+
+
+
+
+
+
+}
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$names[i] == ""){
+   SERUAT_HEAD@meta.data$names[i]<-" elav"
+   }
+}
+
+
+sub_Seted<-SERUAT_HEAD
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+avg_exprs<-AverageExpression(sub_Seted,slot = 'counts', group.by="ident" )
+
+tmp<-as.data.frame(avg_exprs[["RNA"]])
+current_gene<-as.data.frame(tmp[,main_genes[j]])
+rownames(current_gene)<-rownames(tmp)
+colnames(current_gene)<-main_genes[j]
+all<-bind_cols(all,current_gene)
+
+
+}
+
+
+
+
+
+
+```
+
+
+
+```{r}
+SERUAT_HEAD<-sub_Seted
+main_genes<-c(" fru" , " Tbh" , " ple" , " Crz" , " NPFR", " Tdc2", " NPF"," OK107")
+SERUAT_HEAD@meta.data$names<-""
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+    if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+  }
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+  
+
+}
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$names[i] == ""){
+   SERUAT_HEAD@meta.data$names[i]<-" elav"
+   }
+}
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+ t<-SplitObject(SERUAT_HEAD, split.by = "names")
+my_elav<-t[[" elav"]]
+Idents(object = my_elav) <- my_elav@meta.data$names
+
+avg_exprs<-AverageExpression(my_elav,slot = 'counts' )
+
+tmp<-as.data.frame(avg_exprs[["RNA"]])
+current_gene<-as.data.frame(tmp[,"all"])
+rownames(current_gene)<-rownames(tmp)
+colnames(current_gene)<-" elav"
+all<-bind_cols(all,current_gene)
+```
+
