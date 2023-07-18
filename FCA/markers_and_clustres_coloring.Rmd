@@ -138,3 +138,124 @@ dev.off()
 }
 ```
 
+
+```{r}
+library(Seurat)
+
+
+
+
+sub_Seted<-readRDS("/home/alu/aluguest/Lital_galitLab/17_7_reclustered_head_elav_genes.rds")
+final<-NULL
+
+main_genes<-c(" fru" , " Tbh" , " ple" , " Crz" , " NPFR", " Tdc2", " NPF"," OK107")
+
+for(j in 1:length(main_genes)){
+  
+  sub_Seted@meta.data$names<-""
+
+SERUAT_HEAD<-sub_Seted
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+# 
+  if(j == 1) {
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+  }
+  if(j == 2){
+          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+  }
+
+  if(j == 3){
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+}
+  }
+  if(j == 4){
+    
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+  }
+  if(j == 5 ){
+    
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+  }
+  
+  if( j == 6){
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+  }
+
+  if(j== 7){
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+      }
+  }
+
+  if(j == 8){
+          if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+  
+}
+  }
+
+
+
+
+
+
+
+}
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$names[i] == ""){
+   SERUAT_HEAD@meta.data$names[i]<-" elav"
+   }
+}
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+gene_name<-main_genes[j]
+
+all_genes<-FindMarkers(SERUAT_HEAD, ident.1 = gene_name, subset.ident  = " elav", test.use = "DESeq2",slot = "counts",max.cells.per.ident=2000)
+
+sig_genes<-subset(all_genes, abs(avg_log2FC)  >= 1 & p_val_adj <0.05)
+
+sig_genes<-cbind(sig_genes,from_where = gene_name)
+
+final<-rbind(final,sig_genes)
+}
+
+write.csv(final,"/home/alu/aluguest/Lital_galitLab/sig_elav_gene.csv")
+
+
+
+
+
+
+
+
+#sub_neruons <-readRDS("/home/alu/aluguest/Lital_galitLab/elav_genes.rds")
+
+#Idents(object = sub_neruons) <- sub_neruons@meta.data$names
+
+```
+
+
+
+
