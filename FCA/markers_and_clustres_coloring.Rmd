@@ -51,7 +51,7 @@ markers$gene
 
 ```{r}
 tmp<-sub_Seted
-markers<-markers %>% group_by(cluster) %>% slice_max(order_by = avg_log2FC, n = 2)
+markers<-markers %>% group_by(cluster) %>% slice_max(order_by = avg_log2FC, n = 1)
 tmp@meta.data$marker <- NA
 
 
@@ -65,7 +65,7 @@ for(i in 1:length(markers$gene)){
 # Idents(tmp)<-new.cluster.ids
 Idents(tmp) <-tmp@meta.data$marker
  
-plotname<-"/home/alu/aluguest/Lital_galitLab/fru_with_markers_labels_log_fold.tiff"
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/fru_with_markers_labels_log_fold.tiff"
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
@@ -73,5 +73,67 @@ DimPlot(tmp, reduction = "umap", label = TRUE, pt.size = 0.5)+NoLegend()
 
 dev.off()
 
+```
+
+
+```{r}
+library(stringr)
+library(ggplot2)
+list_of_gene<-c(" ple"," NPFR"," fru"," Tdc2"," NPF"," Crz"," Tbh"," OK107")
+
+
+
+
+Idents(object = glu) <- glu@meta.data$names
+
+
+
+#par(mfrow = c(3, 3),mar = c(2.1, 3, 9, 3),xaxs = "i",yaxs = "i",cex.axis=1.1,cex.lab=1.1)
+list_of_gene_names<-names(table(glu@meta.data$names))
+  num_of_genes<-length(table(glu@meta.data$names))
+
+
+
+
+for(gene in 2:length(list_of_gene_names)){
+  Main_gene<-list_of_gene_names[gene]
+  
+  half_num_genes<-(num_of_genes/2)
+  
+my_cols<- c(DiscretePalette(half_num_genes ,palette = "glasbey"),DiscretePalette(half_num_genes, palette = "glasbey"))
+my_cols[1]<-"#A0A0A0"
+names(my_cols)<-list_of_gene_names
+
+
+
+my_plot_order_names<-c()
+the_last_to_plot_names<-c()
+
+
+
+  for(i in 2:num_of_genes){
+    if(!(Main_gene == list_of_gene_names[i])){
+      my_plot_order_names<-c(my_plot_order_names,list_of_gene_names[i])
+      my_cols[list_of_gene_names[i]]<-"#A0A0A0"
+      print(i)
+    }else{
+      the_last_to_plot_names<-c(the_last_to_plot_names,list_of_gene_names[i])
+      print("here")
+      my_cols[list_of_gene_names[i]]<-"#FF00FF"
+
+    }
+  }
+
+
+   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/ALL_GENES/",Main_gene,".tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=1000)
+
+t<-DimPlot(object = glu,cols = my_cols,label=FALSE,pt.size = 1,order =the_last_to_plot_names ) +ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),legend.position="none")
+plot(t)
+#plot(t,xaxt = "n")
+dev.off()
+
+}
 ```
 
