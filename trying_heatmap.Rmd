@@ -177,3 +177,23 @@ colnames(current_gene)<-" elav"
 all<-bind_cols(all,current_gene)
 ```
 
+
+
+
+```{r}
+all<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav.csv",check.names=FALSE,row.names = 1)
+write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav.csv")
+sig_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+
+all<-as.matrix(all)
+
+genes <- c((sig_genes$X))
+
+
+
+mat<-all[row.names(all) %in% genes, ]
+
+pheatmap(mat, scale = "row",cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =9)
+
+```
+
