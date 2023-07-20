@@ -98,7 +98,7 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 sub_Seted<-SERUAT_HEAD
 Idents(object = sub_Seted) <- sub_Seted@meta.data$names
 
-avg_exprs<-AverageExpression(sub_Seted,slot = 'counts', group.by="ident" )
+avg_exprs<-AverageExpression(sub_Seted, group.by="ident" )
 
 tmp<-as.data.frame(avg_exprs[["RNA"]])
 current_gene<-as.data.frame(tmp[,main_genes[j]])
@@ -168,7 +168,7 @@ Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
 my_elav<-t[[" elav"]]
 Idents(object = my_elav) <- my_elav@meta.data$names
 
-avg_exprs<-AverageExpression(my_elav,slot = 'counts' )
+avg_exprs<-AverageExpression(my_elav )
 
 tmp<-as.data.frame(avg_exprs[["RNA"]])
 current_gene<-as.data.frame(tmp[,"all"])
