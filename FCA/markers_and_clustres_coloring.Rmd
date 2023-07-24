@@ -79,6 +79,10 @@ dev.off()
 ```{r}
 library(stringr)
 library(ggplot2)
+
+
+ glu<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes_wo_elav_labels.rds")
+
 list_of_gene<-c(" ple"," NPFR"," fru"," Tdc2"," NPF"," Crz"," Tbh"," OK107")
 
 
@@ -101,7 +105,7 @@ for(gene in 2:length(list_of_gene_names)){
   half_num_genes<-(num_of_genes/2)
   
 my_cols<- c(DiscretePalette(half_num_genes ,palette = "glasbey"),DiscretePalette(half_num_genes, palette = "glasbey"))
-my_cols[1]<-"#A0A0A0"
+my_cols[1]<-"#C0C0C0"
 names(my_cols)<-list_of_gene_names
 
 
@@ -114,21 +118,21 @@ the_last_to_plot_names<-c()
   for(i in 2:num_of_genes){
     if(!(Main_gene == list_of_gene_names[i])){
       my_plot_order_names<-c(my_plot_order_names,list_of_gene_names[i])
-      my_cols[list_of_gene_names[i]]<-"#A0A0A0"
+      my_cols[list_of_gene_names[i]]<-"#C0C0C0"
       print(i)
     }else{
       the_last_to_plot_names<-c(the_last_to_plot_names,list_of_gene_names[i])
       print("here")
-      my_cols[list_of_gene_names[i]]<-"#FF00FF"
+      my_cols[list_of_gene_names[i]]<-"#FF0000"
 
     }
   }
 Main_gene<-trimws(Main_gene)
 
 
-   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/ALL_GENES/",Main_gene,".tiff")
+   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/all_gene_Red/",Main_gene,".tiff")
   
- tiff(file=plotname,units="in",height=11,width=11,res=1000)
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
 
 t<-DimPlot(object = glu,cols = my_cols,label=FALSE,pt.size = 1,order =the_last_to_plot_names ) +ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),legend.position="none")
 plot(t)
