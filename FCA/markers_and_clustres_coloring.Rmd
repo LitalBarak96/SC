@@ -1,0 +1,265 @@
+---
+title: "markers_and_clustes"
+author: "lital barak"
+date: "2023-07-18"
+output: html_document
+---
+```{r}
+ glu<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes_wo_elav_labels.rds")
+
+glu@meta.data$names<-""
+
+
+for(i in 1:nrow(glu@meta.data)){
+
+    if(glu@meta.data$s_fru[i] == TRUE){
+    glu@meta.data$names[i]<-paste(glu@meta.data$names[i],"fru")
+
+    }
+}
+
+
+sub_Seted<-subset(glu, names != "")
+
+
+sub_Seted <- NormalizeData(object = sub_Seted)
+sub_Seted <- FindVariableFeatures(object = sub_Seted)
+sub_Seted <- ScaleData(object = sub_Seted)
+sub_Seted <- RunPCA(object = sub_Seted)
+ElbowPlot(sub_Seted)
+#DimHeatmap(glu, dims = 1:2, balanced = TRUE)
+sub_Seted <- FindNeighbors(object = sub_Seted, dims = 1:10)
+sub_Seted <- FindClusters(object = sub_Seted)
+sub_Seted <- RunUMAP(object = sub_Seted, dims = 1:10)
+
+
+
+   plotname<-paste0("C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/fru_reclustred.tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=1000)
+
+DimPlot(object = sub_Seted,label.size
+=3.5,pt.size = 1.5)
+ dev.off()
+
+markers <- FindAllMarkers(sub_Seted, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 1)
+markers<-subset(markers,p_val_adj<0.05)
+write.csv(markers$gene,"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/fru_pos_marker.csv")
+markers$gene
+```
+
+
+```{r}
+tmp<-sub_Seted
+markers<-markers %>% group_by(cluster) %>% slice_max(order_by = avg_log2FC, n = 1)
+tmp@meta.data$marker <- NA
+
+
+for(i in 1:length(markers$gene)){
+  tmp@meta.data$marker[tmp@meta.data$seurat_clusters == (i-1)] <- markers$gene[i]
+
+}
+
+# new.cluster.ids <- markers$gene
+# names(new.cluster.ids) <- levels(tmp)
+# Idents(tmp)<-new.cluster.ids
+Idents(tmp) <-tmp@meta.data$marker
+ 
+plotname<-"C:/Users/Lital/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/fru_with_markers_labels_log_fold.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+DimPlot(tmp, reduction = "umap", label = TRUE, pt.size = 0.5)+NoLegend()
+
+dev.off()
+
+```
+
+
+```{r}
+library(stringr)
+library(ggplot2)
+
+
+ glu<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes_wo_elav_labels.rds")
+
+list_of_gene<-c(" ple"," NPFR"," fru"," Tdc2"," NPF"," Crz"," Tbh"," OK107")
+
+
+
+
+Idents(object = glu) <- glu@meta.data$names
+
+
+
+#par(mfrow = c(3, 3),mar = c(2.1, 3, 9, 3),xaxs = "i",yaxs = "i",cex.axis=1.1,cex.lab=1.1)
+list_of_gene_names<-names(table(glu@meta.data$names))
+  num_of_genes<-length(table(glu@meta.data$names))
+
+
+
+
+for(gene in 2:length(list_of_gene_names)){
+  Main_gene<-list_of_gene_names[gene]
+  
+  half_num_genes<-(num_of_genes/2)
+  
+my_cols<- c(DiscretePalette(half_num_genes ,palette = "glasbey"),DiscretePalette(half_num_genes, palette = "glasbey"))
+my_cols[1]<-"#C0C0C0"
+names(my_cols)<-list_of_gene_names
+
+
+
+my_plot_order_names<-c()
+the_last_to_plot_names<-c()
+
+
+
+  for(i in 2:num_of_genes){
+    if(!(Main_gene == list_of_gene_names[i])){
+      my_plot_order_names<-c(my_plot_order_names,list_of_gene_names[i])
+      my_cols[list_of_gene_names[i]]<-"#C0C0C0"
+      print(i)
+    }else{
+      the_last_to_plot_names<-c(the_last_to_plot_names,list_of_gene_names[i])
+      print("here")
+      my_cols[list_of_gene_names[i]]<-"#FF0000"
+
+    }
+  }
+Main_gene<-trimws(Main_gene)
+
+
+   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/all_gene_Red/",Main_gene,".tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+t<-DimPlot(object = glu,cols = my_cols,label=FALSE,pt.size = 1,order =the_last_to_plot_names ) +ggtitle(Main_gene)+ theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),legend.position="none")
+plot(t)
+#plot(t,xaxt = "n")
+dev.off()
+
+}
+```
+
+
+```{r}
+library(Seurat)
+
+
+
+
+sub_Seted<-readRDS("/home/alu/aluguest/Lital_galitLab/17_7_reclustered_head_elav_genes.rds")
+final<-NULL
+
+main_genes<-c(" fru" , " Tbh" , " ple" , " Crz" , " NPFR", " Tdc2", " NPF"," OK107")
+
+for(j in 1:length(main_genes)){
+  
+  sub_Seted@meta.data$names<-""
+
+SERUAT_HEAD<-sub_Seted
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+# 
+  if(j == 1) {
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+  }
+  if(j == 2){
+          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+  }
+
+  if(j == 3){
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+}
+  }
+  if(j == 4){
+    
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+  }
+  if(j == 5 ){
+    
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+  }
+  
+  if( j == 6){
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+  }
+
+  if(j== 7){
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+      }
+  }
+
+  if(j == 8){
+          if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+  
+}
+  }
+
+
+
+
+
+
+
+}
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$names[i] == ""){
+   SERUAT_HEAD@meta.data$names[i]<-" elav"
+   }
+}
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+gene_name<-main_genes[j]
+
+all_genes<-FindMarkers(SERUAT_HEAD, ident.1 = gene_name, subset.ident  = " elav", test.use = "DESeq2",slot = "counts",max.cells.per.ident=2000)
+
+sig_genes<-subset(all_genes, abs(avg_log2FC)  >= 1 & p_val_adj <0.05)
+
+sig_genes<-cbind(sig_genes,from_where = gene_name)
+
+final<-rbind(final,sig_genes)
+}
+
+write.csv(final,"/home/alu/aluguest/Lital_galitLab/sig_elav_gene.csv")
+
+
+
+
+
+
+
+
+#sub_neruons <-readRDS("/home/alu/aluguest/Lital_galitLab/elav_genes.rds")
+
+#Idents(object = sub_neruons) <- sub_neruons@meta.data$names
+
+```
+
+
+
+

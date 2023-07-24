@@ -30,10 +30,12 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
         }
   }
   if(j == 2){
-          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
-
-      }
+    
+    #removed
+    #       if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+    # 
+    #   }
   }
 
   if(j == 3){
@@ -94,7 +96,8 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
    }
 }
 
-
+if(j!=2){
+  
 sub_Seted<-SERUAT_HEAD
 Idents(object = sub_Seted) <- sub_Seted@meta.data$names
 
@@ -105,6 +108,8 @@ current_gene<-as.data.frame(tmp[,main_genes[j]])
 rownames(current_gene)<-rownames(tmp)
 colnames(current_gene)<-main_genes[j]
 all<-bind_cols(all,current_gene)
+}
+
 
 
 }
@@ -181,8 +186,10 @@ all<-bind_cols(all,current_gene)
 
 
 ```{r}
-all<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav.csv",check.names=FALSE,row.names = 1)
-write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav.csv")
+
+library(pheatmap)
+all<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
 sig_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
 all<-as.matrix(all)
@@ -193,7 +200,28 @@ genes <- c((sig_genes$X))
 
 mat<-all[row.names(all) %in% genes, ]
 
-pheatmap(mat, scale = "row",cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =9)
+
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/sc_clustering.tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+pheatmap(mat, scale = "row",cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+```
+
+
+
+```{r}
+tmp_gene<-c(row.names(avarges))
+mat<-all[row.names(all) %in% tmp_gene, ]
+
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/sc_clustering_gene_of_yulia.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+dev.off()
 
 ```
 

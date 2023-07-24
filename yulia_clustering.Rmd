@@ -142,9 +142,9 @@ library("DESeq2")
 
 ```{r}
 
-cts <- (read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv",sep=",",row.names="GeneSymbol"))
-coldata <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv", row.names=1)
-coldata_not_factorial <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv")
+cts <- (read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv", row.names=1)
+coldata_not_factorial <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv")
 data_noTPM <- (cts)
 data<-data.frame(row.names=rownames(cts))
 ```
@@ -285,7 +285,9 @@ pheatmap(mat, annotation_col = df,  scale = "row",cluster_cols=TRUE,show_rowname
 #genes <- c(data_frame_merge$Row.names)
 #mat <- assay(dds)[genes, ]
 
-list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
+#list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
+list_of_cells<-c("npf","npfr","tdc2","crz","th","fru","ok107","elav")
+
 avarges<-NULL
 
 
@@ -293,13 +295,13 @@ avarges<-NULL
 main_data<-as.data.frame(mat)
 #avarges$Geneid<-main_data$Geneid
 avarges$fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
-avarges$dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
+#avarges$dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
 avarges$npf<-rowMeans(x=main_data[ , grepl( "npf" , names( main_data ) ) ], na.rm = TRUE)
 avarges$npfr<-rowMeans(x=main_data[ , grepl( "npfr" , names( main_data ) ) ], na.rm = TRUE)
 avarges$tdc2<-rowMeans(x=main_data[ , grepl( "tdc2" , names( main_data ) ) ], na.rm = TRUE)
 avarges$crz<-rowMeans(x=main_data[ , grepl( "crz" , names( main_data ) ) ], na.rm = TRUE)
 avarges$th<-rowMeans(x=main_data[ , grepl( "th" , names( main_data ) ) ], na.rm = TRUE)
-avarges$trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
+#avarges$trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
 avarges$ok107<-rowMeans(x=main_data[ , grepl( "ok107" , names( main_data ) ) ], na.rm = TRUE)
 
 avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na.rm = TRUE)
@@ -327,9 +329,18 @@ rownames(avarges)<-rownames(main_data)
 mat_new<-as.matrix(avarges)
 
 
-pheatmap(mat_new,  cluster_cols=FALSE,show_rownames=FALSE,cluster_rows=FALSE)
+#pheatmap(mat_new,  cluster_cols=FALSE,show_rownames=FALSE,cluster_rows=FALSE)
 
-pheatmap(mat_new, scale = "row",cluster_rows  = T,show_rownames = F, color=colorRampPalette(c("navy", "white", "red"))(50),fontsize_row = 3, fontsize_col = 8,cutree_cols =10)
+
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/yulia_clustering.tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat_new, scale = "row",cluster_rows  = T,show_rownames = F, color=colorRampPalette(c("navy", "white", "red"))(50),fontsize_row = 3, fontsize_col = 8,cutree_cols =8)
+#plot(t,xaxt = "n")
+dev.off()
+
 
 ```
 
