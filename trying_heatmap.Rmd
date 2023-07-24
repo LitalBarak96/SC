@@ -220,8 +220,7 @@ mat<-all[row.names(all) %in% tmp_gene, ]
   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/sc_clustering_gene_of_yulia.tiff")
  tiff(file=plotname,units="in",height=11,width=11,res=600)
 
-pheatmap(mat, scale = "row",cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
-dev.off()
+pheatmap(mat, scale = "row", cluster_cols = FALSE,cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 ```
 
