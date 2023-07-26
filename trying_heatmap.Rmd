@@ -8,8 +8,8 @@ output: html_document
 
 sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
 Idents(object = sub_Seted) <- sub_Seted@meta.data$names
-
-test<-AverageExpression(sub_Seted,slot = 'counts', group.by="ident",features = )
+# 
+# test<-AverageExpression(sub_Seted,slot = 'counts', group.by="ident",features = )
 ```
 
 ```{r}
@@ -188,9 +188,9 @@ all<-bind_cols(all,current_gene)
 ```{r}
 
 library(pheatmap)
-all<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
-write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sig_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+all<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sig_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
 all<-as.matrix(all)
 
@@ -202,10 +202,10 @@ mat<-all[row.names(all) %in% genes, ]
 
 
 
-  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/sc_clustering.tiff")
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/sc_clustering_wo_clust_colums.tiff")
   
  tiff(file=plotname,units="in",height=11,width=11,res=600)
-pheatmap(mat, scale = "row",cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = FALSE,show_rownames = F,fontsize_row = 3, fontsize_col = 20,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 dev.off()
 ```
@@ -221,6 +221,72 @@ mat<-all[row.names(all) %in% tmp_gene, ]
  tiff(file=plotname,units="in",height=11,width=11,res=600)
 
 pheatmap(mat, scale = "row", cluster_cols = FALSE,cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+```
+
+
+
+
+
+```{r}
+
+
+  
+
+
+
+# i did tanformation so i could show the groups and not the features statistic
+all_together_transformed <- as.data.frame(t(all_together))
+
+
+##all together is ready and now we creating the heatmap itself
+
+#install.packages("pvclust")
+
+library(pvclust)
+
+library("pheatmap")
+
+
+
+test<-t(all)
+library(seriation)
+library(dendextend)
+library(svDialogs)
+phtmap <- pheatmap(all,cluster_cols=FALSE)
+  
+if(change == "yes"){
+  res<-c()
+  for(i in 1:num_of_pop){
+    res[i] <- dlg_list(groupsNames, multiple = TRUE,title="order for the heatmap")$res
+  }
+  row_dend<-rotate(row_dend,res)
+  t<-pheatmap(all_together, cluster_rows =as.hclust(row_dend))
+  setwd((choose.dir(caption = "Select folder for saving the heatmap")))
+  ggsave(plot = t, filename = "heatmap.jpeg", units = "cm")
+  jpeg(filename = "dendrogram_p_val.jpeg", width = 1200, height = 800)
+  plot(result)
+  pvrect(result, alpha=0.95)
+  dev.off()
+  
+}else{
+  t <- pheatmap(all_together)
+  setwd((choose.dir(caption = "Select folder for saving the heatmap")))
+  ggsave(plot = t, filename = "heatmap.jpeg",units = "cm")
+  jpeg(filename = "dendrogram_p_val.jpeg", width = 1200, height = 800)
+  plot(result)
+  pvrect(result, alpha=0.95)
+  dev.off()
+
+}
+
+# Finding distance matrix
+distance_mat <- dist(all_together, method = 'euclidean')
+distance_mat
+
+
+
+
 
 ```
 
