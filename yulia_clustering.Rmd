@@ -218,6 +218,25 @@ resultsNames(dds)
 
 ```{r}
 
+list_of_name<-c("inter","Crz","dh44","fru","npf","npfr","ok107","tdc2","th","trh")
+
+names_of_comp<-resultsNames(dds)
+
+final_all<-NULL
+for(i in 1:length(list_of_name)){
+  all<-NULL
+  if(!(list_of_name[i] =="inter" | list_of_name[i]=="dh44" | list_of_name[i]=="trh")){
+    res_tmp <- results(dds, name=names_of_comp[i])
+    all<-subset(res_tmp, padj<0.05 & abs(log2FoldChange)>=1)
+    all<-as.data.frame(all)
+    all<-cbind(all,list_of_name[i])
+    all<-cbind(all,gene=rownames(all))
+   final_all<- rbind(final_all,all)
+  }
+  #res_tmp <- results(dds, name="condition_treated_vs_untreated")
+}
+
+
 ```
 
 
