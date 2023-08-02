@@ -221,13 +221,17 @@ unq_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekl
 
 tmp_gene<-c((unq_gene$gene))
 mat<-all[row.names(all) %in% tmp_gene, ]
-test_scale<-scale(mat)
+#test_scale<-scale(mat)
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
 #test_scale<-mat+0.001
 
-  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/new_markers/sc_clustering_markker_of_yulia_added_value.tiff")
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/new_markers/sc_clustering_marker_of_yulia_not_scaled.tiff")
  tiff(file=plotname,units="in",height=11,width=11,res=600)
 
-pheatmap(test_scale, scale = "row", cluster_cols = FALSE,cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
 dev.off()
 ```
 
@@ -238,8 +242,14 @@ dev.off()
 ```{r}
 
 
-  
+library("dendsort")
+phtmap <- pheatmap(mat)
+row_dend <- phtmap[[2]]
+main_genes<-c("fru" , "ple" , "Crz" , "NPFR", "Tdc2", "NPF","OK107")
 
+  row_dend<-rotate(row_dend,res)
+  
+    t<-pheatmap(mat, cluster_rows =as.hclust(row_dend))
 
 
 # i did tanformation so i could show the groups and not the features statistic
@@ -260,14 +270,12 @@ test<-t(all)
 library(seriation)
 library(dendextend)
 library(svDialogs)
-phtmap <- pheatmap(all,cluster_cols=FALSE)
-  
+
 if(change == "yes"){
   res<-c()
   for(i in 1:num_of_pop){
     res[i] <- dlg_list(groupsNames, multiple = TRUE,title="order for the heatmap")$res
   }
-  row_dend<-rotate(row_dend,res)
   t<-pheatmap(all_together, cluster_rows =as.hclust(row_dend))
   setwd((choose.dir(caption = "Select folder for saving the heatmap")))
   ggsave(plot = t, filename = "heatmap.jpeg", units = "cm")
@@ -295,5 +303,48 @@ distance_mat
 
 
 
+```
+
+
+
+
+```{r}
+library(pheatmap)
+#> [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"
+
+callback = function(hc, mat){
+  sv = svd(t(mat))$v[,c(1)]
+  dend = reorder(as.dendrogram(hc), wts = sv^2)
+  as.hclust(dend)
+}
+
+mat<-as.data.frame(mat)
+
+data <- subset(mat, select=c("NPF", "Tdc2","ple","NPFR","elav","OK107","fru","Crz"))
+
+#svd(t(iris[c(4, 2, 3, 1)]))$v[,1]
+t<-mat[,c("NPF", "Tdc2","ple","NPFR","elav","OK107","fru","Crz")]
+pheatmap(data, clustering_callback = callback)
+```
+
+
+
+
+
+```{r}
+library(gplots)
+
+data<-as.matrix(data)
+
+ht <- heatmap.2(
+    x = data,
+    col = colorRampPalette(c("navy", "white", "red"))(50),
+    trace = "none",
+    key = FALSE,
+    dendrogram = "both",
+    main = "Example Data",
+    labRow = FALSE,
+    scale="row"
+)
 ```
 
