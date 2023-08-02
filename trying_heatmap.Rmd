@@ -213,15 +213,22 @@ dev.off()
 
 
 ```{r}
-tmp_gene<-c(row.names(avarges))
+
+write.csv(avarges,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_gene_sc_data.csv")
+
+#this is the genes from yulia
+unq_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+
+tmp_gene<-c((unq_gene$gene))
 mat<-all[row.names(all) %in% tmp_gene, ]
+test_scale<-scale(mat)
+#test_scale<-mat+0.001
 
-
-  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/sc_clustering_gene_of_yulia.tiff")
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/new_markers/sc_clustering_markker_of_yulia_added_value.tiff")
  tiff(file=plotname,units="in",height=11,width=11,res=600)
 
-pheatmap(mat, scale = "row", cluster_cols = FALSE,cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
-
+pheatmap(test_scale, scale = "row", cluster_cols = FALSE,cluster_rows  = T,show_rownames = F,fontsize_row = 3, fontsize_col = 8,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+dev.off()
 ```
 
 

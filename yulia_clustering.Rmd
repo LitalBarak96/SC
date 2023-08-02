@@ -142,9 +142,9 @@ library("DESeq2")
 
 ```{r}
 
-cts <- (read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv",sep=",",row.names="GeneSymbol"))
-coldata <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv", row.names=1)
-coldata_not_factorial <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv")
+cts <- (read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/ten_cell_type.csv",sep=",",row.names="GeneSymbol"))
+coldata <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv", row.names=1)
+coldata_not_factorial <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.05.23/meta_test.csv")
 data_noTPM <- (cts)
 data<-data.frame(row.names=rownames(cts))
 ```
@@ -218,24 +218,6 @@ resultsNames(dds)
 
 ```{r}
 
-list_of_name<-c("inter","Crz","dh44","fru","npf","npfr","ok107","tdc2","th","trh")
-
-names_of_comp<-resultsNames(dds)
-
-final_all<-NULL
-for(i in 1:length(list_of_name)){
-  all<-NULL
-  if(!(list_of_name[i] =="inter" | list_of_name[i]=="dh44" | list_of_name[i]=="trh")){
-    res_tmp <- results(dds, name=names_of_comp[i])
-    all<-subset(res_tmp, padj<0.05 & abs(log2FoldChange)>=1)
-    all<-as.data.frame(all)
-    all<-cbind(all,list_of_name[i])
-    all<-cbind(all,gene=rownames(all))
-   final_all<- rbind(final_all,all)
-  }
-  #res_tmp <- results(dds, name="condition_treated_vs_untreated")
-}
-
 
 ```
 
@@ -268,7 +250,7 @@ all<-as.data.frame(all)
 ```{r}
 #data_frame_merge <- merge(up, down,
 #      by = 'row.names', all = TRUE)
-genes <- c(row.names(all))
+genes <- c(row.names(unq_gene))
 
 
 mat<-table_counts_normalized[genes, ]
@@ -304,6 +286,39 @@ pheatmap(mat, annotation_col = df,  scale = "row",cluster_cols=TRUE,show_rowname
 #genes <- c(data_frame_merge$Row.names)
 #mat <- assay(dds)[genes, ]
 
+
+
+
+list_of_name<-c("inter","Crz","dh44","fru","npf","npfr","ok107","tdc2","th","trh")
+
+names_of_comp<-resultsNames(dds)
+
+final_all<-NULL
+for(i in 1:length(list_of_name)){
+  all<-NULL
+  if(!(list_of_name[i] =="inter" | list_of_name[i]=="dh44" | list_of_name[i]=="trh")){
+    res_tmp <- results(dds, name=names_of_comp[i])
+    all<-subset(res_tmp, padj<0.05 & abs(log2FoldChange)>=1)
+    all<-as.data.frame(all)
+    all<-cbind(all,list_of_name[i])
+    all<-cbind(all,gene=rownames(all))
+   final_all<- rbind(final_all,all)
+  }
+  #res_tmp <- results(dds, name="condition_treated_vs_untreated")
+}
+
+library(dplyr)
+
+
+unq_gene<-final_all %>% distinct(gene, .keep_all=TRUE)
+
+
+write.csv(unq_gene,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+genes <- c(row.names(unq_genes))
+
+
+mat<-table_counts_normalized[genes, ]
+
 #list_of_cells<-c("dh44","npf","npfr","tdc2","crz","th","trh","fru","ok107","elav")
 list_of_cells<-c("npf","npfr","tdc2","crz","th","fru","ok107","elav")
 
@@ -327,7 +342,7 @@ avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na
 
 
 avarges<-as.data.frame(avarges)
-
+s
 rownames(avarges)<-rownames(main_data)
 
 
@@ -352,7 +367,7 @@ mat_new<-as.matrix(avarges)
 
 
 
-  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/yulia_clustering.tiff")
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/new_markers/yulia_clustering.tiff")
   
  tiff(file=plotname,units="in",height=11,width=11,res=600)
 
