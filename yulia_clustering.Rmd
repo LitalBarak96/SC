@@ -254,6 +254,7 @@ genes <- c(row.names(unq_gene))
 
 
 mat<-table_counts_normalized[genes, ]
+# write.csv(table_counts_normalized,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_data.csv")
 #mat <- assay(dds)[genes, ]
 #mat<-scale(mat)
 #mat <- mat - rowMeans(mat)
@@ -342,7 +343,7 @@ avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na
 
 
 avarges<-as.data.frame(avarges)
-s
+
 rownames(avarges)<-rownames(main_data)
 
 
