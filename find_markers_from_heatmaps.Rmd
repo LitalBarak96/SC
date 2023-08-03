@@ -46,10 +46,19 @@ rownames(avarges)<-rownames(main_data)
 ```
 
 ```{r}
-genes <- c((bulk_gene$gene))
+genes_bulk <- c((bulk_gene$gene))
 
 
-bulk<-avarges[genes, ]
+bulk<-avarges[genes_bulk, ]
+
+
+  genes_sc <- c((sc_genes$X))
+
+
+sc<-sc_data[genes_sc, ]
+sc<-na.omit(sc)
+
+
 ```
 
 ```{r}
@@ -69,11 +78,24 @@ scale_mat = function(mat, scale){
 }
 
 
-normlized<-scale_mat(bulk,"row")
+normlized_bulk<-scale_mat(bulk,"row")
+normlized_sc<-scale_mat(sc,"row")
+
+
+enriched_bulk<-normlized_bulk[abs(normlized_bulk$npfr) > 1.5,]
+
+enriched_sc<-normlized_sc[abs(normlized_sc$NPFR) > 1.5,]
+
+
+write.csv(enriched_bulk,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/bulk_npfr_1_5_abs.csv")
+write.csv(enriched_sc,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/sc_npfr_1_5_abs.csv")
+
+
 
 ```
 
 ```{r}
+
 
 
 gene_bulk<-bulk_gene$X
