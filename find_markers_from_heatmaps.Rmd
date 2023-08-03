@@ -6,14 +6,14 @@ output: html_document
 ---
 
 ```{r}
-sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sc_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
-bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
 
 
-bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_data.csv",row.names = 1)
+bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_data.csv",row.names = 1)
 
 ```
 
@@ -71,5 +71,15 @@ scale_mat = function(mat, scale){
 
 normlized<-scale_mat(bulk,"row")
 
+```
+
+```{r}
+
+
+gene_bulk<-bulk_gene$X
+gene_sc<-sc_genes$X
+
+Overlap <- calculate.overlap(x = list(gene_bulk,gene_sc))
+plot(Overlap)
 ```
 
