@@ -81,14 +81,20 @@ scale_mat = function(mat, scale){
 normlized_bulk<-scale_mat(bulk,"row")
 normlized_sc<-scale_mat(sc,"row")
 
+# 
+# enriched_bulk<-normlized_bulk[abs(normlized_bulk$npfr) > 1,]
+# 
+# enriched_sc<-normlized_sc[abs(normlized_sc$NPFR) > 1,]
 
-enriched_bulk<-normlized_bulk[abs(normlized_bulk$npfr) > 1.5,]
 
-enriched_sc<-normlized_sc[abs(normlized_sc$NPFR) > 1.5,]
+current_gene<-"npf"
 
+enriched_bulk<-normlized_bulk[(normlized_bulk$npf) > 1.5,]
 
-write.csv(enriched_bulk,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/bulk_npfr_1_5_abs.csv")
-write.csv(enriched_sc,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/sc_npfr_1_5_abs.csv")
+enriched_sc<-normlized_sc[(normlized_sc$NPF) > 1.5,]
+
+write.csv(enriched_bulk,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/bulk_up_",current_gene,".csv"))
+write.csv(enriched_sc,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/sc_up_",current_gene,".csv"))
 
 
 
@@ -97,11 +103,100 @@ write.csv(enriched_sc,"D:/OneDrive - Bar Ilan University/Lital/weekly presentati
 ```{r}
 
 
+# 
+# gene_bulk<-bulk_gene$X
+# gene_sc<-sc_genes$X
+# 
+# Overlap <- calculate.overlap(x = list(gene_bulk,gene_sc))
+# plot(Overlap)
+```
+```{r}
 
-gene_bulk<-bulk_gene$X
-gene_sc<-sc_genes$X
 
-Overlap <- calculate.overlap(x = list(gene_bulk,gene_sc))
-plot(Overlap)
+current_gene<-"tdc2"
+
+enriched_bulk<-normlized_bulk[(normlized_bulk$tdc2) > 1.5,]
+
+enriched_sc<-normlized_sc[(normlized_sc$Tdc2) > 1.5,]
+
+write.csv(enriched_bulk,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/bulk_up_",current_gene,".csv"))
+write.csv(enriched_sc,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/sc_up_",current_gene,".csv"))
+
+
+
+all<-bulk_data
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sig_genes<-rownames(enriched_bulk)
+
+all<-as.matrix(all) 
+# write.csv(avarges,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_gene_sc_data.csv")
+
+#this is the genes from yulia
+
+tmp_gene<-c((sig_genes))
+mat<-all[row.names(all) %in% tmp_gene, ]
+#test_scale<-scale(mat)
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+#test_scale<-mat+0.001
+
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/",current_gene,"_up_bulk.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 3, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+
+
+
+all<-sc_data
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sig_genes<-rownames(enriched_sc)
+
+all<-as.matrix(all) 
+# write.csv(avarges,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_gene_sc_data.csv")
+
+
+tmp_gene<-c((sig_genes))
+mat<-all[row.names(all) %in% tmp_gene, ]
+#test_scale<-scale(mat)
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+#test_scale<-mat+0.001
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/",current_gene,"_up_sc.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 8, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+
+```
+```{r}
+all<-sc_data
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sig_genes<-rownames(enriched_sc)
+
+all<-as.matrix(all) 
+# write.csv(avarges,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_gene_sc_data.csv")
+
+
+tmp_gene<-c((sig_genes))
+mat<-all[row.names(all) %in% tmp_gene, ]
+#test_scale<-scale(mat)
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+#test_scale<-mat+0.001
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/npfr_up_sc.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 8, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
 ```
 
