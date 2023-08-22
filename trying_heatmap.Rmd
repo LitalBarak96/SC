@@ -188,9 +188,9 @@ all<-bind_cols(all,current_gene)
 ```{r}
 
 library(pheatmap)
-all<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+all<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sig_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+sig_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
 all<-as.matrix(all)
 
@@ -205,9 +205,35 @@ mat<-all[row.names(all) %in% genes, ]
   plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/23.7.23/sc_clustering_wo_clust_colums.tiff")
   
  tiff(file=plotname,units="in",height=11,width=11,res=600)
-pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = FALSE,show_rownames = F,fontsize_row = 3, fontsize_col = 20,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
+sc_heatmap<-pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 20,cutree_cols =8,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 dev.off()
+```
+
+
+```{r}
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+
+
+bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+
+
+
+bulk_data<-as.matrix(bulk_data)
+
+genes <- c((bulk_gene$X))
+
+
+
+mat<-bulk_data[row.names(bulk_data) %in% genes, ]
+
+
+
+  
+bulk_heatmap<-pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 5,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+
+
 ```
 
 
@@ -216,7 +242,7 @@ dev.off()
 
 #all is for sc
 
-all<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+all<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
 sig_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
@@ -243,6 +269,74 @@ dev.off()
 ```
 
 
+
+
+```{r}
+
+bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+
+avarges<-NULL
+
+
+
+main_data<-as.data.frame(bulk_data)
+#avarges$Geneid<-main_data$Geneid
+avarges$fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
+#avarges$dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npf<-rowMeans(x=main_data[ , grepl( "npf" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npfr<-rowMeans(x=main_data[ , grepl( "npfr" , names( main_data ) ) ], na.rm = TRUE)
+avarges$tdc2<-rowMeans(x=main_data[ , grepl( "tdc2" , names( main_data ) ) ], na.rm = TRUE)
+avarges$crz<-rowMeans(x=main_data[ , grepl( "crz" , names( main_data ) ) ], na.rm = TRUE)
+avarges$th<-rowMeans(x=main_data[ , grepl( "th" , names( main_data ) ) ], na.rm = TRUE)
+#avarges$trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
+avarges$ok107<-rowMeans(x=main_data[ , grepl( "ok107" , names( main_data ) ) ], na.rm = TRUE)
+
+avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na.rm = TRUE)
+
+
+avarges<-as.data.frame(avarges)
+
+
+
+rownames(avarges)<-rownames(main_data)
+
+bulk_data<-avarges
+
+
+
+
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+
+
+bulk_data<-as.matrix(bulk_data)
+
+genes <- c((bulk_gene$X))
+
+
+
+mat<-bulk_data[row.names(bulk_data) %in% genes, ]
+
+
+
+  
+bulk_heatmap<-pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+```
+
+```{r}
+list_of_rowenames_genes<-rownames(mat[bulk_heatmap$tree_row[["order"]],])
+normlized_bulk<-scale_mat(bulk,"row")
+
+
+new_order<-normlized_bulk[(list_of_rowenames_genes), ]
+
+
+plot(bulk_heatmap$tree_row)
+
+abline(h=3, col="red", lty=2, lwd=2)
+
+t<-sort(cutree(bulk_heatmap$tree_row, k=4))
+
+```
 
 
 
