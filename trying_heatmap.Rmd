@@ -273,7 +273,7 @@ dev.off()
 
 ```{r}
 
-bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
 
 avarges<-NULL
 
@@ -305,7 +305,7 @@ bulk_data<-avarges
 
 
 
-bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
 
 
 bulk_data<-as.matrix(bulk_data)
@@ -334,11 +334,42 @@ plot(bulk_heatmap$tree_row)
 
 abline(h=3, col="red", lty=2, lwd=2)
 
-t<-sort(cutree(bulk_heatmap$tree_row, k=4))
+getting_cluster<-sort(cutree(bulk_heatmap$tree_row, h=3))
+
+
+
+getting_cluster<-as.data.frame(getting_cluster)
+getting_cluster<-cbind(getting_cluster,rownames(getting_cluster))
+
+clustered_genes<-getting_cluster[(list_of_rowenames_genes), ]
+
+clustered_genes<-as.data.frame(clustered_genes)
+rownames(clustered_genes)<-list_of_rowenames_genes
+
+
+splited_clustred<-split(clustered_genes,clustered_genes$getting_cluster)
+
 
 ```
 
+```{r}
+current_cluster_genes<-splited_clustred$`33`$`rownames(getting_cluster)`
 
+
+mat<-bulk_data[row.names(bulk_data) %in% current_cluster_genes, ]
+
+
+
+  
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+```
+
+```{r}
+cross_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/120_cross.csv",header = FALSE)
+
+mat<-bulk_data[row.names(bulk_data) %in% current_cluster_genes, ]
+
+```
 
 ```{r}
 
