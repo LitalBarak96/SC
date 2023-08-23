@@ -366,10 +366,36 @@ pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames 
 
 ```{r}
 cross_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/120_cross.csv",header = FALSE)
+cross_genes<-c(cross_genes$V1)
 
-mat<-bulk_data[row.names(bulk_data) %in% current_cluster_genes, ]
+mat<-bulk_data[row.names(bulk_data) %in% cross_genes, ]
 
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/120_crossed_bulked.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
 ```
+```{r}
+sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+
+
+
+mat<-sc_data[row.names(sc_data) %in% cross_genes, ]
+
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/120_crossed_sc.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+```
+
+
+
 
 ```{r}
 
