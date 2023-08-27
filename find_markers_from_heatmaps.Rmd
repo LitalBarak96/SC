@@ -6,14 +6,14 @@ output: html_document
 ---
 
 ```{r}
-sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sc_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
-bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
 
 
-bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
 
 ```
 
@@ -198,5 +198,31 @@ mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
 pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 8, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 dev.off()
+```
+
+
+
+
+```{r}
+sc_splited_genes<-split(sc_genes, sc_genes$from_where)
+bulk_splited_genes<-split(bulk_gene, bulk_gene$list_of_name.i.)
+
+unique(sc_genes$from_where)
+unique(bulk_gene$list_of_name.i.)
+
+sc_main_genes<-c(" fru"  , " ple"  , " Crz"  , " NPFR" , " Tdc2" , " NPF"  , " OK107")
+bulk_main_genes<-c("fru" ,"th" ,"Crz"   , "npfr" ,"tdc2", "npf"   ,  "ok107"   )
+
+
+mybiglist <- list()
+for(i in 1:length(sc_main_genes)){
+  sc_current_gene<-sc_splited_genes[[sc_main_genes[i]]]$X
+  bulk_current_gene<-bulk_splited_genes[[bulk_main_genes[i]]]$X
+intersect(sc_current_gene, bulk_current_gene)
+
+    
+  tmp <- list(genes=intersect(sc_current_gene, bulk_current_gene), from_where =bulk_main_genes[i])
+  mybiglist[[bulk_main_genes[i]]] <- tmp
+}
 ```
 
