@@ -6,14 +6,14 @@ output: html_document
 ---
 
 ```{r}
-sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+sc_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
-bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
 
 
-bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
 
 ```
 
@@ -175,6 +175,7 @@ pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = 
 dev.off()
 
 ```
+
 ```{r}
 all<-sc_data
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
@@ -224,5 +225,96 @@ intersect(sc_current_gene, bulk_current_gene)
   tmp <- list(genes=intersect(sc_current_gene, bulk_current_gene), from_where =bulk_main_genes[i])
   mybiglist[[bulk_main_genes[i]]] <- tmp
 }
+```
+
+```{r}
+
+bulk_main_genes<-c("fru" ,"th" ,"Crz"   , "npfr" ,"tdc2", "npf"   ,  "ok107"   )
+
+mybiglist[[bulk_main_genes[3]]][["genes"]]
+
+
+current_gene<-bulk_main_genes[7]
+
+all<-bulk_data
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sig_genes<-c(mybiglist[[bulk_main_genes[7]]][["genes"]])
+
+all<-as.matrix(all) 
+# write.csv(avarges,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_gene_sc_data.csv")
+
+#this is the genes from yulia
+
+tmp_gene<-c((sig_genes))
+mat<-all[row.names(all) %in% tmp_gene, ]
+#test_scale<-scale(mat)
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+s
+#test_scale<-mat+0.001
+
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/",current_gene,"_bulk.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 8, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+
+```
+```{r}
+
+current_gene<-bulk_main_genes[7]
+
+all<-sc_data
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sig_genes<-c(mybiglist[[bulk_main_genes[7]]][["genes"]])
+
+all<-as.matrix(all) 
+# write.csv(avarges,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_gene_sc_data.csv")
+
+
+tmp_gene<-c((sig_genes))
+mat<-all[row.names(all) %in% tmp_gene, ]
+#test_scale<-scale(mat)
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+#test_scale<-mat+0.001
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/",current_gene,"_sc.tiff") 
+  tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 8, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+```
+
+
+
+```{r}
+
+all<-bulk_data
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sig_genes<-c(sc_genes$X)
+
+all<-as.matrix(all) 
+# write.csv(avarges,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_gene_sc_data.csv")
+
+
+tmp_gene<-c((sig_genes))
+mat<-all[row.names(all) %in% tmp_gene, ]
+#test_scale<-scale(mat)
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+#test_scale<-mat+0.001
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/bulkdata_sc_degenes_sc.tiff") 
+  tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 2, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
 ```
 
