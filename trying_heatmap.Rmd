@@ -395,6 +395,31 @@ dev.off()
 ```
 
 
+```{r}
+#to get only the cells that are npf npfr positive
+sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+ t<-SplitObject(sub_Seted, split.by = "names")
+NPF_CELLS<-t[[" NPF"]]
+NPFR_CELLS<-t[[" NPFR"]]
+
+CountMyGeneMyCell<-GetAssayData(object = NPF_CELLS, slot = "data")
+CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
+CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
+
+mat<-CountMyGeneMyCell
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/npf_all_40_cells_gene_clusters.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+```
+
+
 
 
 ```{r}
