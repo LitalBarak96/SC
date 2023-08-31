@@ -411,10 +411,10 @@ CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
 mat<-CountMyGeneMyCell
 mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
 
-  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/npf_all_40_cells_gene_clusters.tiff")
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/npf_all_40_cells_gene_clusters_No_scale.tiff")
  tiff(file=plotname,units="in",height=11,width=11,res=600)
 
-pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+pheatmap(mat,scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 dev.off()
 ```

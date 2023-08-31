@@ -6,14 +6,14 @@ output: html_document
 ---
 
 ```{r}
-sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sc_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
 
-bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
 
 
-bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
 
 ```
 
@@ -87,14 +87,17 @@ normlized_sc<-scale_mat(sc,"row")
 # enriched_sc<-normlized_sc[abs(normlized_sc$NPFR) > 1,]
 
 
-current_gene<-"npf"
+bulk_main_genes<-c("fru" ,"th" ,"Crz"   , "npfr" ,"tdc2", "npf"   ,  "ok107"   )
 
-enriched_bulk<-normlized_bulk[(normlized_bulk$npf) > 1.5,]
+#this is to get the genes that are high in the clustring (going up)
+current_gene<-"fru"
 
-enriched_sc<-normlized_sc[(normlized_sc$NPF) > 1.5,]
+enriched_bulk<-normlized_bulk[abs(normlized_bulk$fru) > 1.5,]
 
-write.csv(enriched_bulk,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/bulk_up_",current_gene,".csv"))
-write.csv(enriched_sc,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/sc_up_",current_gene,".csv"))
+enriched_sc<-normlized_sc[abs(normlized_sc$fru) > 1.5,]
+
+write.csv(enriched_bulk,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/bulk_abs_",current_gene,".csv"))
+write.csv(enriched_sc,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/sc_abs_",current_gene,".csv"))
 
 
 
@@ -208,6 +211,12 @@ dev.off()
 sc_splited_genes<-split(sc_genes, sc_genes$from_where)
 bulk_splited_genes<-split(bulk_gene, bulk_gene$list_of_name.i.)
 
+
+outersect <- function(x, y) {
+  sort(c(setdiff(x, y),
+         setdiff(y, x)))
+}
+
 unique(sc_genes$from_where)
 unique(bulk_gene$list_of_name.i.)
 
@@ -219,12 +228,19 @@ mybiglist <- list()
 for(i in 1:length(sc_main_genes)){
   sc_current_gene<-sc_splited_genes[[sc_main_genes[i]]]$X
   bulk_current_gene<-bulk_splited_genes[[bulk_main_genes[i]]]$X
-intersect(sc_current_gene, bulk_current_gene)
+setdiff(sc_current_gene, bulk_current_gene)
 
     
-  tmp <- list(genes=intersect(sc_current_gene, bulk_current_gene), from_where =bulk_main_genes[i])
+  #tmp <- list(genes=intersect(sc_current_gene, bulk_current_gene), from_where =bulk_main_genes[i])
+  tmp <- list(genes=outersect(sc_current_gene, bulk_current_gene), from_where =bulk_main_genes[i])
+
   mybiglist[[bulk_main_genes[i]]] <- tmp
+  
+    current_gene<-names(mybiglist[i])
+write.csv(mybiglist[[i]]$genes,paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/up_down_regulated_van_diagram/differ_",current_gene,".csv"))
 }
+
+
 ```
 
 ```{r}
@@ -316,5 +332,32 @@ mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
 pheatmap(mat, scale = "row", cluster_cols = T,cluster_rows  = T,show_rownames = T,fontsize_row = 2, fontsize_col = 8,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 dev.off()
+```
+
+
+
+
+
+```{r}
+sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+
+sc_splited<-split(sc_genes, sc_genes$from_where)
+
+
+bulk_splited<-split(bulk_gene, bulk_gene$list_of_name.i.)
+
+for(i in 1:length(sc_splited)){
+  current_gene<-names(sc_splited[i])
+write.csv(sc_splited[[i]],paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/up_down_regulated_van_diagram/sc_",current_gene,".csv"))
+}
+
+for(i in 1:length(bulk_splited)){
+  current_gene<-names(bulk_splited[i])
+write.csv(bulk_splited[[i]],paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/up_down_regulated_van_diagram/bulk_",current_gene,".csv"))
+}
+
+
 ```
 
