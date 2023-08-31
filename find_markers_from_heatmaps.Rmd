@@ -325,7 +325,6 @@ mat<-as.data.frame(mat)
 mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
 
 #test_scale<-mat+0.001
-
   plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/bulkdata_sc_degenes_sc.tiff") 
   tiff(file=plotname,units="in",height=11,width=11,res=600)
 
@@ -359,5 +358,54 @@ write.csv(bulk_splited[[i]],paste0("D:/OneDrive - Bar Ilan University/Lital/week
 }
 
 
+```
+
+
+
+
+```{r}
+
+
+sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+
+sc_splited<-split(sc_genes, sc_genes$from_where)
+
+
+bulk_splited<-split(bulk_gene, bulk_gene$list_of_name.i.)
+
+
+
+
+
+sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+ t<-SplitObject(sub_Seted, split.by = "names")
+NPF_CELLS<-t[[" NPF"]]
+NPFR_CELLS<-t[[" NPFR"]]
+
+CountMyGeneMyCell<-GetAssayData(object = NPFR_CELLS, slot = "data")
+CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
+CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
+
+mat<-CountMyGeneMyCell
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+
+
+
+
+mat<-mat[row.names(mat) %in% sc_splited[[" NPFR"]]$X, ]
+
+
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/de_genes_of_npfr_sc.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat,scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
 ```
 
