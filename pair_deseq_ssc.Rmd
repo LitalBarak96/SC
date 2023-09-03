@@ -27,7 +27,7 @@ library("DESeq2")
 
 library("readxl")
 
-all_genes<-read_excel("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/all_gene_Avg_Elav.xlsx",)
+all_genes<-read_excel("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/all_gene_Avg_Elav.xlsx",)
 
 rowname_allgenes<-all_genes$...1
 
@@ -68,8 +68,8 @@ result_names<-paste("type_",groups,"_vs_elav",sep="")
 
 
 cts <- all_genes
-coldata <- read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=1)
-coldata_not_factorial <-  read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv")
+coldata <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv", row.names=1)
+coldata_not_factorial <-  read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/28.5.23/meta_data_elav.csv")
 data_noTPM <- (cts)
 data<-data.frame(row.names=rownames(cts))
 

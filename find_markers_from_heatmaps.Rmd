@@ -409,3 +409,99 @@ pheatmap(mat,scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames =
 dev.off()
 ```
 
+```{r}
+
+sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+
+
+sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+ t<-SplitObject(sub_Seted, split.by = "names")
+NPF_CELLS<-t[[" NPF"]]
+NPFR_CELLS<-t[[" NPFR"]]
+
+CountMyGeneMyCell<-GetAssayData(object = NPFR_CELLS, slot = "data")
+CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
+CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
+
+mat<-CountMyGeneMyCell
+#mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+
+mat<-as.data.frame(mat)
+
+
+names_of_npfr<-paste0("NPFR_rep",1:ncol(mat))
+colnames(mat)<-(names_of_npfr)
+
+elav<-sc_data["elav"]
+
+mat<-cbind(mat,sc_data["elav"])
+
+
+```
+
+
+
+
+```{r}
+library(htmltools)
+library(DESeq2)
+library(ggplot2)
+library(autoplotly)
+library(factoextra)
+library("pheatmap")
+library("RColorBrewer")
+#library(limma)
+library("manhattanly")
+library("ggrepel")
+library(plotly)
+library("heatmaply")
+library(dplyr)
+library("DESeq2")
+
+
+
+cts <- mat
+coldata <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/meta_data_elav_npfr.csv", row.names=1)
+coldata_not_factorial <-  read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/meta_data_elav_npfr.csv")
+data_noTPM <- (cts)
+#data<-data.frame(row.names=rownames(cts))
+data<-cts
+
+num_of_exp =105
+for (i in 1:num_of_exp){
+  temp.df<-data.frame()
+  temp.df<-data_noTPM %>%
+    select(starts_with(coldata_not_factorial[i,1]))
+
+
+  data[coldata_not_factorial[i,1]]<- (temp.df)
+}
+
+coldata$type <- factor(coldata$type)
+#coldata$cell <- factor(coldata$cell)
+
+all(rownames(coldata) %in% colnames(data))
+all(rownames(coldata) == colnames(data))
+data <- data[, rownames(coldata)]
+all(rownames(coldata) == colnames(data))
+coldata$type <- factor(coldata$type)
+
+
+dds <- DESeqDataSetFromMatrix(countData = round(data),
+                              colData = coldata,
+                              design = ~ type)
+dds
+dds$type<-relevel(dds$type,ref = "elav")
+
+dds <- DESeq(dds)
+#dds$condition<-relevel(dds$condition,ref = "Mated")
+
+
+resultsNames(dds)
+
+
+```
+
