@@ -421,27 +421,77 @@ Idents(object = sub_Seted) <- sub_Seted@meta.data$names
 NPF_CELLS<-t[[" NPF"]]
 NPFR_CELLS<-t[[" NPFR"]]
 
-CountMyGeneMyCell<-GetAssayData(object = NPFR_CELLS, slot = "data")
+CountMyGeneMyCell<-GetAssayData(object = NPF_CELLS, slot = "data")
 CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
 CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
 
 mat<-CountMyGeneMyCell
-#mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
 
 
 mat<-as.data.frame(mat)
 
 
-names_of_npfr<-paste0("NPFR_rep",1:ncol(mat))
+names_of_npfr<-paste0("NPF_rep",1:ncol(mat))
 colnames(mat)<-(names_of_npfr)
 
 elav<-sc_data["elav"]
 
 mat<-cbind(mat,sc_data["elav"])
 
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
 
 ```
 
+
+```{r}
+new_mat<-mat/mat[,49]
+
+lfc<-log2(new_mat)
+lfc[lfc == -Inf] <- 0
+
+
+colnames(lfc)<-rep("REP", 49)
+
+the_genes<-NULL
+
+for(i in 1:ncol(lfc)){
+   if(i==49){
+   break
+   }else{
+     tmp_current_rep<-lfc[i]
+ log_fold_change_1_5<-subset(tmp_current_rep, abs(REP) > 1.5 )
+ the_genes<-c(the_genes,rownames(log_fold_change_1_5))
+
+ }
+
+}
+
+tmp_genes<-unique(the_genes)
+tmp_genes<-as.data.frame(tmp_genes)
+
+sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+ t<-SplitObject(sub_Seted, split.by = "names")
+NPF_CELLS<-t[[" NPF"]]
+NPFR_CELLS<-t[[" NPFR"]]
+
+CountMyGeneMyCell<-GetAssayData(object = NPF_CELLS, slot = "data")
+CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
+CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
+
+mat<-CountMyGeneMyCell
+mat<-as.data.frame(mat)
+
+mat<-mat[row.names(mat) %in% tmp_genes$tmp_genes, ]
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/npf_all_40_cells_gene_clusters_No_scale.tiff")
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat,scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+```
 
 
 
@@ -464,13 +514,13 @@ library("DESeq2")
 
 
 cts <- mat
-coldata <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/meta_data_elav_npfr.csv", row.names=1)
-coldata_not_factorial <-  read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/meta_data_elav_npfr.csv")
+coldata <- read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/meta_data_elav_npf.csv", row.names=1)
+coldata_not_factorial <-  read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/meta_data_elav_npf.csv")
 data_noTPM <- (cts)
 #data<-data.frame(row.names=rownames(cts))
 data<-cts
 
-num_of_exp =105
+num_of_exp =49
 for (i in 1:num_of_exp){
   temp.df<-data.frame()
   temp.df<-data_noTPM %>%
@@ -502,6 +552,13 @@ dds <- DESeq(dds)
 
 resultsNames(dds)
 
+res <- results(dds,name ="type_NPF_vs_elav")
+
+tmp_all<-subset(res, padj<0.05 & abs(log2FoldChange)>=1)
+tmp_all<-as.data.frame(tmp_all)
+
+
+write.csv(tmp_all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/npf_de_genes.csv")
 
 ```
 

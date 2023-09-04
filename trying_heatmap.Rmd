@@ -378,6 +378,7 @@ pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames 
 
 dev.off()
 ```
+
 ```{r}
 sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 
@@ -415,6 +416,39 @@ mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
  tiff(file=plotname,units="in",height=11,width=11,res=600)
 
 pheatmap(mat,scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+```
+
+
+
+
+```{r}
+npfr_de_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/npfr_de_genes.csv")$X
+
+
+npfr_de_genes<-c(npfr_de_genes,"Dh44")
+npfr_de_genes<-c(npfr_de_genes,"NPF")
+npfr_de_genes<-c(npfr_de_genes,"Tk")
+npfr_de_genes<-c(npfr_de_genes,"Tk")
+
+npfr_de_genes<-c(npfr_de_genes,"Ilp2")
+npfr_de_genes<- c(npfr_de_genes,"Ilp5")
+
+
+
+
+sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+
+#rownames_sc<-as.data.frame(rownames_sc)
+
+
+mat<-sc_data[row.names(sc_data) %in% npfr_de_genes, ]
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/npfr_de_to_elav_genes_heatmap.jpeg")
+ jpeg(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 dev.off()
 ```
