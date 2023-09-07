@@ -484,6 +484,11 @@ colnames(the_genes)<-c("Var","i","number")
 
 cast_data = dcast(the_genes, number~i,value.var = "Var")
 
+cast_data<-na.omit(cast_data)
+
+write.csv(cast_data,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/npf_Each_cell.csv",na="")
+
+
 
 #TEST<-gtools::smartbind(the_genes[[1]],the_genes[[2]],the_genes[[3]])
 
@@ -552,20 +557,36 @@ lfc[lfc == -Inf] <- 0
 
 colnames(lfc)<-rep("REP", ncol(mat))
 
-the_genes<-NULL
+the_genes<- NULL
+
+#the_genes<-cbind(the_genes,temp)
 
 for(i in 1:ncol(lfc)){
    if(i==ncol(mat)){
    break
    }else{
      tmp_current_rep<-lfc[i]
- log_fold_change_3<-subset(tmp_current_rep, abs(REP) > number )
- the_genes<-c(the_genes,rownames(log_fold_change_3))
+ log_fold_change_3<-subset(tmp_current_rep, abs(REP) > number)
+ tmp_names<-rownames(log_fold_change_3)
+ # the_genes<-bind_cols(the_genes,tmp_names)
+ #the_genes[[i]]<-(rownames(log_fold_change_3))
+ tmp_names<-cbind(tmp_names,i)
+ numbers_genes<-as.numeric(1:nrow(log_fold_change_3))
+ 
+  tmp_names<-cbind(tmp_names,numbers_genes)
+ the_genes<-rbind(the_genes,tmp_names)
 
  }
 
 }
+the_genes<-as.data.frame(the_genes)
+the_genes$numbers_genes<-as.numeric(the_genes$numbers_genes)
+colnames(the_genes)<-c("Var","i","number")
 
+cast_data = dcast(the_genes, number~i,value.var = "Var")
+
+
+write.csv(cast_data,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/npfr_Each_cell.csv",na="")
 tmp_genes<-unique(the_genes)
 tmp_genes<-as.data.frame(tmp_genes)
 
