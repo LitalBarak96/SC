@@ -410,18 +410,21 @@ dev.off()
 ```
 
 ```{r}
+WHAT_TYPE<-"NPFR"
+number<-30
+# 
+# sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+# 
+# 
+# sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
+# Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+# 
+#  t<-SplitObject(sub_Seted, split.by = "names")
+# NPF_CELLS<-t[[" NPF"]]
+# NPFR_CELLS<-t[[" NPFR"]]
 
-sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
-
-
-sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
-Idents(object = sub_Seted) <- sub_Seted@meta.data$names
-
- t<-SplitObject(sub_Seted, split.by = "names")
-NPF_CELLS<-t[[" NPF"]]
-NPFR_CELLS<-t[[" NPFR"]]
-
-CountMyGeneMyCell<-GetAssayData(object = NPF_CELLS, slot = "data")
+if(WHAT_TYPE == "NPF"){
+  CountMyGeneMyCell<-GetAssayData(object = NPF_CELLS, slot = "data")
 CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
 CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
 
@@ -440,41 +443,46 @@ mat<-cbind(mat,sc_data["elav"])
 
 mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
 
-```
 
+new_mat<-mat/mat[,ncol(mat)]
 
-```{r}
-new_mat<-mat/mat[,49]
+#lfc<-log2(new_mat)
+lfc<-(new_mat)
 
-lfc<-log2(new_mat)
 lfc[lfc == -Inf] <- 0
 
 
-colnames(lfc)<-rep("REP", 49)
+colnames(lfc)<-rep("REP", ncol(mat))
 
-the_genes<-NULL
+
+temp<-1:150
+the_genes<- NULL
+
+the_genes<-cbind(the_genes,temp)
 
 for(i in 1:ncol(lfc)){
-   if(i==49){
+   if(i==ncol(mat)){
    break
    }else{
      tmp_current_rep<-lfc[i]
- log_fold_change_1_5<-subset(tmp_current_rep, abs(REP) > 1.5 )
- the_genes<-c(the_genes,rownames(log_fold_change_1_5))
+ log_fold_change_3<-subset(tmp_current_rep, abs(REP) > number)
+ tmp_names<-rownames(log_fold_change_3)
+ the_genes<-bind_cols(the_genes,tmp_names)
+ #the_genes[[i]]<-(rownames(log_fold_change_3))
 
  }
 
 }
 
+testy<-as.matrix(the_genes)
+
+out <- do.call(cbind, lapply(my.list, function(x) x[1:n, , drop = FALSE]))
+rownames(out) <- NULL
+out
+
 tmp_genes<-unique(the_genes)
 tmp_genes<-as.data.frame(tmp_genes)
 
-sub_Seted<-readRDS("D:/seq_data/FCA/17_7_reclustered_head_elav_genes.rds")
-Idents(object = sub_Seted) <- sub_Seted@meta.data$names
-
- t<-SplitObject(sub_Seted, split.by = "names")
-NPF_CELLS<-t[[" NPF"]]
-NPFR_CELLS<-t[[" NPFR"]]
 
 CountMyGeneMyCell<-GetAssayData(object = NPF_CELLS, slot = "data")
 CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
@@ -485,12 +493,85 @@ mat<-as.data.frame(mat)
 
 mat<-mat[row.names(mat) %in% tmp_genes$tmp_genes, ]
 
-  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/27.8.23/npf_all_40_cells_gene_clusters_No_scale.tiff")
- tiff(file=plotname,units="in",height=11,width=11,res=600)
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/",number,"_npf_all_40_cells_gene_clusters_DE_GENES_TOELAV_PER_CELL.jpeg")
+ jpeg(file=plotname,units="in",height=11,width=11,res=600)
 
 pheatmap(mat,scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
 
 dev.off()
+}
+
+
+if(WHAT_TYPE == "NPFR"){
+  CountMyGeneMyCell<-GetAssayData(object = NPFR_CELLS, slot = "data")
+CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
+CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
+
+mat<-CountMyGeneMyCell
+
+
+mat<-as.data.frame(mat)
+
+
+names_of_npfr<-paste0("NPF_rep",1:ncol(mat))
+colnames(mat)<-(names_of_npfr)
+
+elav<-sc_data["elav"]
+
+mat<-cbind(mat,sc_data["elav"])
+
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+
+new_mat<-mat/mat[,ncol(mat)]
+
+#lfc<-log2(new_mat)
+lfc<-(new_mat)
+
+lfc[lfc == -Inf] <- 0
+
+
+colnames(lfc)<-rep("REP", ncol(mat))
+
+the_genes<-NULL
+
+for(i in 1:ncol(lfc)){
+   if(i==ncol(mat)){
+   break
+   }else{
+     tmp_current_rep<-lfc[i]
+ log_fold_change_3<-subset(tmp_current_rep, abs(REP) > number )
+ the_genes<-c(the_genes,rownames(log_fold_change_3))
+
+ }
+
+}
+
+tmp_genes<-unique(the_genes)
+tmp_genes<-as.data.frame(tmp_genes)
+
+
+CountMyGeneMyCell<-GetAssayData(object = NPFR_CELLS, slot = "data")
+CountMyGeneMyCell<-as.data.frame(CountMyGeneMyCell)
+CountMyGeneMyCell<-as.matrix(CountMyGeneMyCell)
+
+mat<-CountMyGeneMyCell
+mat<-as.data.frame(mat)
+
+mat<-mat[row.names(mat) %in% tmp_genes$tmp_genes, ]
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/3.9.23/",number,"_npfr_all_100_cells_gene_clusters_DE_GENES_TOELAV_PER_CELL.jpeg")
+ jpeg(file=plotname,units="in",height=11,width=11,res=600)
+
+pheatmap(mat,scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,show_colnames  = F,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+}
+```
+
+
+```{r}
+
 ```
 
 
