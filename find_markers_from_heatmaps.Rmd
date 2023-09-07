@@ -412,7 +412,7 @@ dev.off()
 ```{r}
 WHAT_TYPE<-"NPFR"
 number<-30
-# 
+
 # sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # 
 # 
@@ -455,10 +455,10 @@ lfc[lfc == -Inf] <- 0
 colnames(lfc)<-rep("REP", ncol(mat))
 
 
-temp<-1:150
+#temp<-1:150
 the_genes<- NULL
 
-the_genes<-cbind(the_genes,temp)
+#the_genes<-cbind(the_genes,temp)
 
 for(i in 1:ncol(lfc)){
    if(i==ncol(mat)){
@@ -467,18 +467,37 @@ for(i in 1:ncol(lfc)){
      tmp_current_rep<-lfc[i]
  log_fold_change_3<-subset(tmp_current_rep, abs(REP) > number)
  tmp_names<-rownames(log_fold_change_3)
- the_genes<-bind_cols(the_genes,tmp_names)
+ # the_genes<-bind_cols(the_genes,tmp_names)
  #the_genes[[i]]<-(rownames(log_fold_change_3))
+ tmp_names<-cbind(tmp_names,i)
+ numbers_genes<-as.numeric(1:nrow(log_fold_change_3))
+ 
+  tmp_names<-cbind(tmp_names,numbers_genes)
+ the_genes<-rbind(the_genes,tmp_names)
 
  }
 
 }
+the_genes<-as.data.frame(the_genes)
+the_genes$numbers_genes<-as.numeric(the_genes$numbers_genes)
+colnames(the_genes)<-c("Var","i","number")
 
-testy<-as.matrix(the_genes)
+cast_data = dcast(the_genes, number~i,value.var = "Var")
 
-out <- do.call(cbind, lapply(my.list, function(x) x[1:n, , drop = FALSE]))
-rownames(out) <- NULL
-out
+
+#TEST<-gtools::smartbind(the_genes[[1]],the_genes[[2]],the_genes[[3]])
+
+
+# for (i in 1:length(the_genes)) {
+#     names(the_genes[[i]]) <-  paste0("Freq", i)
+# }
+# 
+# 
+# TTT<-Reduce(function(...) merge(..., all = T), the_genes)
+
+#testy<-as.matrix(the_genes)
+
+
 
 tmp_genes<-unique(the_genes)
 tmp_genes<-as.data.frame(tmp_genes)
