@@ -1,0 +1,26 @@
+```{r}
+
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+loom_file <- connect(filename = "D:/seq_data/FCA/s_fca_biohub_male_reproductive_glands_10x.loom", mode = "r+", skip.validate=TRUE)
+matrix_data <- as.data.frame(loom_file[["matrix"]][,])
+  rownames(matrix_data) <- loom_file[["col_attrs/CellID"]][]
+  colnames(matrix_data) <- loom_file[["row_attrs/Gene"]][]
+  SERUAT_Antena <- CreateSeuratObject(counts = t(matrix_data), project = "antena", min.cells = 0, min.features=0)
+ # saveRDS(SERUAT_antena_N, "/home/alu/aluguest/Lital_galitLab/seuruat_antena_non_normelize.rds")
+  
+  
+SERUAT_Antena <- NormalizeData(object = SERUAT_Antena)
+SERUAT_Antena <- FindVariableFeatures(object = SERUAT_Antena)
+SERUAT_Antena <- ScaleData(object = SERUAT_Antena)
+SERUAT_Antena <- RunPCA(object = SERUAT_Antena)
+ElbowPlot(SERUAT_Antena)
+SERUAT_Antena <- FindNeighbors(object = SERUAT_Antena, dims = 1:20)
+SERUAT_Antena <- FindClusters(object = SERUAT_Antena)
+SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:20)
+
+saveRDS(SERUAT_Antena, "D:/seq_data/FCA/seuruat_male_reproductive_glands_13_9.rds")
+```
+
