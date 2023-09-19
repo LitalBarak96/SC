@@ -24,3 +24,165 @@ SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:20)
 saveRDS(SERUAT_Antena, "D:/seq_data/FCA/seuruat_male_reproductive_glands_13_9.rds")
 ```
 
+
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(stringr)
+SERUAT_HEAD<- readRDS("D:/seq_data/FCA/seuruat_antena_13_9.rds")
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+View(SERUAT_HEAD@meta.data)
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'),
+                                  sep = '_')
+
+SERUAT_HEAD@meta.data$obp69a<- FetchData(SERUAT_HEAD, vars = "Obp69a")
+
+SERUAT_HEAD@meta.data$lush<- FetchData(SERUAT_HEAD, vars = "lush")
+SERUAT_HEAD@meta.data$obp28a<- FetchData(SERUAT_HEAD, vars = "Obp28a")
+
+   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/male_reproductive_glands_sex.tiff")
+  
+ tiff(file=plotname,units="in",height=11,width=11,res=600)
+
+DimPlot(SERUAT_HEAD, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+dev.off()
+
+
+
+
+plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/male_reproductive_glands_Obp28a_wo_threshold_Sex.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+#FeaturePlot(SERUAT_HEAD,features ="Obp28a",split.by = "Sex")
+
+FeaturePlot(SERUAT_HEAD,features ="Obp28a")
+
+dev.off()
+
+
+plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/male_reproductive_glands_Obp69a_wo_threshold_Sex.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+#FeaturePlot(SERUAT_HEAD,features ="Obp69a",split.by = "Sex")
+
+FeaturePlot(SERUAT_HEAD,features ="Obp69a")
+dev.off()
+
+
+
+plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/male_reproductive_glands_lush_wo_threshold_Sex.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+#FeaturePlot(SERUAT_HEAD,features ="lush",split.by = "Sex")
+FeaturePlot(SERUAT_HEAD,features ="lush")
+
+dev.off()
+
+```
+
+```{r}
+
+    all_genes<-as.data.frame(rownames(SERUAT_HEAD))
+```
+
+```{r}
+t<-SplitObject(SERUAT_HEAD, split.by = "Sex")
+
+tmp_SERUAT_HEAD<-SERUAT_HEAD
+
+SERUAT_HEAD<-t[["MaleFemale"]]
+
+```
+
+
+```{r}
+# SERUAT_HEAD@meta.data$obp69a<- FetchData(SERUAT_HEAD, vars = "Obp69a")
+# 
+# SERUAT_HEAD@meta.data$lush<- FetchData(SERUAT_HEAD, vars = "lush")
+# SERUAT_HEAD@meta.data$obp28a<- FetchData(SERUAT_HEAD, vars = "Obp28a")
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'), 
+                                  sep = '_')
+all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/all_genes_for_leg.csv"))
+
+
+number_of_fca<-c("3","43","44","55","56")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("obp69a","lush","obp28a")
+
+fullname<-paste("s_",gene_names,sep="")
+
+
+SERUAT_HEAD@meta.data$s_obp69a<-""
+SERUAT_HEAD@meta.data$s_lush<-""
+SERUAT_HEAD@meta.data$s_obp28a<-""
+
+
+
+
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] > current_value_threshold)
+
+  
+}
+}
+
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+#table(SERUAT_HEAD@meta.data$s_elav)
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$s_obp69a[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"obp69a")
+
+  }
+    if(SERUAT_HEAD@meta.data$s_lush[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"lush")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_obp28a[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"obp28a")
+
+      }
+}
+
+
+
+sub_Seted<-subset(SERUAT_HEAD, names != "")
+
+
+
+
+```
+
