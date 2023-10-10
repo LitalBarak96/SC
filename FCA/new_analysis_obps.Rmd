@@ -108,6 +108,30 @@ SERUAT_HEAD<-t[["MaleFemale"]]
 
 
 ```{r}
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+ library(Seurat)
+ library(ggplot2)
+ library(scCustomize)
+
+SERUAT_HEAD<- readRDS("D:/seq_data/FCA/seuruat_antena_13_9.rds")
+
+SERUAT_HEAD$sample <- rownames(SERUAT_HEAD@meta.data)
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "__", "_")
+
+SERUAT_HEAD$sample<-str_replace(SERUAT_HEAD$sample, "-", "_")
+
+View(SERUAT_HEAD@meta.data)
+SERUAT_HEAD@meta.data <- separate(SERUAT_HEAD@meta.data, col = 'sample', into = c("test",'Barcode','identity', 'Sex'),
+                                  sep = '_')
+
+SERUAT_HEAD@meta.data$obp69a<- FetchData(SERUAT_HEAD, vars = "Obp69a")
+
+SERUAT_HEAD@meta.data$lush<- FetchData(SERUAT_HEAD, vars = "lush")
+SERUAT_HEAD@meta.data$obp28a<- FetchData(SERUAT_HEAD, vars = "Obp28a")
 # SERUAT_HEAD@meta.data$obp69a<- FetchData(SERUAT_HEAD, vars = "Obp69a")
 # 
 # SERUAT_HEAD@meta.data$lush<- FetchData(SERUAT_HEAD, vars = "lush")
@@ -201,12 +225,16 @@ SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:20)
 
 sub_Seted<-SERUAT_Antena
 
+Idents(object = sub_Seted) <- sub_Seted@meta.data$Sex
 
-t<-SplitObject(sub_Seted, split.by = "Sex")
 
-object_list <- list(t[["Male"]], t[["Female"]])
-merged_object <- Merge_Seurat_List(list_seurat = object_list)
-only_m_f<-
+#test<-WhichCells(object = sub_Seted, ident.remove = "MaleFemale")
+
+# t<-SplitObject(sub_Seted, split.by = "Sex")
+# 
+# #object_list <- list(t[["Male"]], t[["Female"]])
+# # merged_object <- Merge_Seurat_List(list_seurat = object_list)
+# only_m_f<-
 # 
 # plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/antena_only_markers_sex.tiff"
 # 
@@ -216,10 +244,13 @@ only_m_f<-
 
 Idents(object = sub_Seted) <- sub_Seted@meta.data$Sex
 
-markers <- FindAllMarkers(sub_Seted,only.pos = TRUE,logfc.threshold = 1)
-markers<-subset(markers,p_val_adj<0.05)
+#markers <- FindAllMarkers(sub_Seted,only.pos = TRUE,logfc.threshold = 1)
 
-write.csv(markers,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/antena_sex_pos.csv")
+markers_m_f <- FindMarkers(object = sub_Seted, ident.1 ="Female", ident.2 = "Male",logfc.threshold = 1)
+
+markers<-subset(markers_m_f,p_val_adj<0.05)
+
+write.csv(markers,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/antena_female_to_male.csv")
 
 
 # t<-SplitObject(glu, split.by = "names")
