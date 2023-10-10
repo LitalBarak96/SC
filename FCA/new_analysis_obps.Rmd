@@ -181,7 +181,7 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 
 sub_Seted<-subset(SERUAT_HEAD, names != "")
-sub_Seted<-SERUAT_HEAD
+#sub_Seted<-SERUAT_HEAD
 
 
 
@@ -201,13 +201,25 @@ SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:20)
 
 sub_Seted<-SERUAT_Antena
 
-plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/each_marker_antena_all_leg_data.tiff"
 
-tiff(file=plotname,units="in",height=13,width=18,res=600)
+t<-SplitObject(sub_Seted, split.by = "Sex")
 
-Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+object_list <- list(t[["Male"]], t[["Female"]])
+merged_object <- Merge_Seurat_List(list_seurat = object_list)
+only_m_f<-
+# 
+# plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/antena_only_markers_sex.tiff"
+# 
+# tiff(file=plotname,units="in",height=13,width=18,res=600)
 
+#Idents(object = sub_Seted) <- sub_Seted@meta.data$names
 
+Idents(object = sub_Seted) <- sub_Seted@meta.data$Sex
+
+markers <- FindAllMarkers(sub_Seted,only.pos = TRUE,logfc.threshold = 1)
+markers<-subset(markers,p_val_adj<0.05)
+
+write.csv(markers,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/antena_sex_pos.csv")
 
 
 # t<-SplitObject(glu, split.by = "names")
@@ -215,9 +227,12 @@ Idents(object = sub_Seted) <- sub_Seted@meta.data$names
 # elav<-DimPlot(object = t[[" elav"]],label.size
 # =3.5,pt.size = 1.5,cols ="white")
 
-
-DimPlot(object = sub_Seted,label.size
-=3.5,pt.size = 1.5)
+# 
+# DimPlot(object = sub_Seted,label.size
+# =3.5,pt.size = 1.5,split.by = "Sex")
+# 
+# DimPlot(sub_Seted, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+#                legend.text = element_text(size = 7))
 
 dev.off()
 ```
