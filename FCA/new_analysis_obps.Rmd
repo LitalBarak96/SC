@@ -271,13 +271,20 @@ write.csv(markers,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/t
 
 ```{r}
 
-plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/antena_only_markers_roX1_sex.tiff"
+my_markers<-unique(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/antena_gene_marker_pos.csv")$gene)
+
+for(i in 1:length(my_markers)){
+  current_gene<-my_markers[i]
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/antena_only_markers_sex_",current_gene,".tiff")
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
 
-FeaturePlot(sub_Seted,features ="lncRNA:roX1",split.by = "Sex")
+FeaturePlot(sub_Seted,features =current_gene,split.by = "Sex")
 
 dev.off()
+}
+
+
 
 
 
