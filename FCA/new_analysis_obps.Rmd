@@ -230,7 +230,7 @@ Idents(object = sub_Seted) <- sub_Seted@meta.data$Sex
 
 #test<-WhichCells(object = sub_Seted, ident.remove = "MaleFemale")
 
-# t<-SplitObject(sub_Seted, split.by = "Sex")
+ t<-SplitObject(sub_Seted, split.by = "Sex")
 # 
 # #object_list <- list(t[["Male"]], t[["Female"]])
 # # merged_object <- Merge_Seurat_List(list_seurat = object_list)
@@ -246,7 +246,7 @@ Idents(object = sub_Seted) <- sub_Seted@meta.data$Sex
 
 #markers <- FindAllMarkers(sub_Seted,only.pos = TRUE,logfc.threshold = 1)
 
-markers_m_f <- FindMarkers(object = sub_Seted, ident.1 ="Female", ident.2 = "Male",logfc.threshold = 1)
+markers_m_f <- FindMarkers(object = sub_Seted, ident.1 ="Female", ident.2 = "Male",only.pos = TRUE)
 
 markers<-subset(markers_m_f,p_val_adj<0.05)
 
@@ -265,6 +265,30 @@ write.csv(markers,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/t
 # DimPlot(sub_Seted, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
 #                legend.text = element_text(size = 7))
 
+#dev.off()
+```
+
+
+```{r}
+
+plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/antena_only_markers_roX1_sex.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+FeaturePlot(sub_Seted,features ="lncRNA:roX1",split.by = "Sex")
+
 dev.off()
+
+
+
+DimPlot(sub_Seted, reduction = 'umap', group.by = 'Sex',raster=FALSE)+guides(color = guide_legend(override.aes = list(size=1), ncol=2) )+theme(legend.title = element_text(size = 5), 
+               legend.text = element_text(size = 7))
+
+
+FeaturePlot(sub_Seted,features ="lncRNA:roX2",split.by = "Sex")
+
+
+FeaturePlot(sub_Seted,features ="lncRNA:roX1",split.by = "Sex")
+
 ```
 
