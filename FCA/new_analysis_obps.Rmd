@@ -228,6 +228,10 @@ sub_Seted<-SERUAT_Antena
 Idents(object = sub_Seted) <- sub_Seted@meta.data$Sex
 
 
+  #  all.genes <- rownames(SERUAT_Antena)
+
+    all_genes<-as.data.frame(rownames(SERUAT_Antena))
+
 #test<-WhichCells(object = sub_Seted, ident.remove = "MaleFemale")
 
  t<-SplitObject(sub_Seted, split.by = "Sex")
@@ -296,6 +300,30 @@ FeaturePlot(sub_Seted,features ="lncRNA:roX2",split.by = "Sex")
 
 
 FeaturePlot(sub_Seted,features ="lncRNA:roX1",split.by = "Sex")
+
+```
+```{r}
+
+    all.genes <- rownames(SERUAT_Antena)
+
+
+obps_gene<- grep('Obp', all.genes, value=TRUE)
+
+my_markers<-obps_gene
+
+sub_Seted<-subset(SERUAT_HEAD, Sex != "MaleFemale")
+
+
+for(i in 1:length(my_markers)){
+  current_gene<-my_markers[i]
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/antena_only_markers_m_f_only_",current_gene,".tiff")
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+print(FeaturePlot(sub_Seted,features =current_gene,split.by = "Sex"))
+
+dev.off()
+}
 
 ```
 
