@@ -315,7 +315,8 @@ sub_Seted<-subset(SERUAT_HEAD, Sex != "MaleFemale")
 
 
 for(i in 1:length(my_markers)){
-  current_gene<-my_markers[i]
+  current_gene<-"lush"
+  #current_gene<-my_markers[i]
   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/antena_only_markers_m_f_only_",current_gene,".tiff")
 
 tiff(file=plotname,units="in",height=13,width=18,res=600)
