@@ -97,6 +97,8 @@ SERUAT_HEAD<-readRDS("D:/seq_data/FCA/elav_genes_reclustred.rds")
 ```{r}
 
 
+all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
+ 
 SERUAT_HEAD<-elav_only
 for(gene_i in 1:length(gene_names)){
 
@@ -192,6 +194,33 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 }
 
 
+
+
+plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/elav_pos_100.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+
+# t<-SplitObject(glu, split.by = "names")
+# # label=TRUE
+# elav<-DimPlot(object = t[[" elav"]],label.size
+# =3.5,pt.size = 1.5,cols ="white")
+
+
+# DimPlot(object = SERUAT_HEAD,label.size
+# =3.5,pt.size = 1.5)
+
+
+gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+FeaturePlot(SERUAT_HEAD, features = gene_names)
+
+dev.off()
+
+
+table(SERUAT_HEAD@meta.data$names)
 
 
 # for(i in 1:nrow(SERUAT_HEAD@meta.data)){

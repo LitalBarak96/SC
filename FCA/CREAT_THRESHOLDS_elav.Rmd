@@ -190,3 +190,8 @@ write.csv(all_gene_csv, full_path_csv, row.names=FALSE)
 
 ```
 
+```{r}
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/elav.rds")
+
+```
+

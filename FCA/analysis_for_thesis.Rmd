@@ -322,11 +322,11 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 
 
-plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/elav_pos_100.tiff"
-
-tiff(file=plotname,units="in",height=13,width=18,res=600)
-
-Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+# plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/elav_pos_100.tiff"
+# 
+# tiff(file=plotname,units="in",height=13,width=18,res=600)
+# 
+# Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
 
 
 # t<-SplitObject(glu, split.by = "names")
@@ -339,15 +339,18 @@ Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
 # =3.5,pt.size = 1.5)
 
 
-gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru","OK107")
-
-FeaturePlot(SERUAT_HEAD, features = gene_names)
-
-dev.off()
+# gene_names<-c("ple","NPF","NPFR","Tdc2","Crz","Tbh","fru","OK107")
+# 
+# FeaturePlot(SERUAT_HEAD, features = gene_names)
+# 
+# dev.off()
 
 
 table(SERUAT_HEAD@meta.data$names)
 
+
+
+ saveRDS(SERUAT_HEAD,"D:/seq_data/FCA/15_10_elav_pos_ok107_all_genes.rds")
 
 ```
 
@@ -363,6 +366,7 @@ Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
 
 #par(mfrow = c(3, 3),mar = c(2.1, 3, 9, 3),xaxs = "i",yaxs = "i",cex.axis=1.1,cex.lab=1.1)
 list_of_gene_names<-names(table(SERUAT_HEAD@meta.data$names))
+#list_of_gene_names<-list_of_gene
   num_of_genes<-length(table(SERUAT_HEAD@meta.data$names))
 
 
@@ -371,9 +375,9 @@ list_of_gene_names<-names(table(SERUAT_HEAD@meta.data$names))
 for(gene in 2:length(list_of_gene_names)){
   Main_gene<-list_of_gene_names[gene]
   
-  half_num_genes<-(num_of_genes/2)
+  half_num_genes<-(num_of_genes)
   
-my_cols<- c(DiscretePalette(half_num_genes ,palette = "glasbey"),DiscretePalette(half_num_genes, palette = "glasbey"))
+my_cols<- c(DiscretePalette(half_num_genes ,palette = "glasbey"))
 my_cols[1]<-"#C0C0C0"
 names(my_cols)<-list_of_gene_names
 
