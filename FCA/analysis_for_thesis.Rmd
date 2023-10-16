@@ -415,3 +415,35 @@ dev.off()
 }
 ```
 
+```{r}
+library(ggplot2)
+all_gene_csv<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv")
+
+
+all_gene_csv$value<-as.numeric(all_gene_csv$value)
+
+
+#path_of_photos<-"C:/Users/lital/OneDrive - Bar Ilan University/Lital/weekly presentation/30.4.23/"
+
+
+plotname<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/threshold.tiff"
+
+tiff(file=plotname,units="in",height=13,width=18,res=600)
+
+#dittoHeatmap(TEST,top20$gene,annot.by = "names")
+
+ggplot(all_gene_csv, aes( x=Gene, y=value, fill = Gene)) +
+    geom_boxplot(outlier.shape = NA) +
+  geom_jitter(aes(colour  = as.factor(FCA)))
+
+
+  #  dittoHeatmap(TEST,top10$gene,annot.by = "names",show_colnames = FALSE,show_rownames = TRUE)
+
+dev.off()
+
+
+
+#colnames(all_gene_csv)<-c("value","FCA","Gene")
+
+```
+
