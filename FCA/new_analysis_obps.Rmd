@@ -437,9 +437,17 @@ write.csv(markers,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/t
 
 ```{r}
 
-SERUAT_Antena@meta.data$tra<- FetchData(SERUAT_Antena, vars = "tra")
+#SERUAT_Antena@meta.data$tra<- FetchData(SERUAT_Antena, vars = "tra")
 
 
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/all_antena_m_f_splited_tra.tiff")
+ tiff(file=plotname,units="in",height=15,width=15,res=600)
+
+#,split.by = "Sex"
+FeaturePlot(SERUAT_Antena,features ="tra",split.by = "Sex")
+
+
+dev.off()
 
 ```
 
