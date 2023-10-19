@@ -593,18 +593,18 @@ View(SERUAT_Antena@meta.data)
   
   
   
-  gene_sum_head <- hist(gene_head$head,breaks=seq(0,20,l=20000))                     # Store histogram info
+  gene_sum_head <- hist(gene_head$head,breaks=seq(0,10,l=1000))                     # Store histogram info
   gene_sum_head$counts <- revcumsum((gene_sum_head$counts))    # Change histogram counts
   
-  gene_sum_antena <-hist(gene_antena$antena,breaks=seq(0,20,l=20000)) 
+  gene_sum_antena <-hist(gene_antena$antena,breaks=seq(0,10,l=1000)) 
   gene_sum_antena$counts <- revcumsum((gene_sum_antena$counts))    # Change histogram counts
 
   
- plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/male_female_obp69a.tiff")
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/male_female_",gene_name,".tiff")
   
  # plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
   
-tiff(file=plotname,units="in",height=11,width=11,res=600)
+tiff(file=plotname,units="in",height=15,width=15,res=600)
   main_title <-paste("female (red) vs male (green)",gene_name)
 
   plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
@@ -613,8 +613,28 @@ dev.off()
 
 
 
+
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/male_",gene_name,".tiff")
+  
+ # plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
+  
+tiff(file=plotname,units="in",height=15,width=15,res=600)
+  main_title <-paste("male (green)",gene_name)
+
+  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
+dev.off()
+
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/female_",gene_name,".tiff")
+  
+ # plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
+  
+tiff(file=plotname,units="in",height=15,width=15,res=600)
+  main_title <-paste("male (green)",gene_name)
+
+  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
+dev.off()
 }
 
-head_antena_sum("obp69a",13,10)
+head_antena_sum("lush",8000,8)
 ```
 
