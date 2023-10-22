@@ -638,3 +638,138 @@ dev.off()
 head_antena_sum("lush",8000,8)
 ```
 
+
+
+
+```{r}
+#SERUAT_HEAD<- readRDS("D:/Lital/16_10_antena_obp_m_and_f_reclustered.rds")
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/obp69a_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="Obp69a",split.by = "Sex")
+
+
+dev.off()
+
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/lush_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="lush",split.by = "Sex")
+
+
+dev.off()
+
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/obp28a_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="Obp28a",split.by = "Sex")
+
+
+dev.off()
+```
+
+```{r}
+
+    all_genes<-as.data.frame(rownames(SERUAT_HEAD))
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/Rox1_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="lncRNA:roX1",split.by = "Sex")
+
+
+dev.off()
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/Rox2_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="lncRNA:roX2",split.by = "Sex")
+
+
+dev.off()
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/Hr38_splited.tiff")
+  
+
+  
+
+FeaturePlot(SERUAT_HEAD,features ="Hr38",split.by = "Sex")
+
+
+dev.off()
+
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/sxe2_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="sxe2",split.by = "Sex")
+
+
+dev.off()
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/dsx_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="dsx",split.by = "Sex")
+
+
+dev.off()
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/tra_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="tra",split.by = "Sex")
+
+
+dev.off()
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/Or65a_splited.tiff")
+  
+
+  
+tiff(file=plotname,units="in",height=20,width=20,res=600)
+
+FeaturePlot(SERUAT_HEAD,features ="Or65a",split.by = "Sex")
+
+
+dev.off()
+
+```
+
