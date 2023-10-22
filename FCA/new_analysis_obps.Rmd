@@ -564,11 +564,11 @@ head_FCA_sum<-function(gene_name,y_value,bottom_x_value,top_x_value,FCA,NUMBER_O
 ```
 
 ```{r}
-# SERUAT_HEAD <-readRDS("D:/seq_data/FCA/seuruat_head_non_norm.rds")
+# SERUAT_HEAD <-readRDS("D:/seq_data/FCA/16_10_antena_obp_m_and_f_reclustered.rds")
 # 
 # SERUAT_Antena <-readRDS("D:/seq_data/FCA/seuruat_antena_non_normelize.rds")
 
-
+library(spatstat.utils)
 SERUAT_HEAD<- readRDS("D:/seq_data/FCA/16_10_antena_obp_m_and_f.rds")
 
 
@@ -600,42 +600,42 @@ View(SERUAT_Antena@meta.data)
   gene_sum_antena$counts <- revcumsum((gene_sum_antena$counts))    # Change histogram counts
 
   
- plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/male_female_",gene_name,".tiff")
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/3_male_female_",gene_name,".tiff")
   
  # plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
   
 tiff(file=plotname,units="in",height=15,width=15,res=600)
   main_title <-paste("female (red) vs male (green)",gene_name)
 
-  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
-  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),add = TRUE)
+  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(3, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
+  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(3, x_value)),ylim =c(0,y_value),add = TRUE)
 dev.off()
 
 
 
 
- plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/male_",gene_name,".tiff")
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/3_male_",gene_name,".tiff")
   
  # plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
   
 tiff(file=plotname,units="in",height=15,width=15,res=600)
   main_title <-paste("male (green)",gene_name)
 
-  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
+  plot(gene_sum_antena,col=alpha('green',0.5),xlim=rev(c(3, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
 dev.off()
 
- plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/female_",gene_name,".tiff")
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/3_female_",gene_name,".tiff")
   
  # plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
   
 tiff(file=plotname,units="in",height=15,width=15,res=600)
   main_title <-paste("female (red)",gene_name)
 
-  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
+  plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(3, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
 dev.off()
 }
 
-head_antena_sum("lush",8000,8)
+head_antena_sum("lush",2000,8)
 ```
 
 
@@ -770,6 +770,71 @@ FeaturePlot(SERUAT_HEAD,features ="Or65a",split.by = "Sex")
 
 
 dev.off()
+
+```
+
+
+
+```{r}
+ SERUAT_HEAD <-readRDS("D:/seq_data/FCA/16_10_antena_obp_m_and_f_reclustered.rds")
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$seurat_clusters
+
+
+list_of_gene_names<-names(table(SERUAT_HEAD@meta.data$seurat_clusters))
+
+
+my_cols<- c(DiscretePalette(length(list_of_gene_names) ,palette = "glasbey"))
+my_cols[1]<-"#C0C0C0"
+names(my_cols)<-list_of_gene_names
+
+
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/all_clusters.tiff")
+ tiff(file=plotname,units="in",height=20,width=20,res=600)
+ 
+DimPlot(SERUAT_HEAD, reduction = 'umap',raster=FALSE,cols = my_cols)
+
+dev.off()
+```
+
+
+```{r}
+
+markers_clustres_20 <- FindMarkers(object = SERUAT_HEAD, ident.1 =20,only.pos = TRUE,logfc.threshold = 1)
+
+markers_clustres_20<-subset(markers_clustres_20,p_val_adj<0.05)
+
+write.csv(markers_clustres_20,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_20.csv")
+
+
+markers_clustres_21 <- FindMarkers(object = SERUAT_HEAD, ident.1 =21,only.pos = TRUE,logfc.threshold = 1)
+
+
+markers_clustres_21<-subset(markers_clustres_21,p_val_adj<0.05)
+
+write.csv(markers_clustres_21,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_21.csv")
+
+
+markers_clustres_23 <- FindMarkers(object = SERUAT_HEAD, ident.1 =23,only.pos = TRUE,logfc.threshold = 1)
+
+
+
+markers_clustres_23<-subset(markers_clustres_21,p_val_adj<0.05)
+
+write.csv(markers_clustres_23,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_23.csv")
+
+library(purrr)
+
+#     l <- list( rownames(markers_clustres_20),rownames(markers_clustres_21),rownames(markers_clustres_23))
+# inter<-combn(length(l), 2, FUN=function(i)intersect(l[[i[1]]], l[[i[2]]]),
+#       simplify=FALSE)
+
+
+#intersect(intersect(a,b),c)
+inter<-intersect(intersect( rownames(markers_clustres_20), rownames(markers_clustres_21)),rownames(markers_clustres_23) )
+
+
+write.csv(inter,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/common_markers_20_21_23.csv")
 
 ```
 
