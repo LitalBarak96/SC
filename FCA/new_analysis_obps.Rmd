@@ -629,7 +629,7 @@ dev.off()
  # plotname<-paste("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/basal_level/","freq",gene_name,"y_lim",y_value,".tiff",sep = "")
   
 tiff(file=plotname,units="in",height=15,width=15,res=600)
-  main_title <-paste("male (green)",gene_name)
+  main_title <-paste("female (red)",gene_name)
 
   plot(gene_sum_head,col=alpha('red',0.5),xlim=rev(c(0, x_value)),ylim =c(0,y_value),main=main_title,ylab = "sum of sampels") 
 dev.off()
