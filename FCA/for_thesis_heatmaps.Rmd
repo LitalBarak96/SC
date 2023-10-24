@@ -152,14 +152,77 @@ all<-bind_cols(all,current_gene)
 
 
 ```{r}
-sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sc_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/sig_elav_gene_new.csv")
+sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/sig_elav_gene_new.csv")
 
-bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
 
 
-bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
 
+```
+
+
+```{r}
+avarges<-NULL
+
+
+
+main_data<-as.data.frame(bulk_data)
+#avarges$Geneid<-main_data$Geneid
+avarges$fru<-rowMeans(x=main_data[ , grepl( "fru" , names( main_data ) ) ], na.rm = TRUE)
+#avarges$dh44<-rowMeans(x=main_data[ , grepl( "dh44" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npf<-rowMeans(x=main_data[ , grepl( "npf" , names( main_data ) ) ], na.rm = TRUE)
+avarges$npfr<-rowMeans(x=main_data[ , grepl( "npfr" , names( main_data ) ) ], na.rm = TRUE)
+avarges$tdc2<-rowMeans(x=main_data[ , grepl( "tdc2" , names( main_data ) ) ], na.rm = TRUE)
+avarges$crz<-rowMeans(x=main_data[ , grepl( "crz" , names( main_data ) ) ], na.rm = TRUE)
+avarges$th<-rowMeans(x=main_data[ , grepl( "th" , names( main_data ) ) ], na.rm = TRUE)
+#avarges$trh<-rowMeans(x=main_data[ , grepl( "trh" , names( main_data ) ) ], na.rm = TRUE)
+avarges$ok107<-rowMeans(x=main_data[ , grepl( "ok107" , names( main_data ) ) ], na.rm = TRUE)
+
+avarges$elav<-rowMeans(x=main_data[ , grepl( "elav" , names( main_data ) ) ], na.rm = TRUE)
+
+
+avarges<-as.data.frame(avarges)
+
+
+
+rownames(avarges)<-rownames(main_data)
+
+bulk_data<-avarges
+```
+
+
+```{r}
+
+cross_genes<-c(sc_genes$X)
+
+mat<-sc_data[row.names(sc_data) %in% cross_genes, ]
+
+
+  plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/heatmap_scdata_new_threshold.tiff")
+ tiff(file=plotname,units="in",height=15,width=15,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,fontsize_row = 10, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+
+```
+
+
+
+```{r}
+# cross_genes<-c(bulk_gene$gene)
+# 
+# mat<-bulk_data[row.names(bulk_data) %in% cross_genes, ]
+# 
+# 
+#   plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/120_crossed_bulked.tiff")
+#  tiff(file=plotname,units="in",height=11,width=11,res=600)
+# 
+# pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = T,fontsize_row = 5, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+# 
+# dev.off()
 ```
 
