@@ -365,7 +365,8 @@ pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames 
 ```
 
 ```{r}
-cross_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/120_cross.csv",header = FALSE)
+cross_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/
+                      120_cross.csv",header = FALSE)
 cross_genes<-c(cross_genes$V1)
 
 mat<-bulk_data[row.names(bulk_data) %in% cross_genes, ]

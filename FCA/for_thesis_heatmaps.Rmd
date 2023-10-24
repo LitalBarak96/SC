@@ -1,0 +1,165 @@
+---
+title: "Untitled"
+author: "Lital Barak"
+date: "2023-10-24"
+output: html_document
+---
+
+#i run this on the cloud
+
+```{r}
+sub_Seted<-readRDS("D:/Lital/15_10_elav_pos_ok107_all_genes.rds")
+
+main_genes<-c(" fru" , " Tbh" , " ple" , " Crz" , " NPFR", " Tdc2", " NPF"," OK107")
+
+all<-NULL
+for(j in 1:length(main_genes)){
+  
+  sub_Seted@meta.data$names<-""
+
+SERUAT_HEAD<-sub_Seted
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+# 
+  if(j == 1) {
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+  }
+  if(j == 2){
+    
+    #removed
+    #       if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+    # 
+    #   }
+  }
+
+  if(j == 3){
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+}
+  }
+  if(j == 4){
+    
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+  }
+  if(j == 5 ){
+    
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+  }
+  
+  if( j == 6){
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+  }
+
+  if(j== 7){
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+      }
+  }
+
+  if(j == 8){
+          if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+  
+}
+  }
+
+
+
+
+
+
+
+}
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$names[i] == ""){
+   SERUAT_HEAD@meta.data$names[i]<-" elav"
+   }
+}
+
+if(j!=2){
+  
+sub_Seted<-SERUAT_HEAD
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+avg_exprs<-AverageExpression(sub_Seted, group.by="ident" )
+
+tmp<-as.data.frame(avg_exprs[["RNA"]])
+current_gene<-as.data.frame(tmp[,main_genes[j]])
+rownames(current_gene)<-rownames(tmp)
+colnames(current_gene)<-main_genes[j]
+all<-bind_cols(all,current_gene)
+}
+
+
+
+}
+
+
+
+
+```
+
+
+
+```{r}
+sub_Seted<-readRDS("D:/Lital/15_10_elav_pos_ok107_all_genes.rds")
+Idents(object = sub_Seted) <- sub_Seted@meta.data$names
+
+SERUAT_HEAD<-sub_Seted
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+  if(SERUAT_HEAD@meta.data$names[i] == ""){
+   SERUAT_HEAD@meta.data$names[i]<-" elav"
+   }
+}
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+ t<-SplitObject(SERUAT_HEAD, split.by = "names")
+my_elav<-t[[" elav"]]
+Idents(object = my_elav) <- my_elav@meta.data$names
+
+avg_exprs<-AverageExpression(my_elav )
+
+tmp<-as.data.frame(avg_exprs[["RNA"]])
+current_gene<-as.data.frame(tmp[,"all"])
+rownames(current_gene)<-rownames(tmp)
+colnames(current_gene)<-" elav"
+all<-bind_cols(all,current_gene)
+```
+#also the part of getting the sig genes i did in the server
+
+
+
+#the part after getting the data and creating the heatmap
+
+
+```{r}
+sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+# write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
+sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/sig_elav_gene.csv")
+
+bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+
+
+bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+
+```
+
