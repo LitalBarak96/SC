@@ -152,14 +152,14 @@ all<-bind_cols(all,current_gene)
 
 
 ```{r}
-sc_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
+sc_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/mat_avg_elav_wo_tbh.csv",check.names=FALSE,row.names = 1)
 # write.csv(all,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/16.7.23/mat_avg_elav_wo_tbh.csv")
-sc_genes<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/sig_elav_gene_new.csv")
+sc_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/sig_elav_gene_new.csv")
 
-bulk_gene<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
 
 
-bulk_data<-read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
+bulk_data<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/14.8.23/wo_dh44/yulia_data.csv",row.names = 1)
 
 ```
 
@@ -212,6 +212,67 @@ dev.off()
 
 
 
+
+
+
+
+```{r}
+library(pheatmap)
+cross_genes<-c(sc_genes$X)
+
+mat<-bulk_data[row.names(bulk_data) %in% cross_genes, ]
+
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/heatmap_bulkdata_sc_genes.tiff")
+ tiff(file=plotname,units="in",height=15,width=15,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,fontsize_row = 10, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+
+```
+```{r}
+library(pheatmap)
+cross_genes<-c(bulk_gene$X)
+
+mat<-sc_data[row.names(sc_data) %in% cross_genes, ]
+mat<-as.data.frame(mat)
+mat<-mat[apply(mat, 1, function(x) !all(x==0)),]
+
+
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/heatmap_scdata_bulk_genes.tiff")
+ tiff(file=plotname,units="in",height=15,width=15,res=600)
+
+pheatmap(mat, scale = "row",cluster_rows  = T,cluster_cols = TRUE,show_rownames = F,fontsize_row = 10, fontsize_col = 20,color=colorRampPalette(c("navy", "white", "red"))(50))
+
+dev.off()
+```
+
+
+
+```{r}
+sc_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/sig_elav_gene_new.csv")
+
+
+bulk_gene<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.07.23/yulia_de_genes.csv")
+
+
+sc_genes_splited<-split(sc_genes, sc_genes$from_where)
+bulk_gene_splited<-split(bulk_gene, bulk_gene$list_of_name.i.)
+
+
+
+for(i in 1:8){
+  write.csv(sc_genes_splited[[i]],paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/marker_splited/",str_trim(names(sc_genes_splited[i])),"_sc.csv"))
+}
+
+for(i in 1:7){
+  write.csv(bulk_gene_splited[[i]],paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/marker_splited/",str_trim(names(bulk_gene_splited[i])),"_bulk.csv"))
+}
+
+```
+
 ```{r}
 # cross_genes<-c(bulk_gene$gene)
 # 
@@ -225,4 +286,6 @@ dev.off()
 # 
 # dev.off()
 ```
+
+
 

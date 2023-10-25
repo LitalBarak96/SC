@@ -32,7 +32,7 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
   if(j == 2){
     
     #removed
-    #       if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    #       if(SERUAT_HEAD@meta.data$s_Tbh[i] =f= TRUE){
     # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
     # 
     #   }
