@@ -36,7 +36,7 @@ library(loomR)
 
 #SERUAT_HEAD <-readRDS("D:/seq_data/FCA/elav.rds")
 
-SERUAT_HEAD <-readRDS("D:/Lital/15_10_elav_pos_ok107_all_genes.rds")
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/15_10_elav_pos_ok107_all_genes.rds")
 
 
 # 
@@ -221,6 +221,103 @@ SERUAT_HEAD@meta.data$s_elav<-""
 
 
 
+
+
+threshold of 0
+```{r}
+SERUAT_HEAD <-readRDS("D:/seq_data/FCA/elav.rds")
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("Syt1","elav","brp","ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("s_",gene_names,sep="")
+
+
+SERUAT_HEAD@meta.data$s_ple<-""
+SERUAT_HEAD@meta.data$s_NPF<-""
+SERUAT_HEAD@meta.data$s_Tdc2<-""
+SERUAT_HEAD@meta.data$s_Crz<-""
+SERUAT_HEAD@meta.data$s_Tbh<-""
+SERUAT_HEAD@meta.data$s_fru<-""
+SERUAT_HEAD@meta.data$s_Syt1<-""
+SERUAT_HEAD@meta.data$s_brp<-""
+SERUAT_HEAD@meta.data$s_elav<-""
+
+
+all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
+ 
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] >current_value_threshold)
+
+  
+}
+}
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+}
+table(SERUAT_HEAD@meta.data$names)
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+    if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+    }
+
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+            if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+            }
+  
+
+}
+
+
+```
 
 ```{r}
 all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
