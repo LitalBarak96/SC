@@ -807,7 +807,7 @@ dev.off()
 
 
 ```{r}
- SERUAT_HEAD <-readRDS("D:/seq_data/FCA/16_10_antena_obp_m_and_f_reclustered.rds")
+ SERUAT_HEAD <-readRDS("D:/Lital/16_10_antena_obp_m_and_f_reclustered.rds")
 
 Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$seurat_clusters
 
@@ -830,29 +830,36 @@ dev.off()
 
 
 ```{r}
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$Sex
 
-markers_clustres_20 <- FindMarkers(object = SERUAT_HEAD, ident.1 =20,only.pos = TRUE,logfc.threshold = 1)
+t<-SplitObject(SERUAT_HEAD, split.by = "seurat_clusters")
+
+# t_20<- t[["20"]]
+# 
+# Idents(object = t_20) <- t_20@meta.data$Sex
+
+markers_clustres_20 <- FindMarkers(object = t[["20"]], ident.1 ="Female",only.pos = TRUE,logfc.threshold = 1)
 
 markers_clustres_20<-subset(markers_clustres_20,p_val_adj<0.05)
 
-write.csv(markers_clustres_20,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_20.csv")
+write.csv(markers_clustres_20,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_20_male_vs_feamle.csv")
 
 
-markers_clustres_21 <- FindMarkers(object = SERUAT_HEAD, ident.1 =21,only.pos = TRUE,logfc.threshold = 1)
+markers_clustres_21 <- FindMarkers(object = t[["21"]], ident.1 ="Female",only.pos = TRUE,logfc.threshold = 1)
 
 
 markers_clustres_21<-subset(markers_clustres_21,p_val_adj<0.05)
 
-write.csv(markers_clustres_21,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_21.csv")
+write.csv(markers_clustres_21,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_21_male_vs_feamle.csv")
 
 
-markers_clustres_23 <- FindMarkers(object = SERUAT_HEAD, ident.1 =23,only.pos = TRUE,logfc.threshold = 1)
+markers_clustres_23 <- FindMarkers(object =  t[["23"]], ident.1 ="Female",only.pos = TRUE,logfc.threshold = 1)
 
 
 
 markers_clustres_23<-subset(markers_clustres_21,p_val_adj<0.05)
 
-write.csv(markers_clustres_23,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_23.csv")
+write.csv(markers_clustres_23,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/cluster_num_23_male_vs_feamle.csv")
 
 library(purrr)
 
