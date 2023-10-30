@@ -225,7 +225,9 @@ SERUAT_HEAD@meta.data$s_elav<-""
 
 threshold of 0
 ```{r}
-SERUAT_HEAD <-readRDS("D:/seq_data/FCA/elav.rds")
+#SERUAT_HEAD <-readRDS("D:/seq_data/FCA/elav.rds")
+
+SERUAT_HEAD <-readRDS("D:/Lital/15_10_elav_pos_ok107_all_genes.rds")
 
 number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
 names_of_fca<-paste("FCA",number_of_fca,sep="")
@@ -269,10 +271,10 @@ SERUAT_HEAD@meta.data$names<-""
 
 for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
-        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
 
-        }
+    }
 }
 table(SERUAT_HEAD@meta.data$names)
 
@@ -318,6 +320,23 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 
 ```
+```{r}
+t<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+tdc2<-t[[" Tdc2"]]
+all_other_elav_n_tdc2<-t[[1]]
+
+
+all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
+
+gene_names<-c("mGluR","Vmat","VGlut")
+
+FeaturePlot(tdc2, features = gene_names)
+
+
+```
+
+
 
 ```{r}
 all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
