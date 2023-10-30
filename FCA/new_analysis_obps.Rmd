@@ -364,6 +364,8 @@ saveRDS(SERUAT_Antena, "D:/seq_data/FCA/16_10_antena_obp_m_and_f_reclustered.rds
 
 
 ```{r}
+ SERUAT_Antena<- readRDS("D:/Lital/16_10_antena_obp_m_and_f_reclustered.rds")
+
 
 
   plotname<-paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/antena_m_f_sex.tiff")
@@ -434,6 +436,35 @@ markers<-subset(markers,p_val_adj<0.05)
 write.csv(markers,"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/gene_markers_mf.csv")
 # my_markers<-unique(markers$gene)
 ```
+
+
+
+
+
+
+```{r}
+ SERUAT_Antena<- readRDS("D:/Lital/16_10_antena_obp_m_and_f_reclustered.rds")
+
+ t<-SplitObject(SERUAT_Antena, split.by = "Sex")
+male_marker<-(table(t[["Male"]]@meta.data$names)/nrow(t[["Male"]]@meta.data))*100
+
+female_marker<-(table(t[["Female"]]@meta.data$names)/nrow(t[["Female"]]@meta.data))*100
+n<-names(female_marker)
+n[1]<-"others"
+
+
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/obp_analysis/only_m_f/pie_male_neruons.tiff")
+ tiff(file=plotname,units="in",height=15,width=15,res=600)
+
+pie(male_marker,labels = n, col=rainbow(length(n)),
+   main="Pie Chart of neruons males",cex=2)
+
+
+dev.off()
+
+```
+
 
 ```{r}
 
