@@ -320,7 +320,47 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 
 ```
+
 ```{r}
+
+SERUAT_HEAD <-readRDS("D:/Lital/15_10_elav_pos_ok107_all_genes.rds")
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+}
+table(SERUAT_HEAD@meta.data$names)
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+
+my_cols<- c(DiscretePalette(2 ,palette = "glasbey"))
+my_cols[1]<-"#C0C0C0"
+my_cols[2]<-"#ff0000"
+
+
+names(my_cols)<-names(table(SERUAT_HEAD@meta.data$names))
+
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.10.23/all_data_tdc2.tiff")
+ tiff(file=plotname,units="in",height=15,width=15,res=600)
+
+ DimPlot(object = SERUAT_HEAD,label.size
+ =3.5,cols = my_cols)
+
+
+
+dev.off()
+
+
+
 t<-SplitObject(SERUAT_HEAD, split.by = "names")
 
 tdc2<-t[[" Tdc2"]]
@@ -329,9 +369,22 @@ all_other_elav_n_tdc2<-t[[1]]
 
 all.genes_head<-as.data.frame(rownames(SERUAT_HEAD))
 
-gene_names<-c("mGluR","Vmat","VGlut")
+# gene_names<-c("mGluR","Vmat","VGlut","Octalpha2R","Oamb","Rdl","GABA-B-R1","GABA-B-R3","GABA-B-R2")
+# 
+# FeaturePlot(tdc2, features = gene_names)s
 
-FeaturePlot(tdc2, features = gene_names)
+
+  plotname<-paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/30.10.23/all_others_genes.tiff")
+ tiff(file=plotname,units="in",height=15,width=15,res=600)
+
+
+gene_names<-c("mGluR","Vmat","VGlut","Octalpha2R","Oamb","Rdl","GABA-B-R1","GABA-B-R3","GABA-B-R2")
+
+FeaturePlot(all_other_elav_n_tdc2, features = gene_names)
+
+
+
+dev.off()
 
 
 ```
