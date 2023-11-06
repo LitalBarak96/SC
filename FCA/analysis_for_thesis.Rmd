@@ -249,7 +249,7 @@ SERUAT_HEAD@meta.data$s_brp<-""
 SERUAT_HEAD@meta.data$s_elav<-""
 
 
-all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
+all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
  
 for(gene_i in 1:length(gene_names)){
 
@@ -722,6 +722,294 @@ for(i in 1:length(list_of_gene)){
   dev.off()
 }
 
+
+```
+
+
+
+
+```{r}
+
+library(spatstat.utils)
+library(loomR)
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+
+
+SERUAT_HEAD <-readRDS("D:/Lital/15_10_elav_pos_ok107_all_genes.rds")
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("Syt1","elav","brp","ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("s_",gene_names,sep="")
+
+
+SERUAT_HEAD@meta.data$s_ple<-""
+SERUAT_HEAD@meta.data$s_NPF<-""
+SERUAT_HEAD@meta.data$s_Tdc2<-""
+SERUAT_HEAD@meta.data$s_Crz<-""
+SERUAT_HEAD@meta.data$s_Tbh<-""
+SERUAT_HEAD@meta.data$s_fru<-""
+SERUAT_HEAD@meta.data$s_Syt1<-""
+SERUAT_HEAD@meta.data$s_brp<-""
+SERUAT_HEAD@meta.data$s_elav<-""
+
+
+all_gene_csv<-as.data.frame(read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
+ 
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] >current_value_threshold)
+
+  
+}
+}
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+}
+
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+
+SERUAT_Antena<-SERUAT_HEAD
+SERUAT_Antena <- NormalizeData(object = SERUAT_Antena)
+SERUAT_Antena <- FindVariableFeatures(object = SERUAT_Antena)
+SERUAT_Antena <- ScaleData(object = SERUAT_Antena)
+SERUAT_Antena <- RunPCA(object = SERUAT_Antena)
+ElbowPlot(SERUAT_Antena)
+SERUAT_Antena <- FindNeighbors(object = SERUAT_Antena, dims = 1:20)
+SERUAT_Antena <- FindClusters(object = SERUAT_Antena)
+SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:20)
+
+SERUAT_HEAD<-SERUAT_Antena
+
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$seurat_clusters
+
+
+list_of_gene_names<-names(table(SERUAT_HEAD@meta.data$seurat_clusters))
+
+
+my_cols<- c(DiscretePalette(length(list_of_gene_names) ,palette = "glasbey"))
+my_cols[1]<-"#C0C0C0"
+names(my_cols)<-list_of_gene_names
+
+
+
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/last_analysis/Tdc2.tiff")
+ tiff(file=plotname,units="in",height=20,width=20,res=600)
+ 
+DimPlot(SERUAT_HEAD, reduction = 'umap',raster=FALSE,cols = my_cols)
+
+dev.off()
+
+
+
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+    if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+    }
+
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+            if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+            }
+  
+
+}
+
+```
+
+
+
+```{r}
+SERUAT_HEAD <-readRDS("/home/alu/aluguest/Lital_galitLab/15_10_elav_pos_ok107_all_genes.rds")
+
+number_of_fca<-c("1","4","5","6","7","8","9","10","11","12","13","14","15")
+names_of_fca<-paste("FCA",number_of_fca,sep="")
+
+#threshold_values<-c(0.36,0.3,0.18,0.05,0.16,0.33,0.57)
+gene_names<-c("Syt1","elav","brp","ple","NPF","NPFR","Tdc2","Crz","Tbh","fru")
+
+fullname<-paste("s_",gene_names,sep="")
+
+
+SERUAT_HEAD@meta.data$s_ple<-""
+SERUAT_HEAD@meta.data$s_NPF<-""
+SERUAT_HEAD@meta.data$s_Tdc2<-""
+SERUAT_HEAD@meta.data$s_Crz<-""
+SERUAT_HEAD@meta.data$s_Tbh<-""
+SERUAT_HEAD@meta.data$s_fru<-""
+SERUAT_HEAD@meta.data$s_Syt1<-""
+SERUAT_HEAD@meta.data$s_brp<-""
+SERUAT_HEAD@meta.data$s_elav<-""
+
+
+all_gene_csv<-as.data.frame(read.csv("/home/alu/aluguest/Lital_galitLab/all_genes.csv"))
+ 
+for(gene_i in 1:length(gene_names)){
+
+for(fca_i in 1:length(names_of_fca)){
+FCA_LIST<- all_gene_csv[all_gene_csv$FCA %in% names_of_fca[fca_i],]
+
+current_value_threshold<- FCA_LIST[FCA_LIST$Gene %in% gene_names[[gene_i]],]$value
+
+
+SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fullname[gene_i]]<-c(SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],gene_names[[gene_i]]] >current_value_threshold)
+
+  
+}
+}
+
+
+
+
+SERUAT_HEAD@meta.data$names<-""
+
+gene_name<-"fru"
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+}
+
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+new<-SplitObject(SERUAT_HEAD, split.by = "names")
+
+SERUAT_Antena<-new[[2]]
+#SERUAT_Antena<-SERUAT_HEAD
+SERUAT_Antena <- NormalizeData(object = SERUAT_Antena)
+SERUAT_Antena <- FindVariableFeatures(object = SERUAT_Antena)
+SERUAT_Antena <- ScaleData(object = SERUAT_Antena)
+SERUAT_Antena <- RunPCA(object = SERUAT_Antena)
+ElbowPlot(SERUAT_Antena)
+SERUAT_Antena <- FindNeighbors(object = SERUAT_Antena, dims = 1:10)
+SERUAT_Antena <- FindClusters(object = SERUAT_Antena)
+SERUAT_Antena <- RunUMAP(object = SERUAT_Antena, dims = 1:10)
+
+SERUAT_HEAD<-SERUAT_Antena
+
+
+Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$seurat_clusters
+
+
+list_of_gene_names<-names(table(SERUAT_HEAD@meta.data$seurat_clusters))
+
+
+my_cols<- c(DiscretePalette(length(list_of_gene_names) ,palette = "glasbey"))
+my_cols[1]<-"#C0C0C0"
+names(my_cols)<-list_of_gene_names
+if(length(list_of_gene_names)>3){
+  
+  my_cols[3]<-"#0000FF"
+
+}
+
+
+ plotname<- paste0("/home/alu/aluguest/Lital_galitLab/",gene_name,".tiff")
+ tiff(file=plotname,units="in",height=20,width=20,res=600)
+ 
+DimPlot(SERUAT_HEAD, reduction = 'umap',raster=FALSE,cols = my_cols,pt.size
+=1.7)
+
+dev.off()
+
+
+
+
+
+markers <- FindAllMarkers(SERUAT_HEAD,logfc.threshold = 1,only.pos = TRUE)
+markers<-subset(markers,p_val_adj<0.05)
+
+
+write.csv(markers,paste0("/home/alu/aluguest/Lital_galitLab/sig_",gene_name,".csv"))
+
+
+
+
+
+for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+
+
+
+    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+            if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+            }
+  
+
+}
 
 ```
 
