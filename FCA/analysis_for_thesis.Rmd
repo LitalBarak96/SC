@@ -1577,3 +1577,49 @@ SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
   }
 ```
 
+
+
+
+bar plot
+```{r}
+ fru <- c(1454,50778)
+barplot(fru,col = c("#1b98e0", "#353436"),
+        beside = TRUE)
+
+
+data <- as.matrix(data.frame(NPF = c(41,962),         # Create matrix for stacked barchart
+                             NPFR = c(100, 3128),
+                             OK107 = c(2000, 2071),
+                             Crz = c(300, 1895),
+                             Tdc2 = c(265,490),
+                             ple = c(515,4509)))
+rownames(data) <- c("known", "data set")
+data
+
+
+
+
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/barplot_wo_fru.tiff")
+ tiff(file=plotname,units="in",height=20,width=20,res=600)
+ 
+barplot(data,                                         # Create grouped barchart
+        col = c("#1b98e0", "#353436"),
+        beside = TRUE,cex.axis=2)
+
+legend("topleft",                                    # Add legend to barplot
+       legend =  c("known", "data set"),
+       fill = c("#1b98e0", "#353436"))
+
+dev.off()
+
+
+
+ plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/barplot_fru.tiff")
+ tiff(file=plotname,units="in",height=20,width=20,res=600)
+ fru <- c(1454,50778)
+barplot(fru,col = c("#1b98e0", "#353436"),
+        beside = TRUE)
+dev.off()
+
+```
+
