@@ -1095,42 +1095,218 @@ SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fu
 
 
 
-#tmp_head<-SERUAT_HEAD
-SERUAT_HEAD@meta.data$names<-""
 
-gene_name<-"NPF"
+for(j in 1:8){
+  
+  SERUAT_HEAD@meta.data$names<-""
+  
+   if(j == 1) {
+       SERUAT_HEAD@meta.data$names<-""
 
-for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+     for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+              }
+     }
+     table(SERUAT_HEAD@meta.data$names)
+
+  }
+  if(j == 2){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+          }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+
+  if(j == 3){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+        }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  if(j == 4){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+          }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  if(j == 5 ){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+        }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  
+  if( j == 6){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+        }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+
+  if(j== 7){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
     if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
 SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
 
-      }
+    }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  
+    if(j== 8){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+             if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+            }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  
+  
+
+
+
   
 
 }
 
 
+#tmp_head<-SERUAT_HEAD
+# SERUAT_HEAD@meta.data$names<-""
+# 
+# 
+# 
+# #gene_name<-"NPF"
+# 
+# for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+# 
+#     if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+# SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+# 
+#       }
+#   
+# 
+# }
+# 
+# 
+# 
+# #Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+# 
+# table(SERUAT_HEAD@meta.data$names)
+# list_of_gene_names<-names(table(SERUAT_HEAD@meta.data$names))
+# 
+# 
+# my_cols<- c(DiscretePalette(length(list_of_gene_names) ,palette = "glasbey"))
+# my_cols[1]<-"#C0C0C0"
+# my_cols[2]<-"#FF0000"
+# names(my_cols)<-list_of_gene_names
+# 
+# 
+#  plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/NO_CROSS/with_threshold/",gene_name,".tiff")
+#  tiff(file=plotname,units="in",height=20,width=20,res=600)
+#  
+# DimPlot(SERUAT_HEAD, reduction = 'umap',raster=FALSE,cols = my_cols,pt.size
+# =1.7)
+# 
+# dev.off()
 
-Idents(object = SERUAT_HEAD) <- SERUAT_HEAD@meta.data$names
+
+ if(j == 1) {
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
+  }
+  if(j == 2){
+          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
+  }
+
+  if(j == 3){
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+}
+  }
+  if(j == 4){
+    
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
+  }
+  if(j == 5 ){
+    
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
+  }
+  
+  if( j == 6){
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
+  }
+
+  if(j== 7){
+    if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+
+      }
+  }
 
 
-list_of_gene_names<-names(table(SERUAT_HEAD@meta.data$names))
-
-
-my_cols<- c(DiscretePalette(length(list_of_gene_names) ,palette = "glasbey"))
-my_cols[1]<-"#C0C0C0"
-my_cols[2]<-"#FF0000"
-names(my_cols)<-list_of_gene_names
-
-
- plotname<- paste0("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/NO_CROSS/with_threshold/",gene_name,".tiff")
- tiff(file=plotname,units="in",height=20,width=20,res=600)
- 
-DimPlot(SERUAT_HEAD, reduction = 'umap',raster=FALSE,cols = my_cols,pt.size
-=1.7)
-
-dev.off()
 
 ```
 
@@ -1170,7 +1346,7 @@ SERUAT_HEAD@meta.data$s_brp<-""
 SERUAT_HEAD@meta.data$s_elav<-""
 
 
-all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes_zero.csv"))
+all_gene_csv<-as.data.frame(read.csv("D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/threshold/all_genes.csv"))
  
 for(gene_i in 1:length(gene_names)){
 
@@ -1189,19 +1365,141 @@ SERUAT_HEAD@meta.data[SERUAT_HEAD@meta.data$identity %in% names_of_fca[fca_i],fu
 
 
 #tmp_head<-SERUAT_HEAD
-SERUAT_HEAD@meta.data$names<-""
+# SERUAT_HEAD@meta.data$names<-""
+# 
+# gene_name<-"NPF"
+# 
+# for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+# 
+#     if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
+# SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
+# 
+#       }
+#   
+# 
+# }
 
-gene_name<-"NPF"
+for(j in 1:8){
+  
+ # SERUAT_HEAD@meta.data$names<-""
+  
+   if(j == 1) {
+       SERUAT_HEAD@meta.data$names<-""
 
-for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+     for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+              }
+     }
+     table(SERUAT_HEAD@meta.data$names)
+
+  }
+  if(j == 2){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+          }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+
+  if(j == 3){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+        }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  if(j == 4){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+          }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  if(j == 5 ){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+        }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  
+  if( j == 6){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+        }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+
+  if(j== 7){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
     if(SERUAT_HEAD@meta.data$s_NPF[i] == TRUE){
 SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPF")
 
-      }
+    }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  
+    if(j== 8){
+      SERUAT_HEAD@meta.data$names<-""
+
+    for(i in 1:nrow(SERUAT_HEAD@meta.data)){
+
+             if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
+
+            }
+    }
+    table(SERUAT_HEAD@meta.data$names)
+
+  }
+  
+  
+
+
+
   
 
 }
+
 
 
 
@@ -1231,44 +1529,44 @@ dev.off()
 
 ```{r}
  if(j == 1) {
-    #           if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
-    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
-    # 
-    #     }
+              if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
+
+        }
   }
   if(j == 2){
-    #       if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
-    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
-    # 
-    #   }
+          if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
+
+      }
   }
 
   if(j == 3){
-#         if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
-#     SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
-# 
-# }
+        if(SERUAT_HEAD@meta.data$s_ple[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"ple")
+
+}
   }
   if(j == 4){
     
-    #       if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
-    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
-    # 
-    #   }
+          if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
+
+      }
   }
   if(j == 5 ){
     
-    #     if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
-    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
-    # 
-    # }
+        if(SERUAT_HEAD@meta.data$s_NPFR[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"NPFR")
+
+    }
   }
   
   if( j == 6){
-    #     if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
-    # SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
-    # 
-    # }
+        if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+
+    }
   }
 
   if(j== 7){
