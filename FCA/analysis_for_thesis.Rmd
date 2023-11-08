@@ -1008,16 +1008,7 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
             }
   
-
-}
-
-```
-
-
-
-
-```{r}
-all_gene_table<-read.table(file = "C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/best_gene_summary_fb_2023_05.tsv", sep = '\t', header = FALSE, fill = TRUE)
+ll_gene_table<-read.table(file = "C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/best_gene_summary_fb_2023_05.tsv", sep = '\t', header = FALSE, fill = TRUE)
 
 colnames(all_gene_table)<-c("Fb_name","gene","database","explain")
 
@@ -1032,5 +1023,14 @@ df2 <- sig_genes %>% left_join( all_gene_table,
 df2
 
 
+}
+
+```
+
+
+
+
+```{r}
+a
 ```
 
