@@ -782,10 +782,10 @@ SERUAT_HEAD@meta.data$names<-""
 
 for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
-    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
+      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
+    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
 
-    }
+      }
 }
 
 
@@ -817,7 +817,7 @@ names(my_cols)<-list_of_gene_names
 
 
 
- plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/last_analysis/Tdc2.tiff")
+ plotname<- paste0("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/last_analysis/Crz.tiff")
  tiff(file=plotname,units="in",height=20,width=20,res=600)
  
 DimPlot(SERUAT_HEAD, reduction = 'umap',raster=FALSE,cols = my_cols)
@@ -1010,6 +1010,26 @@ for(i in 1:nrow(SERUAT_HEAD@meta.data)){
   
 
 }
+
+```
+
+
+
+
+```{r}
+all_gene_table<-read.table(file = "C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/best_gene_summary_fb_2023_05.tsv", sep = '\t', header = FALSE, fill = TRUE)
+
+colnames(all_gene_table)<-c("Fb_name","gene","database","explain")
+
+
+
+sig_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/last_analysis/sig_Crz.csv")
+library(dplyr)
+
+# Using dplyr - left join multiple columns
+df2 <- sig_genes %>% left_join( all_gene_table, 
+            by=c('gene'='gene'))
+df2
 
 ```
 
