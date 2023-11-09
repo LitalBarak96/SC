@@ -982,48 +982,27 @@ write.csv(markers,paste0("/home/alu/aluguest/Lital_galitLab/sig_",gene_name,".cs
 
 
 
-for(i in 1:nrow(SERUAT_HEAD@meta.data)){
 
 
+all_gene_table<-read.table(file = "D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/best_gene_summary_fb_2023_05.tsv", sep = '\t', header = FALSE,fill = TRUE)
+
+colnames(all_gene_table)<-c("Fb_name","gene","database","description")
 
 
-    if(SERUAT_HEAD@meta.data$s_Tdc2[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tdc2")
-
-    }
-      if(SERUAT_HEAD@meta.data$s_Crz[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Crz")
-
-      }
-      if(SERUAT_HEAD@meta.data$s_Tbh[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"Tbh")
-
-      }
-        if(SERUAT_HEAD@meta.data$s_fru[i] == TRUE){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"fru")
-
-        }
-            if(grepl("Kenyon cell",SERUAT_HEAD@meta.data$tissu[i])){
-    SERUAT_HEAD@meta.data$names[i]<-paste(SERUAT_HEAD@meta.data$names[i],"OK107")
-
-            }
-  
-ll_gene_table<-read.table(file = "C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/best_gene_summary_fb_2023_05.tsv", sep = '\t', header = FALSE, fill = TRUE)
-
-colnames(all_gene_table)<-c("Fb_name","gene","database","explain")
+path_for_sig<-"D:/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/last_analysis/sig_Tdc2"
 
 
-
-sig_genes<-read.csv("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/weekly presentation/thesis/final_outline/last_analysis/sig_Crz.csv")
+sig_genes<-read.csv(paste0(path_for_sig,".csv"))
 library(dplyr)
 
+#it write more things than he should 
 # Using dplyr - left join multiple columns
 df2 <- sig_genes %>% left_join( all_gene_table, 
             by=c('gene'='gene'))
 df2
 
 
-}
+write.csv(df2,paste0(path_for_sig,"_description.csv"))
 
 ```
 
