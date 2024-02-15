@@ -1,23 +1,23 @@
-orgs <- as.data.frame(read.delim("/home/alu/aluguest/Lital_galitLab/GSE107451_DGRP-551_w1118_WholeBrain_57k_Metadata.tsv", header=TRUE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char=""))
+# orgs <- as.data.frame(read.delim("/home/alu/aluguest/Lital_galitLab/GSE107451_DGRP-551_w1118_WholeBrain_57k_Metadata.tsv", header=TRUE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char=""))
 
 #tmp<-as.data.frame(Matrix::readMM('/home/alu/aluguest/Lital_galitLab/matrix.mtx'))
 
-expression_matrix <- ReadMtx(
-  mtx = "/home/alu/aluguest/Lital_galitLab/matrix.mtx", features = "/home/alu/aluguest/Lital_galitLab/genes.tsv",
-  cells = "/home/alu/aluguest/Lital_galitLab/barcodes.tsv",skip.feature = 
-)
+# expression_matrix <- ReadMtx(
+#   mtx = "/home/alu/aluguest/Lital_galitLab/matrix.mtx", features = "/home/alu/aluguest/Lital_galitLab/genes.tsv",
+#   cells = "/home/alu/aluguest/Lital_galitLab/barcodes.tsv",skip.feature = 
+# )
 
-GENES <- as.data.frame(read.delim("/home/alu/aluguest/Lital_galitLab/genes.tsv", header=FALSE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char=""))
-BARCODE <- as.data.frame(read.delim("/home/alu/aluguest/Lital_galitLab/barcodes.tsv", header=FALSE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char=""))
+GENES <- as.data.frame(read.delim("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/pHd/18.2.24/genes.tsv", header=FALSE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char=""))
+BARCODE <- as.data.frame(read.delim("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/pHd/18.2.24/barcodes.tsv", header=FALSE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char=""))
 
-MATRIX<-as.data.frame(Matrix::readMM('/home/alu/aluguest/Lital_galitLab/matrix.mtx'))
+MATRIX<-as.data.frame(Matrix::readMM('C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/pHd/18.2.24/matrix.mtx'))
 
 
 rownames(MATRIX) <- GENES$V2
 colnames(MATRIX) <- BARCODE$V1
 
 
-meta <- as.data.frame(read.delim("/home/alu/aluguest/Lital_galitLab/GSE107451_DGRP-551_w1118_WholeBrain_57k_Metadata.tsv", header=TRUE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char="", row.names = 1))
+meta <- as.data.frame(read.delim("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/pHd/18.2.24/GSE107451_DGRP-551_w1118_WholeBrain_57k_Metadata.tsv", header=TRUE, allowEscapes=FALSE, sep="\t",  quote="", na.strings="", comment.char="", row.names = 1))
 
 
 
