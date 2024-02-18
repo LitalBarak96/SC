@@ -23,7 +23,14 @@ meta <- as.data.frame(read.delim("C:/Users/barakli8/OneDrive - Bar Ilan Universi
 
 test<-CreateSeuratObject( MATRIX, project = "SeuratProject", assay = "RNA",  meta.data = meta)
 
-age_seruat<-test
+
+
+saveRDS(test,"C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/pHd/18.2.24/18_2_againg_not_normelzied.rds")
+
+
+
+
+age_seruat <-readRDS("C:/Users/barakli8/OneDrive - Bar Ilan University/Lital/pHd/18.2.24/18_2_againg_not_normelzied.rds")
 
 age_seruat <- NormalizeData(object = age_seruat)
 age_seruat <- FindVariableFeatures(object = age_seruat)
